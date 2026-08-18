@@ -4,14 +4,26 @@ import { useCart } from '../context/CartContext';
 import { Trash2, ArrowLeft } from 'lucide-react';
 
 export default function Cart() {
+  // جلب دالة الحذف المحدثة التي تقبل الـ id والـ unit
   const { cart, addToCart, removeFromCart, getCartTotal } = useCart();
   const navigate = useNavigate();
 
   const handleDropdownChange = (item, fractionVal, fractionText) => {
+    removeFromCart(item.id, item.selectedUnit);
+
     const newPrice = item.pricePerKg * fractionVal;
     const isOil = item.category === 'زيوت طبيعية';
-    const newQtyText = `${fractionText} ${isOil ? 'ليتر' : 'كيلو'}`;
-    addToCart(item, fractionVal, newQtyText, newPrice);
+    const newQtyText = `1 (${fractionText} ${isOil ? 'ليتر' : 'كيلو'})`;
+
+    const baseProduct = {
+      id: item.id,
+      name: item.name,
+      image: item.image,
+      category: item.category,
+      pricePerKg: item.pricePerKg
+    };
+
+    addToCart(baseProduct, fractionVal, "1", newPrice);
   };
 
   if (cart.length === 0) {
@@ -29,13 +41,17 @@ export default function Cart() {
       <div className="space-y-6">
         {cart.map((item) => {
           const isOil = item.category === 'زيوت طبيعية';
+          
           return (
-            <div key={item.id} className="bg-white p-5 rounded-2xl shadow-sm border flex flex-col sm:flex-row gap-5 items-center justify-between">
+            <div key={item.cartItemId || `${item.id}-${item.selectedUnit}`} className="bg-white p-5 rounded-2xl shadow-sm border flex flex-col sm:flex-row gap-5 items-center justify-between">
               <div className="flex items-center gap-4 w-full sm:w-auto">
                 <img src={item.image} alt={item.name} className="w-20 h-20 object-cover rounded-xl border" />
                 <div>
                   <h3 className="text-lg font-bold text-stone-900">{item.name}</h3>
-                  <p className="text-sm text-stone-400">الحالة: {item.quantityText}</p>
+                  <p className="text-sm text-stone-400">الكمية المطلوبة: {item.quantityText}</p>
+                  <p className="text-xs text-stone-500 mt-0.5">
+                    الوزن: {item.selectedUnit === 1.0 ? (isOil ? '1 ليتر' : '1 كيلو') : `${item.selectedUnit} من الوحدة`}
+                  </p>
                 </div>
               </div>
               <div className="flex flex-wrap items-center gap-4 w-full sm:w-auto justify-between sm:justify-end">
@@ -52,7 +68,7 @@ export default function Cart() {
                       if (val === 1.0) txt = '1';
                       handleDropdownChange(item, val, txt);
                     }}
-                    className="border rounded-lg p-2 bg-stone-50 text-sm font-semibold"
+                    className="border rounded-lg p-2 bg-stone-50 text-sm font-semibold cursor-pointer focus:outline-emerald-800"
                   >
                     <option value="" disabled>مخصص/حر</option>
                     <option value="0.125">1/8 (ثمن)</option>
@@ -61,9 +77,17 @@ export default function Cart() {
                     <option value="1.0">{isOil ? '1 ليتر' : '1 كيلو'}</option>
                   </select>
                 </div>
-                <div className="text-left">
-                  <p className="text-lg font-extrabold text-emerald-800">{item.currentPrice.toFixed(2)} جنيه</p>
-                  <button onClick={() => removeFromCart(item.id)} className="text-red-500 hover:text-red-700 flex items-center gap-1 text-xs mt-1"><Trash2 className="w-4 h-4" /> حذف</button>
+                <div className="text-left min-w-[100px]">
+                  {/* حساب السعر الإجمالي الفعلي لهذا السطر (السعر الحادي × عدد المرات) */}
+                  <p className="text-lg font-extrabold text-emerald-800">
+                    {((Number(item.currentPrice) || 0) * (parseInt(item.quantityText, 10) || 1)).toFixed(2)} جنيه
+                  </p>
+                  <button 
+                    onClick={() => removeFromCart(item.id, item.selectedUnit)} 
+                    className="text-red-500 hover:text-red-700 flex items-center gap-1 text-xs mt-1 transition"
+                  >
+                    <Trash2 className="w-4 h-4" /> حذف
+                  </button>
                 </div>
               </div>
             </div>
@@ -73,12 +97,12 @@ export default function Cart() {
 
       <div className="mt-8 bg-stone-900 text-stone-100 p-6 rounded-2xl flex flex-col md:flex-row justify-between items-center gap-6">
         <div>
-          <span className="text-stone-400 block text-sm">إجمالي الحساب:</span>
+          <span className="text-stone-400 block text-sm">إجمالي الحساب الشامل:</span>
           <span className="text-3xl font-black text-amber-400">{getCartTotal().toFixed(2)} جنيه</span>
         </div>
         <div className="flex gap-4 w-full md:w-auto">
-          <Link to="/" className="flex-1 md:flex-initial bg-stone-800 border px-6 py-3.5 rounded-xl text-center text-sm flex items-center justify-center gap-2"><ArrowLeft className="w-4 h-4" /> العودة</Link>
-          <button onClick={() => navigate('/checkout')} className="flex-1 md:flex-initial bg-amber-500 text-stone-900 px-8 py-3.5 rounded-xl font-extrabold text-sm shadow-lg">تأكيد الطلب والدفع</button>
+          <Link to="/" className="flex-1 md:flex-initial bg-stone-800 border border-stone-700 px-6 py-3.5 rounded-xl text-center text-sm flex items-center justify-center gap-2 hover:bg-stone-700 transition"><ArrowLeft className="w-4 h-4" /> العودة</Link>
+          <button onClick={() => navigate('/checkout')} className="flex-1 md:flex-initial bg-amber-500 text-stone-900 px-8 py-3.5 rounded-xl font-extrabold text-sm shadow-lg hover:bg-amber-400 transition">تأكيد الطلب والدفع</button>
         </div>
       </div>
     </div>
