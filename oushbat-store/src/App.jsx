@@ -11,34 +11,30 @@ import Checkout from './pages/Checkout';
 export default function App() {
   const [productsData, setProductsData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState(null); // مخزن لحفظ نص الخطأ الحقيقي
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        // جلب البيانات من جدول 'products' في السوبابيز
         const { data, error } = await supabase
-          .from('products')
+          .from('products') // 💡 تأكدي من مطابقة الاسم هنا مع جدولكِ
           .select('*');
 
         if (error) throw error;
 
-        // دالة الماب الذكية لتوحيد مسميات الأعمدة وتجنب مشاكل الـ Undefined
         const formattedData = (data || []).map((item) => ({
           id: item.id,
           name: item.name || item.title || 'منتج بدون اسم',
           category: item.category || 'عام',
-          description: item.description || item.desc || 'لا يوجد وصف متاح لهذا المنتج حالياً.',
-          
-          // حماية السعر: يبحث عن pricePerKg أو price أو يضع 0 كقيمة افتراضية
+          description: item.description || item.desc || 'لا يوجد وصف متاح.',
           pricePerKg: Number(item.pricePerKg || item.price || 0),
-          
-          // حماية الصورة: يبحث عن image أو image_url أو يضع رابط صورة افتراضية للعطارة
           image: item.image || item.image_url || 'https://unsplash.com'
         }));
 
         setProductsData(formattedData);
       } catch (error) {
-        console.error('حدث خطأ أثناء جلب المنتجات من قاعدة البيانات:', error.message);
+        console.error('تفاصيل الخطأ في الكونسول:', error);
+        setErrorMessage(error.message || JSON.stringify(error));
       } finally {
         setLoading(false);
       }
@@ -51,9 +47,30 @@ export default function App() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-stone-50">
         <div className="text-center">
-          {/* أنيميشن التحميل */}
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-800 mx-auto"></div>
-          <p className="mt-4 text-stone-600 font-medium">جاري الاتصال بـ Supabase وتحميل المنتجات الحية...</p>
+          <p className="mt-4 text-stone-600 font-medium">جاري فحص الاتصال بالـ Database...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // 💡 إذا وجد النظام خطأ في الربط مع سوبابيز، سيعرضه لكِ هنا فوراً باللون الأحمر
+  if (errorMessage) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-stone-50 p-4">
+        <div className="bg-red-50 border border-red-200 rounded-3xl p-6 max-w-xl text-center shadow-lg">
+          <span className="text-4xl">⚠️</span>
+          <h2 className="text-xl font-bold text-red-800 mt-2">فشل جلب البيانات من Supabase</h2>
+          <p className="text-stone-600 text-sm mt-2">السبب البرمجي الحقيقي هو:</p>
+          <div className="mt-3 p-3 bg-red-100 text-red-700 rounded-xl font-mono text-xs overflow-x-auto text-left dir-ltr">
+            {errorMessage}
+          </div>
+          <button 
+            onClick={() => window.location.reload()} 
+            className="mt-5 bg-red-700 text-white px-5 py-2 rounded-xl font-bold hover:bg-red-600 transition text-sm"
+          >
+            إعادة محاولة الاتصال
+          </button>
         </div>
       </div>
     );
