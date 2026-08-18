@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ShoppingCart, X } from 'lucide-react';
+import { ShoppingCart, X, ShoppingBag } from 'lucide-react'; // استيراد أيقونة الحقيبة كبديل للصورة المكسورة
 import { useCart } from '../context/CartContext';
 
 export default function Navbar() {
   const { cart } = useCart();
   const [isOpen, setIsOpen] = useState(false);
+
+  // حساب إجمالي عدد القطع الفعلي داخل العربة (حتى لو تكرر نفس المنتج)
+  const totalItems = cart.reduce((total, item) => total + (Number(item.quantityText) || 1), 0);
 
   return (
     <nav className="bg-emerald-800 text-stone-100 p-4 sticky top-0 z-50 shadow-md">
@@ -15,9 +18,9 @@ export default function Navbar() {
           <Link to="/" className="hover:text-emerald-200 transition">الرئيسية</Link>
           <div className="relative cursor-pointer" onClick={() => setIsOpen(!isOpen)}>
             <ShoppingCart className="w-6 h-6" />
-            {cart.length > 0 && (
+            {totalItems > 0 && (
               <span className="absolute -top-2 -right-2 bg-amber-500 text-stone-900 text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
-                {cart.length}
+                {totalItems}
               </span>
             )}
           </div>
@@ -25,7 +28,8 @@ export default function Navbar() {
       </div>
 
       {isOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-end text-stone-900">
+        // تم تعديل الـ z-index هنا إلى z-[60] ليصبح أعلى من الـ Navbar
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-[60] flex justify-end text-stone-900">
           <div className="bg-stone-50 w-full max-w-md h-full p-6 flex flex-col justify-between shadow-xl">
             <div>
               <div className="flex justify-between items-center border-b pb-4 mb-4">
@@ -35,10 +39,11 @@ export default function Navbar() {
 
               {cart.length === 0 ? (
                 <div className="text-center py-12 flex flex-col items-center">
-                  <img src="https://flaticon.com" alt="Empty" className="w-32 h-32 opacity-60 mb-4" />
+                  {/* استبدال رابط flaticon المكسور بأيقونة native جميلة متناسقة مع الهوية */}
+                  <ShoppingBag className="w-24 h-24 text-emerald-800 opacity-20 mb-4" />
                   <p className="text-stone-500 mb-6 font-medium">العربة فارغة حالياً</p>
                   <Link to="/" onClick={() => setIsOpen(false)} className="bg-emerald-700 text-white px-6 py-2 rounded-lg font-semibold hover:bg-emerald-600 transition">
-                    Go Shopping
+                    الذهاب للتسوق
                   </Link>
                 </div>
               ) : (
