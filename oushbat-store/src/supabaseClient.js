@@ -1,17 +1,15 @@
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = 'https://bdzdhepkknezyzkbhztk.supabase.co';
-const supabaseAnonKey = 'sb_publishable_r5uQUwf3UG0ABsmTXRv33Q_m4SPocTt';
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+if (!supabaseUrl || !supabaseAnonKey) {
+  console.error('⚠️ خطأ: مفاتيح Supabase مفقودة! تأكدي من إنشاء ملف .env.local وضبط المتغيرات فيه.');
+}
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
-    persistSession: true,
-    autoRefreshToken: true
-  },
-  global: {
-   
-    headers: {
-      'apikey': supabaseAnonKey,
-    },
-  },
+    persistSession: true, 
+    autoRefreshToken: true 
+  }
 });
