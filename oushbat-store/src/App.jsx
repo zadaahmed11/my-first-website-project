@@ -15,15 +15,35 @@ export default function App() {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const { data, error } = await supabase.from('products').select('*');
+        // جلب البيانات من جدول 'products' في السوبابيز
+        const { data, error } = await supabase
+          .from('products')
+          .select('*');
+
         if (error) throw error;
-        setProductsData(data || []);
+
+        // دالة الماب الذكية لتوحيد مسميات الأعمدة وتجنب مشاكل الـ Undefined
+        const formattedData = (data || []).map((item) => ({
+          id: item.id,
+          name: item.name || item.title || 'منتج بدون اسم',
+          category: item.category || 'عام',
+          description: item.description || item.desc || 'لا يوجد وصف متاح لهذا المنتج حالياً.',
+          
+          // حماية السعر: يبحث عن pricePerKg أو price أو يضع 0 كقيمة افتراضية
+          pricePerKg: Number(item.pricePerKg || item.price || 0),
+          
+          // حماية الصورة: يبحث عن image أو image_url أو يضع رابط صورة افتراضية للعطارة
+          image: item.image || item.image_url || 'https://unsplash.com'
+        }));
+
+        setProductsData(formattedData);
       } catch (error) {
-        console.error('حدث خطأ أثناء جلب المنتجات:', error.message);
+        console.error('حدث خطأ أثناء جلب المنتجات من قاعدة البيانات:', error.message);
       } finally {
         setLoading(false);
       }
     };
+
     fetchProducts();
   }, []);
 
@@ -31,8 +51,9 @@ export default function App() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-stone-50">
         <div className="text-center">
+          {/* أنيميشن التحميل */}
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-800 mx-auto"></div>
-          <p className="mt-4 text-stone-600 font-medium">جاري تحميل منتجات عشبة العطار...</p>
+          <p className="mt-4 text-stone-600 font-medium">جاري الاتصال بـ Supabase وتحميل المنتجات الحية...</p>
         </div>
       </div>
     );
