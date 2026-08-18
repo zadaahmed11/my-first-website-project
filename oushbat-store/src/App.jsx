@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { CartProvider } from './context/CartContext';
 import { supabase } from './supabaseClient';
 import Navbar from './components/Navbar';
@@ -8,16 +8,25 @@ import ProductDetails from './pages/ProductDetails';
 import Cart from './pages/Cart';
 import Checkout from './pages/Checkout';
 
+
+function ScrollToTop() {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+  return null;
+}
+
 export default function App() {
   const [productsData, setProductsData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [errorMessage, setErrorMessage] = useState(null); // مخزن لحفظ نص الخطأ الحقيقي
+  const [errorMessage, setErrorMessage] = useState(null); 
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         const { data, error } = await supabase
-          .from('products') // 💡 تأكدي من مطابقة الاسم هنا مع جدولكِ
+          .from('products') 
           .select('*');
 
         if (error) throw error;
@@ -28,7 +37,7 @@ export default function App() {
           category: item.category || 'عام',
           description: item.description || item.desc || 'لا يوجد وصف متاح.',
           pricePerKg: Number(item.pricePerKg || item.price || 0),
-          image: item.image || item.image_url || 'https://unsplash.com'
+          image: item.image || item.image_url || null 
         }));
 
         setProductsData(formattedData);
@@ -54,7 +63,6 @@ export default function App() {
     );
   }
 
-  // 💡 إذا وجد النظام خطأ في الربط مع سوبابيز، سيعرضه لكِ هنا فوراً باللون الأحمر
   if (errorMessage) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-stone-50 p-4">
@@ -62,7 +70,7 @@ export default function App() {
           <span className="text-4xl">⚠️</span>
           <h2 className="text-xl font-bold text-red-800 mt-2">فشل جلب البيانات من Supabase</h2>
           <p className="text-stone-600 text-sm mt-2">السبب البرمجي الحقيقي هو:</p>
-          <div className="mt-3 p-3 bg-red-100 text-red-700 rounded-xl font-mono text-xs overflow-x-auto text-left dir-ltr">
+          <div className="mt-3 p-3 bg-red-100 text-red-700 rounded-xl font-mono text-xs overflow-x-auto text-left" dir="ltr">
             {errorMessage}
           </div>
           <button 
@@ -79,6 +87,8 @@ export default function App() {
   return (
     <CartProvider>
       <Router>
+        <ScrollToTop />
+        
         <div className="min-h-screen bg-stone-50 flex flex-col font-sans" dir="rtl">
           <Navbar />
           <main className="flex-grow">
