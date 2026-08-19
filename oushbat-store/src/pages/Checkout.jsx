@@ -128,7 +128,7 @@ export default function Checkout() {
         <form onSubmit={handleSubmit} className="lg:col-span-7 bg-white p-6 md:p-8 rounded-3xl shadow-2xs border border-stone-200/60 space-y-4">
           <h3 className="text-base font-bold text-[#0b422a] border-b pb-2 mb-2">{t('shippingDetails')}</h3>
           
-          {/* حقل الاسم بالترتيب */}
+
           <div>
             <label className="block text-xs font-bold text-stone-700 mb-1">{t('fullName')}</label>
             <input 
@@ -191,10 +191,10 @@ export default function Checkout() {
             </button>
           </div>
         </form>
-        {/* العمود الأيمن: الخريطة التفاعلية وسلة المشتريات القابلة للتعديل والتحكم الفوري */}
+
         <div className="lg:col-span-5 space-y-6">
 
-          {/* الخريطة الجغرافية الحية ونظام الـ GPS */}
+
           <div className="bg-white p-5 rounded-3xl shadow-2xs border border-stone-200/60">
             <div className="flex items-center justify-between mb-2">
               <h3 className="text-sm font-bold text-stone-800">{t('geoTitle')}</h3>
@@ -212,7 +212,7 @@ export default function Checkout() {
             <div className="w-full h-48 rounded-2xl overflow-hidden border border-stone-100 bg-stone-100 shadow-inner relative">
               <iframe 
                 title="Delivery Location Map" 
-                src={`https://google.com{location.lat},${location.lng}&z=15&output=embed`} 
+                src={`https://google.com/${location.lat},${location.lng}&z=15&output=embed`} 
                 width="100%" 
                 height="100%" 
                 style={{ border: 0 }} 
