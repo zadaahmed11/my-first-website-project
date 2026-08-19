@@ -1,19 +1,74 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useCart } from '../context/CartContext';
 import { useLanguage } from '../context/LanguageContext';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
+import { X, MapPin, ShoppingBag, Send } from 'lucide-react';
 
 export default function Checkout() {
-  const { cart, getCartTotal, clearCart } = useCart();
+  const { cart, addToCart, removeFromCart, getCartTotal, clearCart } = useCart();
   const { t, lang } = useLanguage();
   const navigate = useNavigate();
 
+  const WHATSAPP_NUMBER = "201121777574"; 
+
   const [formData, setFormData] = useState({ name: '', address: '', phone: '', notes: '' });
+  const [location, setLocation] = useState({ lat: 30.0444, lng: 31.2357 });
+  const [geoError, setGeoError] = useState('');
+  
+
+  const [touched, setTouched] = useState({ name: false, address: false, phone: false });
+
+
+  const convertNumbers = (numStr) => {
+    if (!numStr || lang === 'en') return String(numStr || '');
+    return String(numStr).replace(/[0-9]/g, (d) => String.fromCharCode(0x0660 + parseInt(d)));
+  };
+
+
+  const handleDropdownAction = (item, actionType, fractionVal) => {
+    const basePrice = Number(item.price || 0);
+    const isOil = String(item.category || '').toLowerCase().match(/زيت|زيوت|oil/);
+    const defaultUnit = 1.0; 
+    
+    let finalUnitVal = actionType === 'increase' ? defaultUnit + fractionVal : defaultUnit - fractionVal;
+    if (finalUnitVal <= 0) return removeFromCart(item.id);
+
+    const label = isOil ? (lang === 'en' ? 'Liter' : 'لتر') : (lang === 'en' ? 'KG' : 'كيلو');
+    const displayQty = finalUnitVal % 1 === 0 ? finalUnitVal.toFixed(0) : finalUnitVal.toFixed(3);
+    const text = `${convertNumbers(displayQty)} ${label}`;
+
+    addToCart(item, finalUnitVal, text, basePrice * finalUnitVal);
+  };
+
+
+  const handleGetLocation = () => {
+    if (!navigator.geolocation) {
+      setGeoError(lang === 'en' ? 'Geolocation not supported' : 'متصفحك لا يدعم تحديد الموقع الجغرافي');
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setLocation({ lat: position.coords.latitude, lng: position.coords.longitude });
+        setGeoError('');
+      },
+      (error) => {
+        setGeoError(lang === 'en' ? 'Unable to retrieve location' : 'فشل الحصول على الموقع، يرجى تفعيل الـ GPS');
+      }
+    );
+  };
+
+
+  const isNameInvalid = touched.name && !formData.name.trim();
+  const isAddressInvalid = (touched.address || touched.phone) && (!formData.name.trim() || !formData.address.trim());
+  const isPhoneInvalid = touched.phone && (!formData.name.trim() || !formData.address.trim() || !formData.phone.trim());
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.name || !formData.address || !formData.phone) return;
+    setTouched({ name: true, address: true, phone: true });
+    if (!formData.name.trim() || !formData.address.trim() || !formData.phone.trim()) return;
+
+    const googleMapsUrl = `https://google.com/${location.lat},${location.lng}`;
 
     try {
       const { error } = await supabase.from('orders').insert([
@@ -24,11 +79,30 @@ export default function Checkout() {
           notes: formData.notes,
           total_price: Number(getCartTotal()),
           items: cart, 
+          google_maps_link: googleMapsUrl,
           created_at: new Date()
         }
       ]);
-
       if (error) throw error;
+
+      let message = `*طلب جديد 🛒*\n\n`;
+      message += `👤 *الاسم:* ${formData.name}\n`;
+      message += `📍 *العنوان:* ${formData.address}\n`;
+      message += `📞 *الرقم:* ${formData.phone}\n`;
+      if (formData.notes) message += `📝 *ملاحظات:* ${formData.notes}\n`;
+      message += `🗺️ *رابط الموقع الماب:* ${googleMapsUrl}\n\n`;
+      message += `📦 *المنتجات المطلوبة:*\n`;
+      
+      cart.forEach((item, index) => {
+        const name = lang === 'en' ? item.name_en : item.name_ar;
+        message += `${index + 1}. ${name} [${item.quantityText}] -> ${item.currentPrice.toFixed(2)} ${t('currency')}\n`;
+      });
+      
+      message += `\n💰 *الإجمالي النهائي:* ${getCartTotal().toFixed(2)} ${t('currency')}`;
+
+      // 3. فتح الواتساب بشكل مباشر
+      const encodedMessage = encodeURIComponent(message);
+      window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodedMessage}`, '_blank');
 
       alert(t('alertSuccess'));
       clearCart(); 
@@ -43,50 +117,63 @@ export default function Checkout() {
     if (!name) return '';
     return name.replace(/(اعشاب|أعشاب|توابل|بهارات|زيوت|زيت|حبوب|بقوليات|spices|herbs|oil|grains)/gi, '').trim();
   };
+
   return (
-    <div className="container mx-auto px-4 py-12 max-w-5xl animate-fadeIn">
-      {/* عنوان الصفحة المترجم حياً */}
+    <div className="container mx-auto px-4 py-12 max-w-6xl animate-fadeIn">
       <h2 className="text-2xl font-black text-stone-900 mb-8 border-b pb-4">{t('checkoutTitle')}</h2>
       
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-        {/* العمود الأيسر: فورم بيانات الشحن المترجم بالكامل */}
-        <form onSubmit={handleSubmit} className="bg-white p-6 md:p-8 rounded-3xl shadow-2xs border border-stone-200/60 space-y-4">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+        
+
+        <form onSubmit={handleSubmit} className="lg:col-span-7 bg-white p-6 md:p-8 rounded-3xl shadow-2xs border border-stone-200/60 space-y-4">
           <h3 className="text-base font-bold text-[#0b422a] border-b pb-2 mb-2">{t('shippingDetails')}</h3>
           
+          {/* حقل الاسم بالترتيب */}
           <div>
             <label className="block text-xs font-bold text-stone-700 mb-1">{t('fullName')}</label>
             <input 
-              type="text" required value={formData.name} 
+              type="text" 
+              value={formData.name} 
+              onFocus={() => setTouched(p => ({ ...p, name: true }))}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })} 
               placeholder={t('namePlaceholder')} 
-              className="w-full p-3 text-sm border border-stone-200 rounded-xl bg-stone-50/50 focus:ring-2 focus:ring-emerald-600 focus:outline-hidden font-medium" 
+              className={`w-full p-3 text-sm border rounded-xl bg-stone-50/50 focus:ring-2 focus:ring-emerald-600 focus:outline-hidden font-medium transition-all ${isNameInvalid ? 'border-red-500 bg-red-50/30' : 'border-stone-200'}`} 
             />
+            {isNameInvalid && <span className="text-[10px] text-red-500 font-bold mt-1 block">{lang === 'en' ? 'Please fill your name first.' : 'برجاء كتابة الاسم أولاً بالترتيب.'}</span>}
           </div>
           
           <div>
             <label className="block text-xs font-bold text-stone-700 mb-1">{t('fullAddress')}</label>
             <input 
-              type="text" required value={formData.address} 
+              type="text" 
+              disabled={!formData.name.trim()}
+              value={formData.address} 
+              onFocus={() => setTouched(p => ({ ...p, address: true }))}
               onChange={(e) => setFormData({ ...formData, address: e.target.value })} 
-              placeholder={t('addressPlaceholder')} 
-              className="w-full p-3 text-sm border border-stone-200 rounded-xl bg-stone-50/50 focus:ring-2 focus:ring-emerald-600 focus:outline-hidden font-medium" 
-                />
+              placeholder={!formData.name.trim() ? (lang === 'en' ? 'Fill name first...' : 'اكتب الاسم أولاً لتتمكن من التعديل...') : t('addressPlaceholder')} 
+              className={`w-full p-3 text-sm border rounded-xl focus:ring-2 focus:ring-emerald-600 focus:outline-hidden font-medium transition-all ${!formData.name.trim() ? 'bg-stone-100/80 cursor-not-allowed' : 'bg-stone-50/50'} ${isAddressInvalid ? 'border-red-500 bg-red-50/30' : 'border-stone-200'}`} 
+            />
+            {isAddressInvalid && !formData.name.trim() && <span className="text-[10px] text-red-500 font-bold mt-1 block">{lang === 'en' ? 'You must provide a name before the address.' : 'يجب إدخال الاسم قبل الانتقال لحقل العنوان.'}</span>}
           </div>
           
           <div>
             <label className="block text-xs font-bold text-stone-700 mb-1">{t('phone')}</label>
             <input 
-              type="tel" required value={formData.phone} 
+              type="tel" 
+              disabled={!formData.name.trim() || !formData.address.trim()}
+              value={formData.phone} 
+              onFocus={() => setTouched(p => ({ ...p, phone: true }))}
               onChange={(e) => setFormData({ ...formData, phone: e.target.value })} 
               placeholder="01xxxxxxxxx" 
-              className="w-full p-3 text-sm border border-stone-200 rounded-xl bg-stone-50/50 focus:ring-2 focus:ring-emerald-600 focus:outline-hidden text-left font-bold" 
+              className={`w-full p-3 text-sm border rounded-xl focus:ring-2 focus:ring-emerald-600 focus:outline-hidden font-bold transition-all ${(!formData.name.trim() || !formData.address.trim()) ? 'bg-stone-100/80 cursor-not-allowed' : 'bg-stone-50/50'} ${isPhoneInvalid ? 'border-red-500 bg-red-50/30' : 'border-stone-200'}`} 
             />
+            {isPhoneInvalid && (!formData.name.trim() || !formData.address.trim()) && <span className="text-[10px] text-red-500 font-bold mt-1 block">{lang === 'en' ? 'Please complete Name and Address before phone number.' : 'يرجى استكمال الاسم والعنوان أولاً قبل كتابة الرقم.'}</span>}
           </div>
           
           <div>
             <label className="block text-xs font-bold text-stone-700 mb-1">{t('notes')}</label>
             <textarea 
-              rows="3" value={formData.notes} 
+              rows="2" value={formData.notes} 
               onChange={(e) => setFormData({ ...formData, notes: e.target.value })} 
               placeholder={t('notesPlaceholder')} 
               className="w-full p-3 text-sm border border-stone-200 rounded-xl bg-stone-50/50 focus:ring-2 focus:ring-emerald-600 focus:outline-hidden font-medium"
@@ -96,23 +183,36 @@ export default function Checkout() {
           <div className="pt-2">
             <button 
               type="submit" 
-              className="w-full bg-[#0b422a] text-white py-3.5 rounded-xl font-black text-sm shadow-md hover:bg-emerald-800 transition transform hover:scale-101"
+              disabled={cart.length === 0}
+              className={`w-full flex items-center justify-center gap-2 text-white py-4 rounded-xl font-black text-sm shadow-md transition transform hover:scale-101 ${cart.length === 0 ? 'bg-stone-400 cursor-not-allowed' : 'bg-[#0b422a] hover:bg-emerald-800'}`}
             >
-              {t('confirmOrder')} ({getCartTotal().toFixed(2)} {t('currency')})
+              <Send className="w-4 h-4" />
+              {t('confirmOrder')} ({convertNumbers(getCartTotal().toFixed(2))} {t('currency')})
             </button>
           </div>
         </form>
+        {/* العمود الأيمن: الخريطة التفاعلية وسلة المشتريات القابلة للتعديل والتحكم الفوري */}
+        <div className="lg:col-span-5 space-y-6">
 
-        <div className="space-y-6">
-
+          {/* الخريطة الجغرافية الحية ونظام الـ GPS */}
           <div className="bg-white p-5 rounded-3xl shadow-2xs border border-stone-200/60">
-            <h3 className="text-base font-bold text-stone-800 mb-1">{t('geoTitle')}</h3>
-            <p className="text-[11px] text-stone-400 mb-4">{t('geoDesc')}</p>
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="text-sm font-bold text-stone-800">{t('geoTitle')}</h3>
+              <button 
+                type="button"
+                onClick={handleGetLocation}
+                className="flex items-center gap-1 bg-emerald-50 hover:bg-emerald-100 text-[#0b422a] text-[10px] font-black px-3 py-1.5 rounded-xl border border-emerald-200 transition-all cursor-pointer"
+              >
+                <MapPin className="w-3 h-3" />
+                {lang === 'en' ? 'Get My Location' : 'تحديد موقعي الحالي 🎯'}
+              </button>
+            </div>
+            {geoError && <p className="text-[10px] text-red-500 font-bold mb-2">{geoError}</p>}
             
-            <div className="w-full h-72 rounded-2xl overflow-hidden border border-stone-100 bg-stone-100 shadow-inner relative">
+            <div className="w-full h-48 rounded-2xl overflow-hidden border border-stone-100 bg-stone-100 shadow-inner relative">
               <iframe 
                 title="Delivery Location Map" 
-                src="https://google.com" 
+                src={`https://google.com{location.lat},${location.lng}&z=15&output=embed`} 
                 width="100%" 
                 height="100%" 
                 style={{ border: 0 }} 
@@ -122,24 +222,76 @@ export default function Checkout() {
             </div>
           </div>
 
-          <div className="bg-stone-50 p-5 rounded-2xl border border-stone-200/40">
-            <h4 className="font-bold text-xs text-stone-700 mb-3 border-b pb-1.5">{t('orderSummary')} ({cart.length})</h4>
-            <div className="max-h-40 overflow-y-auto space-y-2.5 pr-1">
-              {cart.map(item => (
-                <div key={item.id} className="flex justify-between items-center text-xs">
-                  <span className="text-stone-600 font-medium">
-                    {cleanProductName(lang === 'en' ? item.name_en : item.name_ar)} 
-                    <span className="text-[10px] text-stone-400 font-bold block sm:inline sm:mx-1">({item.quantityText})</span>
-                  </span>
-                  <span className="font-black text-stone-800 whitespace-nowrap">
-                    {item.currentPrice.toFixed(2)} {t('currency')}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
+          <div className="bg-white p-5 rounded-3xl border border-stone-200/60 shadow-2xs">
+            <h4 className="font-black text-sm text-stone-800 mb-4 border-b pb-2 flex items-center justify-between">
+              <span>{t('orderSummary')}</span>
+              <span className="bg-stone-100 text-stone-700 px-2 py-0.5 rounded-md text-xs">{cart.length}</span>
+            </h4>
+            
+            {cart.length === 0 ? (
+              <p className="text-xs text-stone-400 text-center py-6">{lang === 'en' ? 'Your cart is empty.' : 'عربة التسوق فارغة تماماً.'}</p>
+            ) : (
+              <div className="space-y-4 max-h-[380px] overflow-y-auto pr-1">
+                {cart.map(item => {
+                  const isOil = String(item.category || '').toLowerCase().match(/زيت|زيوت|oil/);
+                  const labelUnit = isOil ? (lang === 'en' ? 'L' : 'لتر') : (lang === 'en' ? 'KG' : 'كيلو');
+                  
+                  return (
+                    <div key={item.id} className="p-3 rounded-xl bg-stone-50 border border-stone-100 flex flex-col gap-2 relative overflow-visible">
+                      
+                      <button 
+                        type="button"
+                        onClick={() => removeFromCart(item.id)}
+                        className="absolute top-1.5 right-1.5 ltr:left-auto ltr:right-1.5 rtl:right-auto rtl:left-1.5 w-4 h-4 flex items-center justify-center rounded-full bg-red-50 text-red-500 hover:bg-red-100 transition-all cursor-pointer z-20"
+                      >
+                        <X className="w-2.5 h-2.5" strokeWidth={3} />
+                      </button>
 
+                      <div className="flex items-center gap-3">
+                        <img src={item.image_url} alt="" className="w-10 h-10 object-cover rounded-lg border border-stone-200" />
+                        <div className="min-w-0 flex-1">
+                          <h5 className="text-xs font-bold text-stone-800 truncate">{cleanProductName(lang === 'en' ? item.name_en : item.name_ar)}</h5>
+                          <span className="text-[9px] font-black text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md block w-fit mt-0.5">{item.quantityText}</span>
+                        </div>
+                        <span className="text-xs font-black text-stone-900 whitespace-nowrap">
+                          {convertNumbers(item.currentPrice.toFixed(2))} {t('currency')}
+                        </span>
+                      </div>
+
+                      <div className="flex items-center gap-1.5 mt-1 border-t pt-2 border-stone-200/40">
+                        <label className="text-[9px] font-bold text-stone-400 whitespace-nowrap">{lang === 'en' ? "Modify:" : "تعديل الحسبة:"}</label>
+                        <select 
+                          value="" 
+                          onChange={(e) => { 
+                            const [action, valStr] = e.target.value.split(':');
+                            handleDropdownAction(item, action, parseFloat(valStr)); 
+                            e.target.value = ""; 
+                          }} 
+                          className="w-full text-[10px] p-1 border border-stone-200 rounded-md bg-white cursor-pointer font-bold text-stone-700 focus:outline-hidden"
+                        >
+                          <option value="" disabled>{lang === 'en' ? "Change weight" : "تغيير الحجم والوزن"}</option>
+                          <optgroup label={lang === 'en' ? "➕ Add" : "➕ زيادة وزن"}>
+                            <option value="increase:0.125">{lang === 'en' ? "+ 1/8" : "+ ثمن كيلو"}</option>
+                            <option value="increase:0.25">{lang === 'en' ? "+ 1/4" : "+ ربع كيلو"}</option>
+                            <option value="increase:0.5">{lang === 'en' ? "+ 1/2" : "+ نصف كيلو"}</option>
+                            <option value="increase:1.0">{`+ 1 ${labelUnit}`}</option>
+                          </optgroup>
+                          <optgroup label={lang === 'en' ? "➖ Reduce" : "➖ تنقيص وزن"}>
+                            <option value="decrease:0.125">{lang === 'en' ? "- 1/8" : "- ثمن كيلو"}</option>
+                            <option value="decrease:0.25">{lang === 'en' ? "- 1/4" : "- ربع كيلو"}</option>
+                            <option value="decrease:0.5">{lang === 'en' ? "- 1/2" : "- نصف كيلو"}</option>
+                            <option value="decrease:1.0">{`- 1 ${labelUnit}`}</option>
+                          </optgroup>
+                        </select>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+
+        </div> 
       </div>
     </div>
   );
