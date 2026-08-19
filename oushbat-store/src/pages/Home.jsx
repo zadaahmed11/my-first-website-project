@@ -17,11 +17,11 @@ export default function Home({ productsData }) {
   const cleanProductName = (name) => {
     if (!name) return '';
     return name
-      .replace(/(اعشاب|أعشاب|توابل|بهارات|زيوت|زيت|حبوب|بقوليات|spices|herbs|oil|grains)/gi, '')
+      .replace(/(اعشاب|أعشاب|عشبة|عشبة العطار|توابل|بهارات|زيوت|زيت|حبوب|بقوليات|spices|herbs|oil|grains|oshbat)/gi, '')
       .trim();
   };
 
-  // 💡 حل مشكلة الفلترة السحري: تنظيف النصوص ومطابقتها بذكاء حتى لو فيها مسافات أو أحرف زائدة بالـ DB
+
   const filteredProducts = selectedCategory === 'All' 
     ? productsData 
     : (productsData || []).filter(p => {
@@ -29,17 +29,18 @@ export default function Home({ productsData }) {
         const activeCat = String(selectedCategory).trim();
         return dbCat === activeCat || dbCat.toLowerCase().includes(activeCat.toLowerCase());
       });
+
   return (
     <div className="bg-stone-50 min-h-screen text-stone-800 pb-20">
       
-      {/* الكافر الغامق الفخم المترجم بالكامل من غير أي أيقونات */}
+
       <div className="container mx-auto px-4 pt-6">
         <div className="relative bg-[#0b422a] text-white py-14 px-6 text-center shadow-md rounded-3xl overflow-hidden flex flex-col items-center justify-center">
           <div className="bg-[#10b981]/20 text-[#10b981] text-[10px] font-black tracking-wider uppercase px-3 py-1 rounded-full border border-[#10b981]/30 mb-4 animate-pulse">
             🍃 100% Pure & Authentic Quality
           </div>
           <h1 className="text-3xl md:text-5xl font-black mb-3 tracking-tight">
-            {t('heroTitle')}
+            {lang === 'en' ? "Welcome to Oshbat El Attar Shop" : "مرحباً بكم في محل عشبة العطار"}
           </h1>
           <p className="text-xs md:text-sm text-stone-300 font-medium leading-relaxed max-w-xl mx-auto opacity-90">
             {lang === 'en' 
@@ -51,7 +52,7 @@ export default function Home({ productsData }) {
       </div>
 
       <div className="container mx-auto px-4 py-10">
-        {/* فلاتر الأقسام التفاعلية */}
+
         <div className="flex flex-wrap gap-2 mb-10 overflow-x-auto pb-2">
           {CATEGORIES.map((cat) => (
             <button
@@ -66,7 +67,7 @@ export default function Home({ productsData }) {
           ))}
         </div>
 
-        {/* شبكة المنتجات الكاملة العريضة (Full Width Grid) */}
+
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {filteredProducts.map((product) => {
             const currentName = lang === 'en' ? product.name_en : product.name_ar;
