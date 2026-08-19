@@ -1,0 +1,15 @@
+User-agent: *
+
+
+Allow: /
+Allow: /category/
+Allow: /product/
+
+
+Disallow: /checkout
+Disallow: /cart
+Disallow: /admin
+Disallow: /dashboard
+Disallow: /supabase/
+
+Sitemap: >https://oushbat-el-attar.vercel.app/
