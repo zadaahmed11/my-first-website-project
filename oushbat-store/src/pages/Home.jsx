@@ -42,7 +42,10 @@ export default function Home({ productsData }) {
       
 
       <div className="container mx-auto px-4 pt-6">
-        <div className="relative bg-[#0b422a] text-white py-14 px-6 text-center shadow-md rounded-3xl overflow-hidden flex flex-col items-center justify-center">
+        <div 
+          className="relative text-white py-14 px-6 text-center shadow-lg rounded-3xl overflow-hidden flex flex-col items-center justify-center border border-[#10b981]/10"
+          style={{ backgroundImage: 'radial-gradient(circle, #0e5234 0%, #0b422a 65%, #07301e 100%)' }}
+        >
           
 
           <div className="bg-[#10b981]/20 text-[#10b981] text-[10px] font-black tracking-wider uppercase px-3 py-1 rounded-full border border-[#10b981]/30 mb-4 animate-pulse">
@@ -50,16 +53,28 @@ export default function Home({ productsData }) {
           </div>
 
 
-          <h1 className="text-3xl md:text-5xl font-black mb-3 tracking-tight max-w-2xl mx-auto leading-tight">
+          <h1 className="text-3xl md:text-5xl font-black mb-3 tracking-tight max-w-2xl mx-auto leading-tight drop-shadow-md flex flex-col items-center justify-center gap-2">
             {lang === 'en' ? (
-              <>Welcome to Oshbat El Attar <br /> Shop</>
+              <>
+                <div className="flex items-center gap-2">
+                  <span className="text-4xl text-[#10b981]">🌿</span>
+                  <span>Welcome to Oshbat El Attar</span>
+                </div>
+                <span>Shop</span>
+              </>
             ) : (
-              <>مرحباً بكم في محل <br /> عشبة العطار</>
+              <>
+                <div className="flex items-center gap-2">
+                  <span className="text-4xl text-[#10b981]">🌿</span>
+                  <span>مرحباً بكم في محل</span>
+                </div>
+                <span>عشبة العطار</span>
+              </>
             )}
           </h1>
 
-
-          <p className="text-xs md:text-sm text-stone-300 font-medium leading-relaxed max-w-xl mx-auto opacity-90">
+          {/* الوصف المترجم للعربية والإنجليزية بالكامل */}
+          <p className="text-xs md:text-sm text-stone-300 font-medium leading-relaxed max-w-xl mx-auto opacity-90 drop-shadow-xs">
             {lang === 'en' 
               ? "Discover our premium selection of securely sealed spices, rare wild herbs, and pure natural oils. Delivered anywhere in Egypt with full inspection guarantee at your doorstep before payment."
               : "اكتشف تشكيلتنا الفاخرة من التوابل المحكمة الغلق، الأعشاب البرية النادرة، والزيوت الطبيعية النقية. نشحن لكافة أنحاء الجمهورية مع ضمان الفحص الكامل عند باب بيتك قبل الدفع."
@@ -69,7 +84,7 @@ export default function Home({ productsData }) {
 
           <button 
             onClick={scrollToProducts}
-            className="mt-6 bg-[#10b981] hover:bg-emerald-400 text-stone-900 font-black text-xs px-6 py-2.5 rounded-xl transition-all shadow-xs flex items-center gap-2"
+            className="mt-6 bg-[#10b981] hover:bg-emerald-400 hover:scale-103 text-stone-900 font-black text-xs px-6 py-2.5 rounded-xl transition-all shadow-md flex items-center gap-2"
           >
             {lang === 'en' ? "Browse Products Now 🛒" : "تصفح المنتجات الآن 🛒"}
           </button>
@@ -95,7 +110,7 @@ export default function Home({ productsData }) {
           ))}
         </div>
 
-        {/* شبكة المنتجات الكاملة العريضة (Full Width Grid) */}
+
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {filteredProducts.map((product) => {
             const currentName = lang === 'en' ? product.name_en : product.name_ar;
