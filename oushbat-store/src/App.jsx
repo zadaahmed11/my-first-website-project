@@ -17,7 +17,7 @@ export default function App() {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        // 1. جلب البيانات الصافية من جدولكِ الحقيقي في Supabase
+
         const { data, error } = await supabase
           .from('products')
           .select('*');
@@ -48,6 +48,7 @@ export default function App() {
     };
     fetchProducts();
   }, []);
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-stone-50">
@@ -74,6 +75,7 @@ export default function App() {
   }
 
   return (
+
     <LanguageProvider>
       <CartProvider>
         <Router>
