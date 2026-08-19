@@ -14,6 +14,7 @@ function AppContent() {
   const [loading, setLoading] = useState(true);
   const [dbError, setDbError] = useState(null);
   const { lang } = useLanguage(); 
+
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -21,18 +22,18 @@ function AppContent() {
         if (error) throw error;
 
         if (!data || data.length === 0) {
-          setDbError("الجدول فارغ في Supabase!");
+          setDbError("الجدول فارغ في قاعدة البيانات!");
           return;
         }
 
-        // توحيد الداتا وضمان وجود حقول الحماية لمنع ظهور الحقول الفاضية
+
         const formattedData = data.map((item) => ({
           ...item,
           price: Number(item.price || 0),
           name_en: item.name_en || "Premium Herb",
           name_ar: item.name_ar || "عشبة فاخرة",
-          desc_en: item.desc_en || "Premium organic quality product harvested directly from nature.",
-          desc_ar: item.desc_ar || "منتج عضوي ذو جودة عالية مستخلص من الطبيعة النظيفة مباشرة."
+          desc_en: item.desc_en || "Premium organic quality product.",
+          desc_ar: item.desc_ar || "منتج عضوي ذو جودة عالية."
         }));
 
         setProductsData(formattedData);
@@ -53,12 +54,11 @@ function AppContent() {
       </div>
     );
   }
+
   if (dbError) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-stone-50 text-red-600 font-bold p-6">
-        <div className="bg-red-50 border p-6 rounded-2xl max-w-md text-center shadow-xs">
-          ⚠️ خطأ في جلب بيانات Supabase: {dbError}
-        </div>
+        ⚠️ خطأ قاعدة البيانات: {dbError}
       </div>
     );
   }
@@ -69,9 +69,10 @@ function AppContent() {
         <Navbar />
         <main className="flex-grow">
           <Routes>
+
             <Route path="/" element={<Home key={lang} productsData={productsData} />} />
             <Route path="/product/:id" element={<ProductDetails key={lang} productsData={productsData} />} />
-            <Route path="/cart" element={<Cart />} />
+            <Route path="/cart" element={<Cart key={lang} />} />
             <Route path="/checkout" element={<Checkout />} />
           </Routes>
         </main>

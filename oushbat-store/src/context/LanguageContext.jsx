@@ -31,10 +31,6 @@ export const translations = {
     productNotFound: "Product not found!",
     basePriceLabel: "Base Price",
     heroTitle: "Welcome to Oushbat El Attar Shop",
-    cartItemsCount: "items",
-    navHome: "Home",
-    navCart: "Full Cart",
-    navCheckout: "Checkout",
 
     'أعشاب طبيعية وعطرية': "Medicinal Herbs",
     'توابل وبهارات': "Spices & Seasonings",
@@ -69,11 +65,6 @@ export const translations = {
     productNotFound: "المنتج غير موجود!",
     basePriceLabel: "السعر الأساسي",
     heroTitle: "مرحباً بكم في متجر عشبة العطار",
-    cartItemsCount: "منتجات",
-    navHome: "الرئيسية",
-    navCart: "السلة الكاملة",
-    navCheckout: "الدفع والشحن",
-    // الأقسام بالعربي
     'أعشاب طبيعية وعطرية': "أعشاب طبيعية وعطرية",
     'توابل وبهارات': "توابل وبهارات",
     'حبوب وبقوليات': "حبوب وبقوليات",
@@ -82,7 +73,7 @@ export const translations = {
 };
 
 export const LanguageProvider = ({ children }) => {
-  const [lang, setLang] = useState('en'); // الإنجليزية افتراضية
+  const [lang, setLang] = useState('en');
 
   const toggleLanguage = () => {
     setLang((prev) => (prev === 'en' ? 'ar' : 'en'));
@@ -92,7 +83,7 @@ export const LanguageProvider = ({ children }) => {
 
   return (
     <LanguageContext.Provider value={{ lang, toggleLanguage, t }}>
-      <div dir={lang === 'ar' ? 'rtl' : 'ltr'} className="transition-all duration-300">
+      <div dir={lang === 'ar' ? 'rtl' : 'ltr'}>
         {children}
       </div>
     </LanguageContext.Provider>

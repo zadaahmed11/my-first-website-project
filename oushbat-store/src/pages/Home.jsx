@@ -7,11 +7,11 @@ export default function Home({ productsData }) {
   const [selectedCategory, setSelectedCategory] = useState('All');
 
   const CATEGORIES = [
-    { id: 'All', label: lang === 'en' ? "All Products" : "كل المنتجات" },
-    { id: 'أعشاب طبيعية وعطرية', label: lang === 'en' ? "Medicinal Herbs" : "أعشاب طبيعية وعطرية" },
-    { id: 'توابل وبهارات', label: lang === 'en' ? "Spices & Seasonings" : "توابل وبهارات" },
-    { id: 'حبوب وبقوليات', label: lang === 'en' ? "Grains & Legumes" : "حبوب وبقوليات" },
-    { id: 'زيوت طبيعية', label: lang === 'en' ? "Natural Oils" : "زيوت طبيعية" }
+    { id: 'All', label: t('allProducts') },
+    { id: 'أعشاب طبيعية وعطرية', label: t('أعشاب طبيعية وعطرية') },
+    { id: 'توابل وبهارات', label: t('توابل وبهارات') },
+    { id: 'حبوب وبقوليات', label: t('حبوب وبقوليات') },
+    { id: 'زيوت طبيعية', label: t('زيوت طبيعية') }
   ];
 
   const cleanProductName = (name) => {
@@ -24,9 +24,11 @@ export default function Home({ productsData }) {
   const filteredProducts = selectedCategory === 'All' 
     ? productsData 
     : productsData.filter(p => p.category === selectedCategory);
+
   return (
     <div className="bg-stone-50 min-h-screen text-stone-800 pb-20">
       
+
       <div className="container mx-auto px-4 pt-6">
         <div className="relative bg-[#0b422a] text-white py-14 px-6 text-center shadow-md rounded-3xl overflow-hidden flex flex-col items-center justify-center">
           <div className="bg-[#10b981]/20 text-[#10b981] text-[10px] font-black tracking-wider uppercase px-3 py-1 rounded-full border border-[#10b981]/30 mb-4 animate-pulse">
@@ -37,8 +39,8 @@ export default function Home({ productsData }) {
           </h1>
           <p className="text-xs md:text-sm text-stone-300 font-medium leading-relaxed max-w-xl mx-auto opacity-90">
             {lang === 'en' 
-              ? "Discover our premium selection of securely sealed spices, rare wild herbs, and pure natural oils. Delivered anywhere in Egypt with full inspection guarantee."
-              : "اكتشف تشكيلتنا الفاخرة من التوابل المحكمة الغلق، الأعشاب البرية النادرة، والزيوت الطبيعية النقية بكافة أنحاء الجمهورية مع ضمان الفحص الكامل."
+              ? "Discover our premium selection of securely sealed spices, rare wild herbs, and pure natural oils. Delivered anywhere in Egypt."
+              : "اكتشف تشكيلتنا الفاخرة من التوابل المحكمة الغلق، الأعشاب البرية النادرة، والزيوت الطبيعية النقية بكافة أنحاء الجمهورية."
             }
           </p>
         </div>
@@ -63,8 +65,7 @@ export default function Home({ productsData }) {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {filteredProducts.map((product) => {
-
-const currentName = lang === 'en' ? product.name_en : product.name_ar;
+            const currentName = lang === 'en' ? product.name_en : product.name_ar;
             const currentDesc = lang === 'en' ? product.desc_en : product.desc_ar;
 
             return (
@@ -85,7 +86,7 @@ const currentName = lang === 'en' ? product.name_en : product.name_ar;
                   </p>
                 </div>
 
-
+                {/* فوتر الكارت المحسن مع السعر والعملة وزر التبديل اللغوي المباشر لـ "أضف للعربة" */}
                 <div className="pt-4 border-t border-stone-100 flex items-center justify-between">
                   <div className="flex flex-col">
                     <span className="text-[9px] font-bold text-stone-400 uppercase tracking-wide">{t('basePriceLabel')}</span>

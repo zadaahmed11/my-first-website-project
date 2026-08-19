@@ -11,7 +11,7 @@ export default function Navbar() {
   const navigate = useNavigate();
 
   return (
-    <nav className="bg-white text-stone-800 py-5 px-8共享 sticky top-0 z-50 shadow-2xs border-b border-stone-100">
+    <nav className="bg-white text-stone-800 py-5 px-8 sticky top-0 z-50 shadow-2xs border-b border-stone-100">
       <div className="container mx-auto flex justify-between items-center">
         
         <div className="flex items-center gap-3">
@@ -35,7 +35,7 @@ export default function Navbar() {
 
           <button 
             onClick={toggleLanguage}
-            className="bg-[#0b422a] text-white border border-[#0b422a] px-4 py-1.5 rounded-lg text-xs font-bold hover:bg-emerald-800 transition-all"
+            className="bg-emerald-50 text-emerald-800 border border-emerald-100 px-4 py-1.5 rounded-lg text-xs font-bold hover:bg-emerald-100 transition-all"
           >
             {lang === 'en' ? 'العربية' : 'English'}
           </button>
@@ -72,7 +72,6 @@ export default function Navbar() {
                 <div className="space-y-4 overflow-y-auto max-h-[65vh]">
                   {cart.map((item) => (
                     <div key={item.id} className="flex gap-4 items-center border-b pb-3">
-                      <img src={item.image_url} alt={item.name_en} className="w-14 h-14 object-cover rounded-xl border" />
                       <div className="flex-1">
                         <h4 className="font-bold text-sm text-stone-800">{lang === 'en' ? item.name_en : item.name_ar}</h4>
                         <p className="text-xs text-stone-400">{item.quantityText}</p>
