@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
-import { useLanguage } from '../context/LanguageContext';
+import { useLanguage, translations } from '../context/LanguageContext';
 
 export default function ProductDetails({ productsData }) {
   const { id } = useParams();
@@ -19,6 +19,7 @@ export default function ProductDetails({ productsData }) {
     );
   }
 
+  // 💡 اللوجيك الذكي: لتر للزيوت وكيلو للباقي، بيتحول حياً فوري بمجرد ضغط زر اللغة
   const isOil = product.category === 'زيوت طبيعية';
   const unitLabel = isOil 
     ? (lang === 'en' ? 'Liter' : 'لتر') 
@@ -95,10 +96,9 @@ export default function ProductDetails({ productsData }) {
 
   const currentName = lang === 'en' ? (product.name_en || product.name_ar) : (product.name_ar || product.name_en);
   const currentDesc = lang === 'en' ? (product.desc_en || product.desc_ar) : (product.desc_ar || product.desc_en);
-
-    return (
-
-      <div className="container mx-auto px-4 py-16 max-w-5xl animate-fadeIn">
+  return (
+    // الكونتينر متناسق ومريح جداً للعين ليعطي الوصف والاسم مساحتهما الكاملة
+    <div className="container mx-auto px-4 py-16 max-w-5xl animate-fadeIn">
       <div className="bg-white rounded-3xl shadow-xl overflow-hidden grid grid-cols-1 md:grid-cols-2 gap-8 p-6 md:p-10 border border-stone-100">
         
 
@@ -114,9 +114,12 @@ export default function ProductDetails({ productsData }) {
 
             <div className="mt-6">
               <h1 className="text-2xl font-black text-stone-900 mb-2">{currentName}</h1>
+              
+
               <span className="text-xs font-bold bg-emerald-50 text-emerald-800 px-3 py-1.5 rounded-lg border border-emerald-100/40">
-                {lang === 'en' ? (translations.en[product.category] || product.category) : product.category}
+                {t(product.category) || product.category}
               </span>
+              
 
               <p className="text-stone-600 mt-5 text-sm leading-relaxed antialiased font-medium">
                 {currentDesc || (lang === 'en' ? "Premium organic quality product harvested directly from the pure nature." : "منتج عضوي ذو جودة عالية مستخلص من الطبيعة النظيفة مباشرة إليك.")}
