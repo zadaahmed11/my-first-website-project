@@ -22,7 +22,7 @@ export default function Cart() {
   const { t, lang } = useLanguage();
   const navigate = useNavigate();
 
-  // تحويل الأرقام إلى العربية حسب اللغة الحالية
+
   const convertNumbers = (numStr) => {
     if (!numStr || lang === 'en') return String(numStr || '');
     return String(numStr).replace(/[0-9]/g, (d) => String.fromCharCode(0x0660 + parseInt(d)));
@@ -67,7 +67,6 @@ export default function Cart() {
         {lang === 'en' ? "Your Shopping Cart" : "عربة التسوق الخاصة بك"}
       </h2>
       
-
       <div className="space-y-4 mb-10">
         {cart.map((item) => {
           const isOil = String(item.category || '').toLowerCase().match(/زيت|زيوت|oil/);
@@ -75,7 +74,7 @@ export default function Cart() {
 
           return (
             <div key={item.id} className="bg-white p-5 rounded-2xl shadow-3xs border border-stone-100 flex flex-col md:flex-row gap-6 items-start md:items-center justify-between relative overflow-visible pt-8">
-              <button onClick={() => removeFromCart(item.id)} className="absolute top-2 right-2 ltr:left-auto ltr:right-2 rtl:right-auto rtl:left-2 w-5 h-5 flex items-center justify-center rounded-full bg-red-50 text-red-500 hover:bg-red-100 hover:text-red-700 transition-all shadow-3xs cursor-pointer z-20">
+              <button onClick={() => removeFromCart(item.id)} className="absolute top-2 right-2 ltr:left-auto ltr:right-2 rtl:right-auto rtl:left-2 w-5 h-5 flex items-center justify-center rounded-full bg-red-50 text-red-500 hover:bg-red-100 hover:text-red-700 transition-all shadow-3xs cursor-pointer z-20" title={lang === 'en' ? "Remove Item" : "حذف المنتج"}>
                 <X className="w-2.5 h-2.5" strokeWidth={3.5} />
               </button>
 
@@ -89,7 +88,16 @@ export default function Cart() {
 
               <div className="flex items-center gap-2 w-full md:w-1/3 justify-start md:justify-center relative z-30">
                 <label className="text-[10px] font-bold text-stone-400 whitespace-nowrap">{lang === 'en' ? "Choose weight:" : "اختر الوزن:"}</label>
-                <select value="" onChange={(e) => { handleDropdownAction(item, ...e.target.value.split(':')); e.target.value = ""; }} className="w-full max-w-[140px] border border-stone-200 rounded-xl p-1.5 bg-white text-[11px] font-black cursor-pointer text-stone-700 shadow-3xs">
+                <select 
+                  value="" 
+                  onChange={(e) => { 
+
+                    const [action, valStr] = e.target.value.split(':');
+                    handleDropdownAction(item, action, parseFloat(valStr)); 
+                    e.target.value = ""; 
+                  }} 
+                  className="w-full max-w-[140px] border border-stone-200 rounded-xl p-1.5 bg-white text-[11px] font-black cursor-pointer text-stone-700 shadow-3xs"
+                >
                   <option value="" disabled>{lang === 'en' ? "Modify weight" : "تعديل الوزن"}</option>
                   <optgroup label={lang === 'en' ? "➕ Increase weight" : "➕ زيادة الوزن"}>
                     <option value="increase:0.125">{lang === 'en' ? "+ 1/8 fraction" : "+ ثمن الكيلو"}</option>
