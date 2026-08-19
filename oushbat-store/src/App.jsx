@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { CartProvider } from './context/CartContext';
-import { LanguageProvider } from './context/LanguageContext';
+import { LanguageProvider, useLanguage } from './context/LanguageContext';
 import { supabase } from './supabaseClient';
 import Navbar from './components/Navbar';
 import Home from './pages/Home';
@@ -9,38 +9,35 @@ import ProductDetails from './pages/ProductDetails';
 import Cart from './pages/Cart';
 import Checkout from './pages/Checkout';
 
-export default function App() {
+function AppContent() {
   const [productsData, setProductsData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [dbError, setDbError] = useState(null);
-
+  const { lang } = useLanguage(); 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-
-        const { data, error } = await supabase
-          .from('products')
-          .select('*');
-
+        const { data, error } = await supabase.from('products').select('*');
         if (error) throw error;
 
         if (!data || data.length === 0) {
-          setDbError("الجدول متصل بنجاح، لكنه فارغ تماماً ولا يحتوي على أي صفوف بيانات داخل Supabase حالياً!");
+          setDbError("الجدول فارغ في Supabase!");
           return;
         }
 
+        // توحيد الداتا وضمان وجود حقول الحماية لمنع ظهور الحقول الفاضية
         const formattedData = data.map((item) => ({
           ...item,
           price: Number(item.price || 0),
-          name_en: item.name_en || "Premium Product",
-          name_ar: item.name_ar || "منتج فاخر",
+          name_en: item.name_en || "Premium Herb",
+          name_ar: item.name_ar || "عشبة فاخرة",
           desc_en: item.desc_en || "Premium organic quality product harvested directly from nature.",
           desc_ar: item.desc_ar || "منتج عضوي ذو جودة عالية مستخلص من الطبيعة النظيفة مباشرة."
         }));
 
         setProductsData(formattedData);
       } catch (error) {
-        console.error('Database connection error:', error.message);
+        console.error(error.message);
         setDbError(error.message);
       } finally {
         setLoading(false);
@@ -56,41 +53,38 @@ export default function App() {
       </div>
     );
   }
-
   if (dbError) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-stone-50 p-6 text-center">
-        <div className="bg-red-50 border border-red-200 p-6 rounded-2xl max-w-md shadow-xs">
-          <span className="text-3xl">⚠️</span>
-          <h2 className="text-base font-bold text-red-800 mt-2">تنبيه اتصال قاعدة البيانات</h2>
-          <p className="text-xs text-stone-600 mt-2 bg-white p-3 rounded-lg border font-mono text-left">
-            {dbError}
-          </p>
-          <p className="text-xs text-stone-500 mt-3">
-            تأكدي من إضافة صفوف ممتلئة بالأسماء والوصف الحقيقي داخل جدول <code className="bg-stone-100 px-1 py-0.5 rounded text-red-600">products</code> في لوحة تحكم Supabase.
-          </p>
+      <div className="min-h-screen flex items-center justify-center bg-stone-50 text-red-600 font-bold p-6">
+        <div className="bg-red-50 border p-6 rounded-2xl max-w-md text-center shadow-xs">
+          ⚠️ خطأ في جلب بيانات Supabase: {dbError}
         </div>
       </div>
     );
   }
 
   return (
+    <Router>
+      <div className="min-h-screen bg-stone-50 flex flex-col">
+        <Navbar />
+        <main className="flex-grow">
+          <Routes>
+            <Route path="/" element={<Home key={lang} productsData={productsData} />} />
+            <Route path="/product/:id" element={<ProductDetails key={lang} productsData={productsData} />} />
+            <Route path="/cart" element={<Cart />} />
+            <Route path="/checkout" element={<Checkout />} />
+          </Routes>
+        </main>
+      </div>
+    </Router>
+  );
+}
 
+export default function App() {
+  return (
     <LanguageProvider>
       <CartProvider>
-        <Router>
-          <div className="min-h-screen bg-stone-50 flex flex-col">
-            <Navbar />
-            <main className="flex-grow">
-              <Routes>
-                <Route path="/" element={<Home productsData={productsData} />} />
-                <Route path="/product/:id" element={<ProductDetails productsData={productsData} />} />
-                <Route path="/cart" element={<Cart />} />
-                <Route path="/checkout" element={<Checkout />} />
-              </Routes>
-            </main>
-          </div>
-        </Router>
+        <AppContent />
       </CartProvider>
     </LanguageProvider>
   );
