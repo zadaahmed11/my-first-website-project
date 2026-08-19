@@ -24,7 +24,6 @@ export default function Home({ productsData }) {
       .trim();
   };
 
-
   const scrollToProducts = () => {
     productsSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
@@ -44,7 +43,7 @@ export default function Home({ productsData }) {
       <div className="container mx-auto px-4 pt-6">
         <div 
           className="relative text-white py-14 px-6 text-center shadow-lg rounded-3xl overflow-hidden flex flex-col items-center justify-center border border-[#10b981]/10"
-          style={{ backgroundImage: 'radial-gradient(circle, #0e5234 0%, #0b422a 65%, #07301e 100%)' }}
+          style={{ backgroundImage: 'radial-gradient(circle at center, #0e5234 0%, #0b422a 60%, #07301e 100%)' }}
         >
           
 
@@ -73,7 +72,7 @@ export default function Home({ productsData }) {
             )}
           </h1>
 
-          {/* الوصف المترجم للعربية والإنجليزية بالكامل */}
+
           <p className="text-xs md:text-sm text-stone-300 font-medium leading-relaxed max-w-xl mx-auto opacity-90 drop-shadow-xs">
             {lang === 'en' 
               ? "Discover our premium selection of securely sealed spices, rare wild herbs, and pure natural oils. Delivered anywhere in Egypt with full inspection guarantee at your doorstep before payment."
@@ -122,7 +121,6 @@ export default function Home({ productsData }) {
                 <div className="relative rounded-xl overflow-hidden h-48 mb-4 bg-stone-50 border border-stone-100/60">
                   <img src={product.image_url} alt={currentName} className="w-full h-full object-cover group-hover:scale-102 transition duration-500" />
                   
-
                   <span className="absolute top-2.5 left-2.5 bg-[#10b981] text-white font-black text-[9px] uppercase px-2 py-0.5 rounded-md shadow-xs">
                     {lang === 'en' ? "Pure" : "نقي"}
                   </span>
