@@ -7,11 +7,11 @@ export default function Home({ productsData }) {
   const [selectedCategory, setSelectedCategory] = useState('All');
 
   const CATEGORIES = [
-    { id: 'All', label: lang === 'en' ? "All Products" : "كل المنتجات" },
-    { id: 'أعشاب طبيعية وعطرية', label: lang === 'en' ? "Medicinal Herbs" : "أعشاب طبيعية وعطرية" },
-    { id: 'توابل وبهارات', label: lang === 'en' ? "Spices & Seasonings" : "توابل وبهارات" },
-    { id: 'حبوب وبقوليات', label: lang === 'en' ? "Grains & Legumes" : "حبوب وبقوليات" },
-    { id: 'زيوت طبيعية', label: lang === 'en' ? "Natural Oils" : "زيوت طبيعية" }
+    { id: 'All', label: t('allProducts') },
+    { id: 'أعشاب طبيعية وعطرية', label: t('أعشاب طبيعية وعطرية') },
+    { id: 'توابل وبهارات', label: t('توابل وبهارات') },
+    { id: 'حبوب وبقوليات', label: t('حبوب وبقوليات') },
+    { id: 'زيوت طبيعية', label: t('زيوت طبيعية') }
   ];
 
   const cleanProductName = (name) => {
@@ -24,17 +24,25 @@ export default function Home({ productsData }) {
   const filteredProducts = selectedCategory === 'All' 
     ? productsData 
     : productsData.filter(p => p.category === selectedCategory);
-  return (
+
+       return (
     <div className="bg-stone-50 min-h-screen text-stone-800 pb-20">
       
+      {/* الكافر الغامق الفخم الثابت الألوان مع نصوص مترجمة حية بالكامل */}
       <div className="container mx-auto px-4 pt-6">
         <div className="relative bg-[#0b422a] text-white py-14 px-6 text-center shadow-md rounded-3xl overflow-hidden flex flex-col items-center justify-center">
           <div className="bg-[#10b981]/20 text-[#10b981] text-[10px] font-black tracking-wider uppercase px-3 py-1 rounded-full border border-[#10b981]/30 mb-4 animate-pulse">
             🍃 100% Pure & Authentic Quality
           </div>
           <h1 className="text-3xl md:text-5xl font-black mb-3 tracking-tight">
-            {lang === 'en' ? "Oushbat El Attar Shop" : "متجر عشبة العطار"}
+            {t('heroTitle')}
           </h1>
+          <p className="text-xs md:text-sm text-stone-300 font-medium leading-relaxed max-w-xl mx-auto opacity-90">
+            {lang === 'en' 
+              ? "Discover our premium selection of securely sealed spices, rare wild herbs, and pure natural oils. Delivered anywhere in Egypt with full inspection guarantee."
+              : "اكتشف تشكيلتنا الفاخرة من التوابل المحكمة الغلق، الأعشاب البرية النادرة، والزيوت الطبيعية النقية بكافة أنحاء الجمهورية مع ضمان الفحص."
+            }
+          </p>
         </div>
       </div>
 
@@ -69,15 +77,17 @@ export default function Home({ productsData }) {
                 </div>
 
                 <div className="mb-5">
-                  <h3 className="text-base font-black text-stone-900 tracking-tight">{cleanProductName(currentName)}</h3>
+                  <h3 className="text-base font-black text-stone-900 tracking-tight">
+                    {cleanProductName(currentName)}
+                  </h3>
                   <p className="text-stone-500 text-xs mt-2 leading-relaxed line-clamp-3 h-12 antialiased font-medium">
-                    {currentDesc || (lang === 'en' ? "Premium organic quality product harvested directly from the pure nature." : "منتج عضوي ذو جودة عالية مستخلص من الطبيعة النظيفة مباشرة.")}
+                    {currentDesc}
                   </p>
                 </div>
 
                 <div className="pt-4 border-t border-stone-100 flex items-center justify-between">
                   <div className="flex flex-col">
-                    <span className="text-[9px] font-bold text-stone-400 uppercase tracking-wide">Base Price</span>
+                    <span className="text-[9px] font-bold text-stone-400 uppercase tracking-wide">{t('basePriceLabel')}</span>
                     <span className="text-[#0b422a] font-black text-base mt-0.5">
                       {product.price} <span className="text-xs font-bold text-stone-500">{t('currency')}</span>
                       <span className="text-[10px] text-stone-400 font-normal"> / {product.category === 'زيوت طبيعية' ? t('perLiter') : t('perKg')}</span>
@@ -88,7 +98,7 @@ export default function Home({ productsData }) {
                     to={`/product/${product.id}`}
                     className="bg-[#0b422a] hover:bg-emerald-800 text-white px-5 py-2.5 rounded-xl text-xs font-black transition-all shadow-2xs"
                   >
-                    {lang === 'en' ? "Add to Cart 🛒" : "أضف للعربة 🛒"}
+                    {t('detailsBtn')}
                   </Link>
                 </div>
 

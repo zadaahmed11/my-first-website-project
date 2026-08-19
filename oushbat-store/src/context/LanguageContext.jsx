@@ -4,9 +4,9 @@ const LanguageContext = createContext();
 
 export const translations = {
   en: {
-    logo: "🌿 Oushbat El Attar",
+    logo: "Oushbat El Attar",
     allProducts: "All Products",
-    detailsBtn: "View Details",
+    detailsBtn: "Add to Cart 🛒",
     perKg: "kg",
     perLiter: "liter",
     currency: "EGP",
@@ -15,7 +15,6 @@ export const translations = {
     miniCartTitle: "Shopping Cart",
     viewFullCart: "View Full Cart",
     weightPriceTitle: "Weight & Price Settings",
-
     originalPrice: "Original Price",
     choosePreset: "Select Preset Weight (Independent):",
     customValue: "Or Enter Custom Value (Auto-calculated):",
@@ -26,37 +25,26 @@ export const translations = {
     fractionText_1_4: "1/4",
     fractionText_1_2: "1/2",
     fractionText_1: "1",
-    addToCartBtn: "Add & Update Cart",
+    addToCartBtn: "Add to Shopping Cart 🛒",
     continueShopping: "Continue Shopping",
     goToCartPage: "Go To Full Cart",
     productNotFound: "Product not found!",
+    basePriceLabel: "Base Price",
+    heroTitle: "Welcome to Oushbat El Attar Shop",
+    cartItemsCount: "items",
+    navHome: "Home",
+    navCart: "Full Cart",
+    navCheckout: "Checkout",
 
-    cartTitle: "Your Shopping Cart",
-    changeWeight: "Change Weight:",
-    totalAmount: "Total Payable Amount:",
-    checkoutBtn: "Proceed to Checkout",
-    deleteBtn: "Remove",
-    customText: "Custom",
-
-    checkoutTitle: "Complete Your Order",
-    shippingDetails: "Receiver & Delivery Details",
-    fullName: "Full Name *",
-    fullAddress: "Detailed Address *",
-    phone: "Mobile Phone Number *",
-    notes: "Special Delivery Notes",
-    confirmOrder: "Confirm Final Order",
-    geoTitle: "Select Delivery Location via GPS Map",
-    geoDesc: "Please ensure your location service is enabled for accurate delivery:",
-    orderSummary: "Order Summary",
-    namePlaceholder: "Enter your full name",
-    addressPlaceholder: "City, street name, building number",
-    notesPlaceholder: "Any extra details you want to tell the Attar...",
-    alertSuccess: "Thank you! Your order has been placed successfully in Supabase."
+    'أعشاب طبيعية وعطرية': "Medicinal Herbs",
+    'توابل وبهارات': "Spices & Seasonings",
+    'حبوب وبقوليات': "Grains & Legumes",
+    'زيوت طبيعية': "Natural Oils"
   },
   ar: {
-    logo: "🌿 عشبة العطار",
+    logo: "عشبة العطار",
     allProducts: "كل المنتجات",
-    detailsBtn: "تفاصيل المنتج",
+    detailsBtn: "أضف للعربة 🛒",
     perKg: "كيلو",
     perLiter: "ليتر",
     currency: "جنيه",
@@ -64,7 +52,6 @@ export const translations = {
     goShopping: "اذهب للتسوق",
     miniCartTitle: "عربة التسوق",
     viewFullCart: "عرض السلة بالكامل",
-
     weightPriceTitle: "تحديد الوزن والسعر",
     originalPrice: "السعر الأصلي",
     choosePreset: "اختر وزناً جاهزاً (مستقل):",
@@ -76,37 +63,27 @@ export const translations = {
     fractionText_1_4: "ربع",
     fractionText_1_2: "نصف",
     fractionText_1: "1",
-    addToCartBtn: "إضافة وتحديث العربة",
+    addToCartBtn: "أضف لعربة التسوق 🛒",
     continueShopping: "مواصلة التسوق",
     goToCartPage: "ذهاب للعربة بالكامل",
     productNotFound: "المنتج غير موجود!",
-
-    cartTitle: "سلة المشتريات",
-    changeWeight: "تغيير الوزن:",
-    totalAmount: "إجمالي الحساب المستحق:",
-    checkoutBtn: "تأكيد الطلب والدفع",
-    deleteBtn: "حذف",
-    customText: "مخصص",
-    // صفحة الشحن
-    checkoutTitle: "إتمام عملية الشراء",
-    shippingDetails: "بيانات المستلم والتوصيل",
-    fullName: "الاسم الكامل *",
-    fullAddress: "العنوان التفصيلي *",
-    phone: "رقم الهاتف الجوال *",
-    notes: "ملاحظات خاصة بالطلب (Notes)",
-    confirmOrder: "تأكيد الطلب النهائي",
-    geoTitle: "تحديد موقعك الجغرافي للتوصيل",
-    geoDesc: "يرجى التأكد من تشغيل الـ GPS على الخريطة للحصول على دقة توصيل متناهية:",
-    orderSummary: "ملخص الأصناف المختارة",
-    namePlaceholder: "اكتب اسمك الثلاثي",
-    addressPlaceholder: "المدينة، اسم الشارع، رقم العقار",
-    notesPlaceholder: "أي تفاصيل إضافية تود إخبار العطار بها...",
-    alertSuccess: "شكراً لك! تم تسجيل طلبك بنجاح في قاعدة البيانات وجاري التجهيز."
+    basePriceLabel: "السعر الأساسي",
+    heroTitle: "مرحباً بكم في متجر عشبة العطار",
+    cartItemsCount: "منتجات",
+    navHome: "الرئيسية",
+    navCart: "السلة الكاملة",
+    navCheckout: "الدفع والشحن",
+    // الأقسام بالعربي
+    'أعشاب طبيعية وعطرية': "أعشاب طبيعية وعطرية",
+    'توابل وبهارات': "توابل وبهارات",
+    'حبوب وبقوليات': "حبوب وبقوليات",
+    'زيوت طبيعية': "زيوت طبيعية"
   }
 };
 
 export const LanguageProvider = ({ children }) => {
-  const [lang, setLang] = useState('en');
+  const [lang, setLang] = useState('en'); // الإنجليزية افتراضية
+
   const toggleLanguage = () => {
     setLang((prev) => (prev === 'en' ? 'ar' : 'en'));
   };
