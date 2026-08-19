@@ -21,7 +21,7 @@ export default function Navbar() {
               {t('logo')}
             </Link>
             <span className="text-[10px] text-stone-400 mt-1 font-medium">
-              {lang === 'en' ? "Pure nature straight to your doorstep" : "الطبيعة النقية مباشرة إلى باب منزلك"}
+              {lang === 'en' ? "Pure nature and authentic quality straight to your doorstep" : "الطبيعة النقية مباشرة إلى باب منزلك"}
             </span>
           </div>
         </div>

@@ -45,11 +45,11 @@ export default function Home({ productsData }) {
         >
           
           <div className="bg-[#10b981]/20 text-[#10b981] text-[10px] font-black tracking-wider uppercase px-3 py-1 rounded-full border border-[#10b981]/30 mb-4 animate-pulse">
-            🍃 100% Pure & Authentic Quality
+            {lang === 'en' ? "🍃 100% Pure & Authentic Quality" : "🍃 جودة نقية وأصلية 100%"}
           </div>
 
           <h1 className="text-3xl md:text-5xl font-black mb-4 tracking-tight max-w-4xl mx-auto leading-tight drop-shadow-md flex flex-col sm:flex-row items-center justify-center gap-3">
-            <span className="text-4xl md:text-5xl text-[#10b981] animate-bounce">🌿</span>
+            <span className="text-4xl md:text-5xl text-[#10b981]">🌿</span>
             <span>
               {lang === 'en' ? "Welcome to Oshbat El Attar Shop" : "مرحباً بكم في محل عشبة العطار"}
             </span>
