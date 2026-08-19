@@ -41,7 +41,7 @@ export default function Cart() {
         
         <div className="w-56 h-56 relative mb-6 drop-shadow-xs flex items-center justify-center bg-white rounded-full p-4 border border-stone-100 shadow-2xs">
           <img 
-            src="https://framerusercontent.com" 
+            src="https://i.pinimg.com/736x/7e/e4/de/7ee4de44590df3aed123b49639148bb7.jpg" 
             alt="Empty Cart" 
             className="w-full h-full object-contain animate-bounce [animation-duration:3s]" 
           />
