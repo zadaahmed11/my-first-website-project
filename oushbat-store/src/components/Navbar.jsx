@@ -14,9 +14,8 @@ export default function Navbar() {
     <nav className="bg-white text-stone-800 py-5 px-8 sticky top-0 z-50 shadow-2xs border-b border-stone-100">
       <div className="container mx-auto flex justify-between items-center">
         
-        {/* اللوجو والاسم المترجم */}
         <div className="flex items-center gap-3">
-          <span className="text-2xl text-emerald-700 font-bold">🍃</span>
+          <span className="text-2xl text-emerald-700 font-bold">🌿</span>
           <div className="flex flex-col">
             <Link to="/" className="text-xl font-black text-emerald-900 tracking-wide leading-none">
               {t('logo')}
@@ -35,7 +34,7 @@ export default function Navbar() {
             <span>{lang === 'en' ? "Fast shipping 📦" : "شحن سريع وآمن 📦"}</span>
           </div>
 
-          {/* زر تبديل اللغة */}
+
           <button 
             onClick={toggleLanguage}
             className="bg-emerald-50 text-emerald-800 border border-emerald-100 px-4 py-1.5 rounded-lg text-xs font-bold hover:bg-emerald-100 transition-all"
@@ -43,7 +42,7 @@ export default function Navbar() {
             {lang === 'en' ? 'العربية' : 'English'}
           </button>
 
-          {/* أيقونة العربة الفنية المحسنة */}
+
           <div 
             className="relative p-2.5 bg-stone-50 hover:bg-emerald-50 rounded-xl cursor-pointer text-stone-700 hover:text-emerald-800 transition-all border border-stone-100/60"
             onClick={() => setIsOpen(!isOpen)}
@@ -58,7 +57,7 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* شاشة العربة المصغرة */}
+
       {isOpen && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-xs z-50 flex justify-end text-stone-900 animate-fadeIn">
           <div className="bg-white w-full max-w-md h-full p-6 flex flex-col justify-between shadow-2xl">
