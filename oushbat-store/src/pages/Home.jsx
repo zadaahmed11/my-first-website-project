@@ -6,13 +6,15 @@ export default function Home({ productsData }) {
   const { t, lang } = useLanguage();
   const [selectedCategory, setSelectedCategory] = useState('All');
 
+
   const CATEGORIES = [
-    { id: 'All', label: lang === 'en' ? "All Products" : t('allProducts') },
-    { id: 'أعشاب طبيعية وعطرية', label: lang === 'en' ? "Medicinal Herbs" : t('cat1') },
-    { id: 'توابل وبهارات', label: lang === 'en' ? "Spices & Seasonings" : t('cat3') },
-    { id: 'حبوب وبقوليات', label: lang === 'en' ? "Grains & Legumes" : t('cat4') },
-    { id: 'زيوت طبيعية', label: lang === 'en' ? "Natural Oils" : t('cat2') }
+    { id: 'All', label: lang === 'en' ? "All Products" : "كل المنتجات" },
+    { id: 'أعشاب طبيعية وعطرية', label: lang === 'en' ? "Medicinal Herbs" : "أعشاب طبيعية وعطرية" },
+    { id: 'توابل وبهارات', label: lang === 'en' ? "Spices & Seasonings" : "توابل وبهارات" },
+    { id: 'حبوب وبقوليات', label: lang === 'en' ? "Grains & Legumes" : "حبوب وبقوليات" },
+    { id: 'زيوت طبيعية', label: lang === 'en' ? "Natural Oils" : "زيوت طبيعية" }
   ];
+
 
   const cleanProductName = (name) => {
     if (!name) return '';
@@ -69,9 +71,17 @@ export default function Home({ productsData }) {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {filteredProducts.map((product) => {
+            
 
-const displayName = product.name || product.title;
-            const displayDesc = product.description || product.desc;
+            const currentName = lang === 'en' ? product.name_en : product.name_ar;
+            const currentDesc = lang === 'en' ? product.desc_en : product.desc_ar;
+            const currentPrice = product.price; 
+            const currentImage = product.image_url || 'https://unsplash.com';
+
+
+            const categoryLabel = lang === 'en' 
+              ? (CATEGORIES.find(c => c.id === product.category)?.label || product.category)
+              : product.category;
 
             return (
               <div key={product.id} className="bg-white rounded-2xl border border-stone-200/60 shadow-2xs hover:shadow-sm transition-all duration-300 flex flex-col justify-between overflow-hidden p-4 group">
@@ -79,8 +89,8 @@ const displayName = product.name || product.title;
 
                 <div className="overflow-hidden rounded-xl h-44 mb-4 bg-stone-50 border border-stone-100">
                   <img 
-                    src={product.image || product.image_url} 
-                    alt={displayName} 
+                    src={currentImage} 
+                    alt={currentName} 
                     className="w-full h-full object-cover group-hover:scale-102 transition duration-500" 
                   />
                 </div>
@@ -88,25 +98,25 @@ const displayName = product.name || product.title;
 
                 <div className="mb-4">
                   <span className="text-[10px] font-bold text-stone-400 block mb-1">
-                    {product.category}
+                    {categoryLabel}
                   </span>
+                  
 
                   <h3 className="text-base font-black text-stone-900 line-clamp-1">
-                    {cleanProductName(displayName)}
+                    {cleanProductName(currentName)}
                   </h3>
                   <p className="text-stone-500 text-xs mt-1 leading-relaxed line-clamp-2 h-8">
-                    {displayDesc}
+                    {currentDesc || (lang === 'en' ? "No description available." : "لا يوجد وصف متاح حالياً.")}
                   </p>
                 </div>
 
 
                 <div className="pt-3 border-t border-stone-100 flex items-center justify-between">
                   <span className="text-stone-900 font-black text-sm">
-                    {product.pricePerKg || product.price} <span className="text-xs font-bold text-stone-500">{t('currency')}</span>
+                    {currentPrice} <span className="text-xs font-bold text-stone-500">{t('currency')}</span>
                     <span className="text-[10px] text-stone-400 font-normal"> / {product.category === 'زيوت طبيعية' ? t('perLiter') : t('perKg')}</span>
                   </span>
                   
-
                   <Link 
                     to={`/product/${product.id}`} 
                     className="bg-stone-950 text-white px-5 py-2.5 rounded-xl text-xs font-bold hover:bg-emerald-800 transition shadow-2xs"
