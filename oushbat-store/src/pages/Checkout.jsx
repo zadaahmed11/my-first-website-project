@@ -16,15 +16,12 @@ export default function Checkout() {
   const [location, setLocation] = useState({ lat: 30.0444, lng: 31.2357 });
   const [geoError, setGeoError] = useState('');
   
-
   const [touched, setTouched] = useState({ name: false, address: false, phone: false });
-
 
   const convertNumbers = (numStr) => {
     if (!numStr || lang === 'en') return String(numStr || '');
     return String(numStr).replace(/[0-9]/g, (d) => String.fromCharCode(0x0660 + parseInt(d)));
   };
-
 
   const handleDropdownAction = (item, actionType, fractionVal) => {
     const basePrice = Number(item.price || 0);
@@ -41,7 +38,6 @@ export default function Checkout() {
     addToCart(item, finalUnitVal, text, basePrice * finalUnitVal);
   };
 
-
   const handleGetLocation = () => {
     if (!navigator.geolocation) {
       setGeoError(lang === 'en' ? 'Geolocation not supported' : 'متصفحك لا يدعم تحديد الموقع الجغرافي');
@@ -57,8 +53,6 @@ export default function Checkout() {
       }
     );
   };
-
-
   const isNameInvalid = touched.name && !formData.name.trim();
   const isAddressInvalid = (touched.address || touched.phone) && (!formData.name.trim() || !formData.address.trim());
   const isPhoneInvalid = touched.phone && (!formData.name.trim() || !formData.address.trim() || !formData.phone.trim());
@@ -68,7 +62,7 @@ export default function Checkout() {
     setTouched({ name: true, address: true, phone: true });
     if (!formData.name.trim() || !formData.address.trim() || !formData.phone.trim()) return;
 
-    const googleMapsUrl = `https://google.com/${location.lat},${location.lng}`;
+    const googleMapsUrl = `https://google.com{location.lat},${location.lng}`;
 
     try {
       const { error } = await supabase.from('orders').insert([
@@ -100,7 +94,6 @@ export default function Checkout() {
       
       message += `\n💰 *الإجمالي النهائي:* ${getCartTotal().toFixed(2)} ${t('currency')}`;
 
-      // 3. فتح الواتساب بشكل مباشر
       const encodedMessage = encodeURIComponent(message);
       window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodedMessage}`, '_blank');
 
@@ -119,37 +112,33 @@ export default function Checkout() {
   };
 
   return (
-    
-  <div className="container mx-auto px-4 py-12 max-w-6xl animate-fadeIn">
-    
-    <div className="flex gap-2 mb-6 select-none">
-      <button 
-        onClick={() => navigate('/')} 
-        className="flex items-center gap-1.5 px-3 py-1.5 border border-stone-200 hover:border-stone-400 text-stone-600 rounded-lg text-[11px] font-black cursor-pointer transition-all bg-white"
-      >
-        <ShoppingBag className="w-3.5 h-3.5" />
-        {lang === 'en' ? "Home" : "الرئيسية"}
-      </button>
+    <div className="container mx-auto px-4 py-12 max-w-6xl animate-fadeIn">
       
-      <button 
-        onClick={() => navigate('/cart')} 
-        className="flex items-center gap-1.5 px-3 py-1.5 border border-stone-200 hover:border-stone-400 text-stone-600 rounded-lg text-[11px] font-black cursor-pointer transition-all bg-white"
-      >
-        <ArrowLeft className="w-3.5 h-3.5" />
-        {lang === 'en' ? "Back to Cart" : "العودة للسلة"}
-      </button>
-    </div>
+      <div className="flex gap-2 mb-6 select-none">
+        <button 
+          onClick={() => navigate('/')} 
+          className="flex items-center gap-1.5 px-3 py-1.5 border border-stone-200 hover:border-stone-400 text-stone-600 rounded-lg text-[11px] font-black cursor-pointer transition-all bg-white"
+        >
+          <ShoppingBag className="w-3.5 h-3.5" />
+          {lang === 'en' ? "Home" : "الرئيسية"}
+        </button>
+        
+        <button 
+          onClick={() => navigate('/cart')} 
+          className="flex items-center gap-1.5 px-3 py-1.5 border border-stone-200 hover:border-stone-400 text-stone-600 rounded-lg text-[11px] font-black cursor-pointer transition-all bg-white"
+        >
+          <ArrowLeft className="w-3.5 h-3.5" />
+          {lang === 'en' ? "Back to Cart" : "العودة للسلة"}
+        </button>
+      </div>
 
-    <h2 className="text-2xl font-black text-stone-900 mb-8 border-b pb-4">{t('checkoutTitle')}</h2>
+      <h2 className="text-2xl font-black text-stone-900 mb-8 border-b pb-4">{t('checkoutTitle')}</h2>
 
-      
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
         
-
         <form onSubmit={handleSubmit} className="lg:col-span-7 bg-white p-6 md:p-8 rounded-3xl shadow-2xs border border-stone-200/60 space-y-4">
           <h3 className="text-base font-bold text-[#0b422a] border-b pb-2 mb-2">{t('shippingDetails')}</h3>
           
-
           <div>
             <label className="block text-xs font-bold text-stone-700 mb-1">{t('fullName')}</label>
             <input 
@@ -212,10 +201,7 @@ export default function Checkout() {
             </button>
           </div>
         </form>
-
         <div className="lg:col-span-5 space-y-6">
-
-
           <div className="bg-white p-5 rounded-3xl shadow-2xs border border-stone-200/60">
             <div className="flex items-center justify-between mb-2">
               <h3 className="text-sm font-bold text-stone-800">{t('geoTitle')}</h3>
@@ -233,7 +219,7 @@ export default function Checkout() {
             <div className="w-full h-48 rounded-2xl overflow-hidden border border-stone-100 bg-stone-100 shadow-inner relative">
               <iframe 
                 title="Delivery Location Map" 
-                src={`https://google.com/${location.lat},${location.lng}&z=15&output=embed`} 
+                src={`https://google.com{location.lat},${location.lng}&t=&z=15&ie=UTF8&iwloc=&output=embed`} 
                 width="100%" 
                 height="100%" 
                 style={{ border: 0 }} 
@@ -252,67 +238,77 @@ export default function Checkout() {
             {cart.length === 0 ? (
               <p className="text-xs text-stone-400 text-center py-6">{lang === 'en' ? 'Your cart is empty.' : 'عربة التسوق فارغة تماماً.'}</p>
             ) : (
-              <div className="space-y-4 max-h-[380px] overflow-y-auto pr-1">
-                {cart.map(item => {
-                  const isOil = String(item.category || '').toLowerCase().match(/زيت|زيوت|oil/);
-                  const labelUnit = isOil ? (lang === 'en' ? 'L' : 'لتر') : (lang === 'en' ? 'KG' : 'كيلو');
-                  
-                  return (
-                    <div key={item.id} className="p-3 rounded-xl bg-stone-50 border border-stone-100 flex flex-col gap-2 relative overflow-visible">
-                      
-                      <button 
-                        type="button"
-                        onClick={() => removeFromCart(item.id)}
-                        className="absolute top-1.5 right-1.5 ltr:left-auto ltr:right-1.5 rtl:right-auto rtl:left-1.5 w-4 h-4 flex items-center justify-center rounded-full bg-red-50 text-red-500 hover:bg-red-100 transition-all cursor-pointer z-20"
-                      >
-                        <X className="w-2.5 h-2.5" strokeWidth={3} />
-                      </button>
-
-                      <div className="flex items-center gap-3">
-                        <img src={item.image_url} alt="" className="w-10 h-10 object-cover rounded-lg border border-stone-200" />
-                        <div className="min-w-0 flex-1">
-                          <h5 className="text-xs font-bold text-stone-800 truncate">{cleanProductName(lang === 'en' ? item.name_en : item.name_ar)}</h5>
-                          <span className="text-[9px] font-black text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md block w-fit mt-0.5">{item.quantityText}</span>
-                        </div>
-                        <span className="text-xs font-black text-stone-900 whitespace-nowrap">
-                          {convertNumbers(item.currentPrice.toFixed(2))} {t('currency')}
-                        </span>
-                      </div>
-
-                      <div className="flex items-center gap-1.5 mt-1 border-t pt-2 border-stone-200/40">
-                        <label className="text-[9px] font-bold text-stone-400 whitespace-nowrap">{lang === 'en' ? "Modify:" : "تعديل الحسبة:"}</label>
-                        <select 
-                          value="" 
-                          onChange={(e) => { 
-                            const [action, valStr] = e.target.value.split(':');
-                            handleDropdownAction(item, action, parseFloat(valStr)); 
-                            e.target.value = ""; 
-                          }} 
-                          className="w-full text-[10px] p-1 border border-stone-200 rounded-md bg-white cursor-pointer font-bold text-stone-700 focus:outline-hidden"
+              <>
+                <div className="space-y-4 max-h-[280px] overflow-y-auto pr-1 border-b pb-4">
+                  {cart.map(item => {
+                    const isOil = String(item.category || '').toLowerCase().match(/زيت|زيوت|oil/);
+                    const labelUnit = isOil ? (lang === 'en' ? 'L' : 'لتر') : (lang === 'en' ? 'KG' : 'كيلو');
+                    
+                    return (
+                      <div key={item.id} className="p-3 rounded-xl bg-stone-50 border border-stone-100 flex flex-col gap-2 relative overflow-visible">
+                        <button 
+                          type="button"
+                          onClick={() => removeFromCart(item.id)}
+                          className="absolute top-1.5 right-1.5 ltr:left-auto ltr:right-1.5 rtl:right-auto rtl:left-1.5 w-4 h-4 flex items-center justify-center rounded-full bg-red-50 text-red-500 hover:bg-red-100 transition-all cursor-pointer z-20"
                         >
-                          <option value="" disabled>{lang === 'en' ? "Change weight" : "تغيير الحجم والوزن"}</option>
-                          <optgroup label={lang === 'en' ? "➕ Add" : "➕ زيادة وزن"}>
-                            <option value="increase:0.125">{lang === 'en' ? "+ 1/8" : "+ ثمن كيلو"}</option>
-                            <option value="increase:0.25">{lang === 'en' ? "+ 1/4" : "+ ربع كيلو"}</option>
-                            <option value="increase:0.5">{lang === 'en' ? "+ 1/2" : "+ نصف كيلو"}</option>
-                            <option value="increase:1.0">{`+ 1 ${labelUnit}`}</option>
-                          </optgroup>
-                          <optgroup label={lang === 'en' ? "➖ Reduce" : "➖ تنقيص وزن"}>
-                            <option value="decrease:0.125">{lang === 'en' ? "- 1/8" : "- ثمن كيلو"}</option>
-                            <option value="decrease:0.25">{lang === 'en' ? "- 1/4" : "- ربع كيلو"}</option>
-                            <option value="decrease:0.5">{lang === 'en' ? "- 1/2" : "- نصف كيلو"}</option>
-                            <option value="decrease:1.0">{`- 1 ${labelUnit}`}</option>
-                          </optgroup>
-                        </select>
+                          <X className="w-2.5 h-2.5" strokeWidth={3} />
+                        </button>
+
+                        <div className="flex items-center gap-3">
+                          <img src={item.image_url} alt="" className="w-10 h-10 object-cover rounded-lg border border-stone-200" />
+                          <div className="min-w-0 flex-1">
+                            <h5 className="text-xs font-bold text-stone-800 truncate">{cleanProductName(lang === 'en' ? item.name_en : item.name_ar)}</h5>
+                            <span className="text-[9px] font-black text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md block w-fit mt-0.5">{item.quantityText}</span>
+                          </div>
+                          <span className="text-xs font-black text-stone-900 whitespace-nowrap">
+                            {convertNumbers(item.currentPrice.toFixed(2))} {t('currency')}
+                          </span>
+                        </div>
+
+                        <div className="flex items-center gap-1.5 mt-1 border-t pt-2 border-stone-200/40">
+                          <label className="text-[9px] font-bold text-stone-400 whitespace-nowrap">{lang === 'en' ? "Modify:" : "تعديل الحسبة:"}</label>
+                          <select 
+                            value="" 
+                            onChange={(e) => { 
+                              const [action, valStr] = e.target.value.split(':');
+                              handleDropdownAction(item, action, parseFloat(valStr)); 
+                              e.target.value = ""; 
+                            }} 
+                            className="w-full text-[10px] p-1 border border-stone-200 rounded-md bg-white cursor-pointer font-bold text-stone-700 focus:outline-hidden"
+                          >
+                            <option value="" disabled>{lang === 'en' ? "Change weight" : "تغيير الحجم والوزن"}</option>
+                            <optgroup label={lang === 'en' ? "➕ Add" : "➕ زيادة وزن"}>
+                              <option value="increase:0.125">{lang === 'en' ? "+ 1/8" : "+ ثمن كيلو"}</option>
+                              <option value="increase:0.25">{lang === 'en' ? "+ 1/4" : "+ ربع كيلو"}</option>
+                              <option value="increase:0.5">{lang === 'en' ? "+ 1/2" : "+ نصف كيلو"}</option>
+                              <option value="increase:1.0">{`+ 1 ${labelUnit}`}</option>
+                            </optgroup>
+                            <optgroup label={lang === 'en' ? "➖ Reduce" : "➖ تنقيص وزن"}>
+                              <option value="decrease:0.125">{lang === 'en' ? "- 1/8" : "- ثمن كيلو"}</option>
+                              <option value="decrease:0.25">{lang === 'en' ? "- 1/4" : "- ربع كيلو"}</option>
+                              <option value="decrease:0.5">{lang === 'en' ? "- 1/2" : "- نصف كيلو"}</option>
+                              <option value="decrease:1.0">{`- 1 ${labelUnit}`}</option>
+                            </optgroup>
+                          </select>
+                        </div>
                       </div>
-                    </div>
-                  );
-                })}
-              </div>
+                    );
+                  })}
+                </div>
+
+                <div className="flex items-center justify-between pt-4 px-1">
+                  <span className="text-xs font-black text-stone-500">
+                    {lang === 'en' ? "Total Price:" : "إجمالي سعر الطلب:"}
+                  </span>
+                  <span className="text-sm font-black text-[#0b422a] bg-stone-50 border border-stone-100 px-3 py-1 rounded-xl">
+                    {convertNumbers(getCartTotal().toFixed(2))} {t('currency')}
+                  </span>
+                </div>
+              </>
             )}
           </div>
 
-        </div> 
+        </div>
       </div>
     </div>
   );
