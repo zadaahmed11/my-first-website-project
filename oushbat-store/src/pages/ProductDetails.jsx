@@ -9,7 +9,6 @@ export default function ProductDetails({ productsData }) {
   const { addToCart } = useCart();
   const { t, lang } = useLanguage();
 
-
   const product = productsData.find((p) => p.id === parseInt(id));
 
   if (!product) {
@@ -19,11 +18,9 @@ export default function ProductDetails({ productsData }) {
   const isOil = product.category === 'زيوت طبيعية';
   const unitLabel = isOil ? t('perLiter') : t('perKg');
 
-
   const [inputPrice, setInputPrice] = useState('');
   const [inputQty, setInputQty] = useState('');
   const [selectedPreset, setSelectedPreset] = useState(null);
-
 
   useEffect(() => {
     if (product) {
@@ -35,7 +32,6 @@ export default function ProductDetails({ productsData }) {
     }
   }, [product, isOil, lang]);
 
-
   const handlePriceChange = (val) => {
     setInputPrice(val);
     setSelectedPreset(null);
@@ -46,7 +42,7 @@ export default function ProductDetails({ productsData }) {
     }
   };
 
-
+  // 5. دالة حساب السعر عند كتابة الكمية يدوياً
   const handleQtyChange = (val) => {
     setInputQty(val);
     setSelectedPreset(null);
@@ -56,7 +52,6 @@ export default function ProductDetails({ productsData }) {
       setInputPrice('');
     }
   };
-
 
   const handlePresetSelect = (fraction, fractionTextKey) => {
     let text = t(fractionTextKey);
@@ -68,7 +63,7 @@ export default function ProductDetails({ productsData }) {
     setInputQty('');
   };
 
-
+  // 7. إرسال الوزن النهائي المحسوب للعربة
   const handleAddToCartAction = () => {
     let finalPrice = 0, finalQtyText = '', finalUnitVal = 0;
 
@@ -92,27 +87,23 @@ export default function ProductDetails({ productsData }) {
   const currentName = lang === 'en' ? product.name_en : product.name_ar;
   const currentDesc = lang === 'en' ? product.desc_en : product.desc_ar;
   return (
-
-    <div className="container mx-auto px-4 py-16 max-w-5xl animate-fadeIn">
+    <div className="container mx-auto px-4 py-16 max-w-5xl">
       <div className="bg-white rounded-3xl shadow-xl overflow-hidden grid grid-cols-1 md:grid-cols-2 gap-8 p-6 md:p-10 border border-stone-100">
         
-
-        <div className="flex flex-col justify-between h-full">
+        <div className="flex flex-col justify-between">
           <div>
-
             <div className="relative rounded-2xl overflow-hidden h-80 bg-stone-50 border border-stone-100 shadow-xs">
               <img src={product.image_url} alt={currentName} className="w-full h-full object-cover" />
-              <span className="absolute top-3 left-3 bg-[#10b981] text-white font-black text-[10px] uppercase px-2.5 py-1 rounded-md shadow-xs">Pure</span>
+              <span className="absolute top-3 left-3 bg-[#10b981] text-white font-black text-[10px] uppercase px-2.5 py-1 rounded-md shadow-sm">Pure</span>
               <span className="absolute bottom-3 right-3 bg-black/60 text-stone-200 font-extrabold text-[10px] px-3 py-1.5 rounded-md backdrop-blur-xs">WILD HERBS</span>
             </div>
             
-
             <div className="mt-6">
               <h1 className="text-2xl font-black text-stone-900 mb-2">{currentName}</h1>
               <span className="text-xs font-bold bg-emerald-50 text-emerald-800 px-3 py-1.5 rounded-lg border border-emerald-100/40">
                 {product.category}
               </span>
-              <p className="text-stone-600 mt-5 text-sm leading-relaxed antialiased font-medium">
+              <p className="text-stone-600 mt-5 text-sm leading-relaxed antialiased">
                 {currentDesc || (lang === 'en' ? "Premium organic product directly from nature." : "منتج عضوي ممتاز من الطبيعة مباشرة إليك.")}
               </p>
             </div>
@@ -121,13 +112,12 @@ export default function ProductDetails({ productsData }) {
           <div className="mt-6 pt-4 border-t border-stone-100 hidden md:block">
             <button 
               onClick={() => navigate('/')} 
-              className="text-stone-400 hover:text-emerald-800 font-bold text-xs transition-colors"
+              className="text-stone-500 hover:text-emerald-800 font-bold text-xs transition-colors"
             >
               ← {t('continueShopping')}
             </button>
           </div>
         </div>
-
 
         <div className="flex flex-col justify-between bg-stone-50 p-6 md:p-8 rounded-2xl border border-stone-200/60 shadow-xs">
           <div>
@@ -135,7 +125,6 @@ export default function ProductDetails({ productsData }) {
             <p className="text-xs text-stone-500 mb-6">
               {t('originalPrice')}: <span className="font-black text-[#0b422a] text-sm">{product.price} {t('currency')}</span> / {unitLabel}
             </p>
-
 
             <div className="mb-6">
               <label className="block text-xs font-bold text-stone-700 mb-2.5">{t('choosePreset')}</label>
@@ -161,7 +150,6 @@ export default function ProductDetails({ productsData }) {
                 ))}
               </div>
             </div>
-
 
             <div className="space-y-4 pt-2 border-t border-stone-200/40">
               <label className="block text-xs font-bold text-stone-700 -mb-2">{t('customValue')}</label>
@@ -189,7 +177,6 @@ export default function ProductDetails({ productsData }) {
               </div>
             </div>
 
-
             <div className="mt-6 p-4 bg-emerald-50/60 rounded-xl border border-emerald-100/60 shadow-inner">
               <p className="text-xs font-bold text-emerald-900">
                 {t('currentCalc')}{' '}
@@ -203,7 +190,6 @@ export default function ProductDetails({ productsData }) {
               </p>
             </div>
           </div>
-
 
           <div className="mt-8 space-y-2.5">
             <button 
