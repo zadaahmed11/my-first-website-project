@@ -1,10 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 
 export default function Home({ productsData }) {
   const { t, lang } = useLanguage();
   const [selectedCategory, setSelectedCategory] = useState('All');
+  
+
+  const productsSectionRef = useRef(null);
 
   const CATEGORIES = [
     { id: 'All', label: lang === 'en' ? "All Products" : "كل المنتجات" },
@@ -22,6 +25,10 @@ export default function Home({ productsData }) {
   };
 
 
+  const scrollToProducts = () => {
+    productsSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
   const filteredProducts = selectedCategory === 'All' 
     ? productsData 
     : (productsData || []).filter(p => {
@@ -36,22 +43,43 @@ export default function Home({ productsData }) {
 
       <div className="container mx-auto px-4 pt-6">
         <div className="relative bg-[#0b422a] text-white py-14 px-6 text-center shadow-md rounded-3xl overflow-hidden flex flex-col items-center justify-center">
+          
+
           <div className="bg-[#10b981]/20 text-[#10b981] text-[10px] font-black tracking-wider uppercase px-3 py-1 rounded-full border border-[#10b981]/30 mb-4 animate-pulse">
             🍃 100% Pure & Authentic Quality
           </div>
-          <h1 className="text-3xl md:text-5xl font-black mb-3 tracking-tight">
-            {lang === 'en' ? "Welcome to Oshbat El Attar Shop" : "مرحباً بكم في محل عشبة العطار"}
+
+
+          <h1 className="text-3xl md:text-5xl font-black mb-3 tracking-tight max-w-2xl mx-auto leading-tight">
+            {lang === 'en' ? (
+              <>Welcome to Oshbat El Attar <br /> Shop</>
+            ) : (
+              <>مرحباً بكم في محل <br /> عشبة العطار</>
+            )}
           </h1>
+
+
           <p className="text-xs md:text-sm text-stone-300 font-medium leading-relaxed max-w-xl mx-auto opacity-90">
             {lang === 'en' 
-              ? "Discover our premium selection of securely sealed spices, rare wild herbs, and pure natural oils. Delivered anywhere in Egypt with full inspection guarantee."
-              : "اكتشف تشكيلتنا الفاخرة من التوابل المحكمة الغلق، الأعشاب البرية النادرة، والزيوت الطبيعية النقية بكافة أنحاء الجمهورية مع ضمان الفحص الكامل."
+              ? "Discover our premium selection of securely sealed spices, rare wild herbs, and pure natural oils. Delivered anywhere in Egypt with full inspection guarantee at your doorstep before payment."
+              : "اكتشف تشكيلتنا الفاخرة من التوابل المحكمة الغلق، الأعشاب البرية النادرة، والزيوت الطبيعية النقية. نشحن لكافة أنحاء الجمهورية مع ضمان الفحص الكامل عند باب بيتك قبل الدفع."
             }
           </p>
+
+
+          <button 
+            onClick={scrollToProducts}
+            className="mt-6 bg-[#10b981] hover:bg-emerald-400 text-stone-900 font-black text-xs px-6 py-2.5 rounded-xl transition-all shadow-xs flex items-center gap-2"
+          >
+            {lang === 'en' ? "Browse Products Now 🛒" : "تصفح المنتجات الآن 🛒"}
+          </button>
+
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-10">
+
+      <div ref={productsSectionRef} className="container mx-auto px-4 py-10 scroll-mt-6">
+        
 
         <div className="flex flex-wrap gap-2 mb-10 overflow-x-auto pb-2">
           {CATEGORIES.map((cat) => (
@@ -67,7 +95,7 @@ export default function Home({ productsData }) {
           ))}
         </div>
 
-
+        {/* شبكة المنتجات الكاملة العريضة (Full Width Grid) */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {filteredProducts.map((product) => {
             const currentName = lang === 'en' ? product.name_en : product.name_ar;
@@ -78,8 +106,14 @@ export default function Home({ productsData }) {
                 
                 <div className="relative rounded-xl overflow-hidden h-48 mb-4 bg-stone-50 border border-stone-100/60">
                   <img src={product.image_url} alt={currentName} className="w-full h-full object-cover group-hover:scale-102 transition duration-500" />
-                  <span className="absolute top-2.5 left-2.5 bg-[#10b981] text-white font-black text-[9px] uppercase px-2 py-0.5 rounded-md shadow-xs">Pure</span>
-                  <span className="absolute bottom-2.5 right-2.5 bg-black/60 text-stone-200 font-extrabold text-[9px] px-2.5 py-1 rounded-md backdrop-blur-xs">WILD HERBS</span>
+                  
+
+                  <span className="absolute top-2.5 left-2.5 bg-[#10b981] text-white font-black text-[9px] uppercase px-2 py-0.5 rounded-md shadow-xs">
+                    {lang === 'en' ? "Pure" : "نقي"}
+                  </span>
+                  <span className="absolute bottom-2.5 right-2.5 bg-black/60 text-stone-200 font-extrabold text-[9px] px-2.5 py-1 rounded-md backdrop-blur-xs">
+                    {lang === 'en' ? "WILD HERBS" : "أعشاب برية"}
+                  </span>
                 </div>
 
                 <div className="mb-5">
