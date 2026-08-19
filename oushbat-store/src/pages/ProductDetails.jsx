@@ -19,15 +19,20 @@ export default function ProductDetails({ productsData }) {
     );
   }
 
-  // 💡 فحص قسم الزيوت لقلب المقاييس تلقائياً للملّي (ml) بدلاً من اللتر
-  const isOil = String(product.category || '').trim() === 'زيوت طبيعية';
-  const unitLabel = isOil ? (lang === 'en' ? 'ml' : 'ملي') : (lang === 'en' ? 'KG' : 'كيلو');
+
+  const categoryText = String(product.category || '').toLowerCase().trim();
+  const isOil = categoryText.includes('زيت') || 
+                categoryText.includes('زيوت') || 
+                categoryText.includes('oil') || 
+                categoryText.includes('oils');
+
+  const unitLabel = isOil ? (lang === 'en' ? 'Liter' : 'لتر') : (lang === 'en' ? 'KG' : 'كيلو');
 
   const [inputPrice, setInputPrice] = useState('');
   const [inputQty, setInputQty] = useState('');
   const [selectedPreset, setSelectedPreset] = useState(null);
 
-  // 💡 دالة سحرية لتحويل الأرقام العادية إلى أرقام عربية صريحة (١، ٢، ٣) عند قلب اللغة للعربية
+
   const convertNumbers = (numStr) => {
     if (!numStr) return '';
     if (lang === 'en') return String(numStr);
@@ -35,18 +40,18 @@ export default function ProductDetails({ productsData }) {
     return String(numStr).replace(/[0-9]/g, (d) => String.fromCharCode(arabicZero + parseInt(d)));
   };
 
-  // دالة متطورة لتنظيف المدخلات وتوحيدها برميّاً لكي تفهم الحسبة الرياضية الأرقام العربية والإنجليزية معاً
+
   const handleArabicInputClean = (val) => {
     if (!val) return '';
     return String(val).replace(/[٠-٩]/g, (d) => String(d.charCodeAt(0) - 1632));
   };
 
-  // 💡 القيمة الافتراضية المحسوبة: 1 كيلو للأعشاب أو 250 ملي تلقائياً للزيوت فور فتح الصفحة
+
   useEffect(() => {
     if (product) {
       setSelectedPreset({ 
-        fraction: isOil ? 250 : 1.0, 
-        fractionText: isOil ? (lang === 'en' ? '250 ml' : '250 ملي') : (lang === 'en' ? '1 KG' : '1 كيلو'), 
+        fraction: 1.0, 
+        fractionText: isOil ? (lang === 'en' ? '1 Liter' : '1 لتر') : (lang === 'en' ? '1 KG' : '1 كيلو'), 
         key: 'fractionText_1' 
       });
       setInputPrice('');
@@ -59,8 +64,7 @@ export default function ProductDetails({ productsData }) {
     setSelectedPreset(null);
     const basePrice = Number(product.price || 0);
     if (val && !isNaN(val) && basePrice > 0) {
-      const qty = isOil ? (parseFloat(val) / basePrice) * 1000 : (parseFloat(val) / basePrice);
-      setInputQty(qty.toFixed(isOil ? 0 : 3));
+      setInputQty((parseFloat(val) / basePrice).toFixed(3));
     } else {
       setInputQty('');
     }
@@ -71,15 +75,21 @@ export default function ProductDetails({ productsData }) {
     setSelectedPreset(null);
     const basePrice = Number(product.price || 0);
     if (val && !isNaN(val) && basePrice > 0) {
-      const price = isOil ? (parseFloat(val) / 1000) * basePrice : parseFloat(val) * basePrice;
-      setInputPrice(price.toFixed(2));
+      setInputPrice((parseFloat(val) * basePrice).toFixed(2));
     } else {
       setInputPrice('');
     }
   };
 
-  const handlePresetSelect = (fraction, fractionTextKey, labelText) => {
-    setSelectedPreset({ fraction, fractionText: labelText, key: fractionTextKey });
+  const handlePresetSelect = (fraction, fractionTextKey) => {
+    let text = t(fractionTextKey);
+    if (fractionTextKey === 'fractionText_1') {
+      text = isOil ? (lang === 'en' ? '1 Liter' : '1 لتر') : (lang === 'en' ? '1 KG' : '1 كيلو');
+    } else {
+      const fractionLabel = fractionTextKey === 'fractionText_1_8' ? '1/8' : fractionTextKey === 'fractionText_1_4' ? '1/4' : '1/2';
+      text = lang === 'en' ? `${fractionLabel} ${unitLabel}` : `${fractionLabel} ${text}`;
+    }
+    setSelectedPreset({ fraction, fractionText: text, key: fractionTextKey });
     setInputPrice('');
     setInputQty('');
   };
@@ -89,7 +99,7 @@ export default function ProductDetails({ productsData }) {
     const basePrice = Number(product.price || 0);
 
     if (selectedPreset) {
-      finalPrice = isOil ? (basePrice / 1000) * selectedPreset.fraction : basePrice * selectedPreset.fraction;
+      finalPrice = basePrice * selectedPreset.fraction;
       finalQtyText = selectedPreset.fractionText;
       finalUnitVal = selectedPreset.fraction;
     } else if (inputQty && inputPrice) {
@@ -97,7 +107,7 @@ export default function ProductDetails({ productsData }) {
       finalQtyText = `${inputQty} ${unitLabel}`;
       finalUnitVal = parseFloat(inputQty);
     } else {
-      alert(lang === 'en' ? 'Please configure weight!' : 'الرجاء تحديد الوزن أولاً!');
+      alert(lang === 'en' ? 'Please configure weight!' : 'الرجاء تحديد ">الوزن أولاً!');
       return;
     }
 
@@ -109,7 +119,7 @@ export default function ProductDetails({ productsData }) {
   const currentName = lang === 'en' ? (product.name_en || product.name_ar || '') : (product.name_ar || product.name_en || '');
   const currentDesc = lang === 'en' ? (product.desc_en || product.desc_ar || '') : (product.desc_ar || product.desc_en || '');
   return (
-    // الكونتينر ملموم ومتناسق جداً ومقاس محكم وصغير تماماً max-w-2xl بدون عناوين زائدة أو تكرارات
+
     <div className="container mx-auto px-4 py-12 max-w-2xl animate-fadeIn">
       <div className="bg-white rounded-3xl shadow-lg overflow-hidden grid grid-cols-1 md:grid-cols-2 gap-6 p-5 md:p-6 border border-stone-100">
         
@@ -125,7 +135,7 @@ export default function ProductDetails({ productsData }) {
             <div className="mt-4">
               <h1 className="text-xl font-black text-stone-900 mb-2">{currentName}</h1>
               <p className="text-stone-500 text-xs mt-2 leading-relaxed antialiased font-medium">
-                {currentDesc}
+                {currentDesc || (lang === 'en' ? "Premium organic quality product harvested directly from the pure nature." : "منتج عضوي ذو جودة عالية مستخلص من الطبيعة النظيفة مباشرة إليك.")}
               </p>
             </div>
           </div>
@@ -136,7 +146,7 @@ export default function ProductDetails({ productsData }) {
           <div>
             <h3 className="text-sm font-black text-stone-800 mb-2.5 border-b pb-2 tracking-tight">{t('weightPriceTitle')}</h3>
             <p className="text-xs text-stone-500 mb-4">
-              {t('originalPrice')}: <span className="font-black text-[#0b422a] text-sm">{convertNumbers(product.price)} {t('currency')}</span> / {isOil ? (lang === 'en' ? '1000 ml' : '١٠٠٠ ملي') : (lang === 'en' ? '1 KG' : '١ كيلو')}
+              {t('originalPrice')}: <span className="font-black text-[#0b422a] text-sm">{convertNumbers(product.price)} {t('currency')}</span> / {unitLabel}
             </p>
 
 
@@ -144,32 +154,16 @@ export default function ProductDetails({ productsData }) {
               <label className="block text-[11px] font-bold text-stone-600 mb-1.5">{t('choosePreset')}</label>
               <div className="grid grid-cols-4 gap-1">
                 {[
-                  { 
-                    label: isOil ? (lang === 'en' ? '30 ml' : '30 ملي') : (lang === 'en' ? '1/8' : '1/8 ثمن'), 
-                    val: isOil ? 30 : 0.125, 
-                    key: 'fractionText_1_8' 
-                  },
-                  { 
-                    label: isOil ? (lang === 'en' ? '50 ml' : '50 ملي') : (lang === 'en' ? '1/4' : '1/4 ربع'), 
-                    val: isOil ? 50 : 0.25, 
-                    key: 'fractionText_1_4' 
-                  },
-                  { 
-                    label: isOil ? (lang === 'en' ? '125 ml' : '125 ملي') : (lang === 'en' ? '1/2' : '1/2 نصف'), 
-                    val: isOil ? 125 : 0.5, 
-                    key: 'fractionText_1_2' 
-                  },
-                  { 
-                    label: isOil ? (lang === 'en' ? '250 ml' : '250 ملي') : (lang === 'en' ? '1 KG' : '1 كيلو'), 
-                    val: isOil ? 250 : 1.0, 
-                    key: 'fractionText_1' 
-                  }
+                  { label: lang === 'en' ? '1/8' : '1/8 ثمن', val: 0.125, key: 'fractionText_1_8' },
+                  { label: lang === 'en' ? '1/4' : '1/4 ربع', val: 0.25, key: 'fractionText_1_4' },
+                  { label: lang === 'en' ? '1/2' : '1/2 نصف', val: 0.5, key: 'fractionText_1_2' },
+                  { label: isOil ? (lang === 'en' ? '1 L' : '1 لتر') : (lang === 'en' ? '1 KG' : '1 كيلو'), val: 1.0, key: 'fractionText_1' }
                 ].map((item) => (
                   <button
                     key={item.key}
                     type="button"
-                    onClick={() => handlePresetSelect(item.val, item.key, item.label)}
-                    className={`py-1.5 rounded-lg text-[10px] sm:text-xs font-black border transition-all ${
+                    onClick={() => handlePresetSelect(item.val, item.key)}
+                    className={`py-1.5 rounded-lg text-xs font-black border transition-all ${
                       selectedPreset?.key === item.key 
                         ? 'bg-[#0b422a] text-white border-[#0b422a] shadow-2xs' 
                         : 'bg-white text-stone-700 border-stone-200 hover:bg-stone-100'
@@ -181,7 +175,7 @@ export default function ProductDetails({ productsData }) {
               </div>
             </div>
 
-
+            {/* الـ Inputs التفاعلية المترجمة */}
             <div className="space-y-3 pt-2 border-t border-stone-200/40">
               <div>
                 <label className="block text-[9px] font-semibold text-stone-400 mb-0.5">{t('enterPrice')}</label>
@@ -212,12 +206,13 @@ export default function ProductDetails({ productsData }) {
               </div>
             </div>
 
+
             <div className="mt-4 p-3 bg-emerald-50/60 rounded-xl border border-emerald-100/60 shadow-inner">
               <p className="text-[11px] font-bold text-emerald-900">
                 {t('currentCalc')}{' '}
                 <span className="font-black text-[#0b422a] block text-xs mt-0.5">
                   {selectedPreset 
-                    ? `${convertNumbers(Number(isOil ? (product.price / 1000) * selectedPreset.fraction : product.price * selectedPreset.fraction).toFixed(2))} ${t('currency')} [${selectedPreset.fractionText}]` 
+                    ? `${convertNumbers(Number(product.price * selectedPreset.fraction).toFixed(2))} ${t('currency')} [${selectedPreset.fractionText}]` 
                     : inputPrice && inputQty 
                     ? `${convertNumbers(parseFloat(inputPrice).toFixed(2))} ${t('currency')} [${convertNumbers(inputQty)} ${unitLabel}]` 
                     : '...'}
@@ -225,6 +220,7 @@ export default function ProductDetails({ productsData }) {
               </p>
             </div>
           </div>
+
 
           <div className="mt-5 space-y-2">
             <button 
