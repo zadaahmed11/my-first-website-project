@@ -9,7 +9,6 @@ export default function ProductDetails({ productsData }) {
   const { addToCart } = useCart();
   const { t, lang } = useLanguage();
 
-  // 1. جلب المنتج وتأمينه تماماً ضد الـ undefined أو تعليق الكاش القديم
   const product = (productsData || []).find((p) => p.id === parseInt(id));
 
   if (!product) {
@@ -20,16 +19,15 @@ export default function ProductDetails({ productsData }) {
     );
   }
 
-  // 💡 التحديث القاطع: فحص القسم وتمرير اللتر للزيوت والكيلو للأصناف الأخرى بشكل حقيقي ونظيف
+  // لوجيك فحص الزيوت لقلب المقاييس تلقائياً للتر
   const isOil = String(product.category || '').trim() === 'زيوت طبيعية';
   const unitLabel = isOil ? (lang === 'en' ? 'Liter' : 'لتر') : (lang === 'en' ? 'KG' : 'كيلو');
 
-  // 2. إدارة الـ States للحسابات التفاعلية والـ Inputs التبادلية
   const [inputPrice, setInputPrice] = useState('');
   const [inputQty, setInputQty] = useState('');
   const [selectedPreset, setSelectedPreset] = useState(null);
 
-  // 3. 💡 منع الاختفاء وتجمد الكاش: تعيين 1 لتر تلقائياً للزيوت و 1 كيلو للأعشاب فور فتح الشاشة
+  // القيمة الافتراضية 1 كيلو / 1 لتر
   useEffect(() => {
     if (product) {
       setSelectedPreset({ 
@@ -42,7 +40,6 @@ export default function ProductDetails({ productsData }) {
     }
   }, [product, isOil, lang]);
 
-  // 4. دالة حساب الكمية عند كتابة السعر يدوياً (تحديث متبادل)
   const handlePriceChange = (val) => {
     setInputPrice(val);
     setSelectedPreset(null);
@@ -54,7 +51,6 @@ export default function ProductDetails({ productsData }) {
     }
   };
 
-  // 5. دالة حساب السعر عند كتابة الكمية يدوياً (تحديث متبادل)
   const handleQtyChange = (val) => {
     setInputQty(val);
     setSelectedPreset(null);
@@ -66,7 +62,6 @@ export default function ProductDetails({ productsData }) {
     }
   };
 
-  // 6. عند الضغط على الأزرار الجاهزة الثابتة وتحديث نصوصها ومقاييسها حياً حسب اللغة والزيوت
   const handlePresetSelect = (fraction, fractionTextKey) => {
     let text = t(fractionTextKey);
     if (fractionTextKey === 'fractionText_1') {
@@ -79,7 +74,6 @@ export default function ProductDetails({ productsData }) {
     setInputQty('');
   };
 
-  // 7. زر الإضافة النهائي للعربة المجهزة ببيانات سوبابيز الحقيقية
   const handleAddToCartAction = () => {
     let finalPrice = 0, finalQtyText = '', finalUnitVal = 0;
     const basePrice = Number(product.price || 0);
@@ -98,62 +92,56 @@ export default function ProductDetails({ productsData }) {
     }
 
     addToCart(product, finalUnitVal, finalQtyText, finalPrice);
-    alert(lang === 'en' ? 'Added successfully to your cart!' : 'تم إضافة الوزن المختار إلى عربة التسوق بنجاح!');
+    alert(lang === 'en' ? 'Added successfully! Continuing shopping...' : 'تم إضافة الوزن المختار للعربة! جاري العودة لمواصلة التسوق...');
+    navigate('/'); // توجيه فوري ومباشر لمواصلة التسوق براحة تامة
   };
 
-  // 💡 تأمين قاطع للنصوص لمنع ظهور أي حقول فاضية عند تبديل اللغات
   const currentName = lang === 'en' ? (product.name_en || product.name_ar || '') : (product.name_ar || product.name_en || '');
   const currentDesc = lang === 'en' ? (product.desc_en || product.desc_ar || '') : (product.desc_ar || product.desc_en || '');
   return (
-    // الكونتينر متناسق ومريح جداً للعين ليعطي الوصف والاسم مساحتهما الكاملة ليأخذ راحته تماماً كالصورة
-    <div className="container mx-auto px-4 py-16 max-w-5xl animate-fadeIn">
-      <div className="bg-white rounded-3xl shadow-xl overflow-hidden grid grid-cols-1 md:grid-cols-2 gap-8 p-6 md:p-10 border border-stone-100">
+    // 💡 تصغير حجم الكونتينر الخارجي ليكون max-w-4xl ليعطيكِ التناسق التام والمحكم نفس لقطة الشاشة بالملي
+    <div className="container mx-auto px-4 py-12 max-w-4xl animate-fadeIn">
+      <div className="bg-white rounded-3xl shadow-lg overflow-hidden grid grid-cols-1 md:grid-cols-2 gap-8 p-6 md:p-8 border border-stone-100">
         
-        {/* الجانب الأيسر: عرض تفاصيل وصورة المنتج النظيفة الفخمة والوصف المريح الواسع */}
+        {/* الجانب الأيسر: الصورة والوصف واخذ راحته ومسح الكلمة الخضراء */}
         <div className="flex flex-col justify-between h-full">
           <div>
-            {/* حاوية الصورة والبادجات الاحترافية المعتمدة */}
-            <div className="relative rounded-2xl overflow-hidden h-80 bg-stone-50 border border-stone-100 shadow-xs">
+            <div className="relative rounded-2xl overflow-hidden h-64 bg-stone-50 border border-stone-100 shadow-2xs">
               <img src={product.image_url} alt={currentName} className="w-full h-full object-cover" />
-              <span className="absolute top-3 left-3 bg-[#10b981] text-white font-black text-[10px] uppercase px-2.5 py-1 rounded-md shadow-xs">Pure</span>
-              <span className="absolute bottom-3 right-3 bg-black/60 text-stone-200 font-extrabold text-[10px] px-3 py-1.5 rounded-md backdrop-blur-xs">WILD HERBS</span>
+              <span className="absolute top-3 left-3 bg-[#10b981] text-white font-black text-[9px] uppercase px-2 py-0.5 rounded-md shadow-xs">Pure</span>
+              <span className="absolute bottom-3 right-3 bg-black/60 text-stone-200 font-extrabold text-[9px] px-2.5 py-1 rounded-md backdrop-blur-xs">WILD HERBS</span>
             </div>
             
-            {/* عنوان العشبة والوصف مريح تماماً ويأخذ مساحته الكاملة في العرض وبدون اختفاء */}
-            <div className="mt-6">
-              <h1 className="text-2xl font-black text-stone-900 mb-2">{currentName}</h1>
+            <div className="mt-5">
+              <h1 className="text-xl font-black text-stone-900 mb-2">{currentName}</h1>
               
-              {/* حل مشكلة اختفاء الأقسام بربطها بالقاموس اللغوي حياً */}
-              <span className="text-xs font-bold bg-emerald-50 text-emerald-800 px-3 py-1.5 rounded-lg border border-emerald-100/40">
-                {t(product.category) || product.category}
-              </span>
+              {/* 💡 تم مسح وسم الـ category (herbs) تماماً من هنا بناءً على طلبكِ لتنظيف المظهر */}
               
-              {/* الوصف واخذ راحته ومساحته الكاملة بدون تقييد أسطر خانق ومكتوب بدقة */}
-              <p className="text-stone-600 mt-5 text-sm leading-relaxed antialiased font-medium">
+              <p className="text-stone-500 text-xs mt-3 leading-relaxed antialiased font-medium">
                 {currentDesc || (lang === 'en' ? "Premium organic quality product harvested directly from the pure nature." : "منتج عضوي ذو جودة عالية مستخلص من الطبيعة النظيفة مباشرة إليك.")}
               </p>
             </div>
           </div>
           
-          <div className="mt-6 pt-4 border-t border-stone-100 hidden md:block">
-            <button onClick={() => navigate('/')} className="text-stone-400 hover:text-emerald-800 font-bold text-xs transition-colors">
+          <div className="mt-5 pt-3 border-t border-stone-50 hidden md:block">
+            <button onClick={() => navigate('/')} className="text-stone-400 hover:text-emerald-800 font-bold text-[11px] transition-colors">
               ← {t('continueShopping')}
             </button>
           </div>
         </div>
 
-        {/* الجانب الأيمن: لوحة التحكم وحساب الأوزان المتبادلة المنسقة بالألوان الفخمة للبراند */}
-        <div className="flex flex-col justify-between bg-stone-50 p-6 md:p-8 rounded-2xl border border-stone-200/60 shadow-xs">
+        {/* الجانب الأيمن: لوحة التحكم المترجمة كلياً (الـ inputs والأوزان والعملات والـ KG حياً) */}
+        <div className="flex flex-col justify-between bg-stone-50 p-5 md:p-6 rounded-2xl border border-stone-200/60 shadow-3xs">
           <div>
-            <h3 className="text-lg font-black text-stone-800 mb-4 border-b pb-2 tracking-tight">{t('weightPriceTitle')}</h3>
-            <p className="text-xs text-stone-500 mb-6">
+            <h3 className="text-base font-black text-stone-800 mb-3 border-b pb-2 tracking-tight">{t('weightPriceTitle')}</h3>
+            <p className="text-xs text-stone-500 mb-5">
               {t('originalPrice')}: <span className="font-black text-[#0b422a] text-sm">{product.price} {t('currency')}</span> / {unitLabel}
             </p>
 
-            {/* الأزرار الجاهزة الثابتة (ثمن، ربع، نصف، كيلو أو لتر) تنقلب حياً */}
-            <div className="mb-6">
-              <label className="block text-xs font-bold text-stone-700 mb-2.5">{t('choosePreset')}</label>
-              <div className="grid grid-cols-4 gap-2">
+            {/* صف الأزرار الجاهزة الثابتة (ثمن، ربع، نصف، 1 كيلو/لتر) */}
+            <div className="mb-5">
+              <label className="block text-xs font-bold text-stone-600 mb-2">{t('choosePreset')}</label>
+              <div className="grid grid-cols-4 gap-1.5">
                 {[
                   { label: '1/8', val: 0.125, key: 'fractionText_1_8' },
                   { label: '1/4', val: 0.25, key: 'fractionText_1_4' },
@@ -164,9 +152,9 @@ export default function ProductDetails({ productsData }) {
                     key={item.label}
                     type="button"
                     onClick={() => handlePresetSelect(item.val, item.key)}
-                    className={`py-2.5 rounded-xl text-xs font-black border transition-all ${
+                    className={`py-2 rounded-xl text-xs font-black border transition-all ${
                       selectedPreset?.key === item.key 
-                        ? 'bg-[#0b422a] text-white border-[#0b422a] shadow-xs' 
+                        ? 'bg-[#0b422a] text-white border-[#0b422a] shadow-2xs' 
                         : 'bg-white text-stone-700 border-stone-200 hover:bg-stone-100'
                     }`}
                   >
@@ -176,38 +164,38 @@ export default function ProductDetails({ productsData }) {
               </div>
             </div>
 
-            {/* الـ Inputs المتبادلة التفاعلية للقيم المخصصة وتتغير حياً */}
-            <div className="space-y-4 pt-2 border-t border-stone-200/40">
-              <label className="block text-xs font-bold text-stone-700 -mb-2">{t('customValue')}</label>
+            {/* الـ Inputs التفاعلية المتبادلة المترجمة والـ placeholders الحية */}
+            <div className="space-y-3.5 pt-2 border-t border-stone-200/40">
+              <label className="block text-xs font-bold text-stone-600 -mb-1.5">{t('customValue')}</label>
               
               <div>
-                <label className="block text-[10px] font-semibold text-stone-400 mb-1">{t('enterPrice')}</label>
+                <label className="block text-[10px] font-semibold text-stone-400 mb-0.5">{t('enterPrice')}</label>
                 <input 
                   type="number" 
                   value={inputPrice} 
                   onChange={(e) => handlePriceChange(e.target.value)} 
                   placeholder={lang === 'en' ? "EGP" : "جنيه"} 
-                  className="w-full p-3 text-sm border border-stone-200 rounded-xl bg-white focus:ring-2 focus:ring-emerald-600 focus:outline-hidden font-bold" 
+                  className="w-full p-2.5 text-xs border border-stone-200 rounded-xl bg-white focus:ring-2 focus:ring-emerald-600 focus:outline-hidden font-bold" 
                 />
               </div>
               
               <div>
-                <label className="block text-[10px] font-semibold text-stone-400 mb-1">{t('enterQty')} ({unitLabel})</label>
+                <label className="block text-[10px] font-semibold text-stone-400 mb-0.5">{t('enterQty')} ({unitLabel})</label>
                 <input 
                   type="number" 
                   value={inputQty} 
                   onChange={(e) => handleQtyChange(e.target.value)} 
                   placeholder="0.00" 
-                  className="w-full p-3 text-sm border border-stone-200 rounded-xl bg-white focus:ring-2 focus:ring-emerald-600 focus:outline-hidden font-bold" 
+                  className="w-full p-2.5 text-xs border border-stone-200 rounded-xl bg-white focus:ring-2 focus:ring-emerald-600 focus:outline-hidden font-bold" 
                 />
               </div>
             </div>
 
-            {/* مستطيل الحسبة الحية الفورية المقدرة للوزن الحالي المعين وينقلب مع اللغات والعملات فوراً */}
-            <div className="mt-6 p-4 bg-emerald-50/60 rounded-xl border border-emerald-100/60 shadow-inner">
+            {/* مستطيل الحسبة الحية الفورية المقدرة المترجم بالكامل */}
+            <div className="mt-5 p-3.5 bg-emerald-50/60 rounded-xl border border-emerald-100/60 shadow-inner">
               <p className="text-xs font-bold text-emerald-900">
                 {t('currentCalc')}{' '}
-                <span className="font-black text-[#0b422a] block text-base mt-1">
+                <span className="font-black text-[#0b422a] block text-sm mt-0.5">
                   {selectedPreset 
                     ? `${(product.price * selectedPreset.fraction).toFixed(2)} ${t('currency')} [${selectedPreset.fractionText}]` 
                     : inputPrice && inputQty 
@@ -218,29 +206,23 @@ export default function ProductDetails({ productsData }) {
             </div>
           </div>
 
-          {/* أزرار المواصلة والزرار المحدث "أضف لعربة التسوق" بالكامل */}
-          <div className="mt-8 space-y-2.5">
+          {/* 💡 أزرار التوجيه المحدثة: 2 زون عريضة وفخمة ومتكاملة */}
+          <div className="mt-6 space-y-2">
+            {/* الزر الأول: إضافة واكمال تسوق */}
             <button 
               onClick={handleAddToCartAction} 
-              className="w-full bg-[#0b422a] text-white py-3.5 rounded-xl font-black text-sm shadow-md hover:bg-emerald-800 transition-all"
+              className="w-full bg-[#0b422a] text-white py-3 rounded-xl font-black text-xs shadow-xs hover:bg-emerald-800 transition-all transform hover:scale-101"
             >
-              {lang === 'en' ? "Add to Cart 🛒" : "أضف لعربة التسوق 🛒"}
+              {lang === 'en' ? "Add to Cart & Continue Shopping 🛒" : "أضف للعربة واكمل التسوق 🛒"}
             </button>
             
-            <div className="grid grid-cols-2 gap-2.5">
-              <button 
-                onClick={() => navigate('/')} 
-                className="md:hidden bg-stone-200 text-stone-800 py-3 rounded-xl font-bold text-xs hover:bg-stone-300 transition"
-              >
-                {t('continueShopping')}
-              </button>
-              <button 
-                onClick={() => navigate('/cart')} 
-                className="col-span-2 sm:col-span-1 bg-amber-500 text-stone-900 py-3 rounded-xl font-black text-xs hover:bg-amber-400 transition text-center shadow-xs"
-              >
-                {t('goToCartPage')}
-              </button>
-            </div>
+            {/* الزر الثاني: الذهاب لصفحة الشحن والدفع المباشر */}
+            <button 
+              onClick={() => navigate('/checkout')} 
+              className="w-full bg-amber-500 text-stone-900 py-3 rounded-xl font-black text-xs hover:bg-amber-400 transition-all shadow-xs text-center block transform hover:scale-101"
+            >
+              {lang === 'en' ? "Proceed to Checkout & Shipping 🚀" : "الذهاب لصفحة الشحن والدفع 🚀"}
+            </button>
           </div>
 
         </div>
