@@ -35,12 +35,25 @@ export default function Home({ productsData }) {
     productsSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
+
+  const normalizeArabic = (text) => {
+    if (!text) return '';
+    return String(text)
+      .trim()
+      .toLowerCase()
+      .replace(/[أإآ]/g, 'ا')
+      .replace(/ة/g, 'ه')
+      .replace(/\s+/g, ' '); 
+  };
+
+
   const filteredProducts = selectedCategory === 'All' 
     ? productsData 
     : (productsData || []).filter(p => {
-        const dbCat = String(p.category || '').trim();
-        const activeCat = String(selectedCategory).trim();
-        return dbCat === activeCat || dbCat.toLowerCase().includes(activeCat.toLowerCase());
+        const dbCat = normalizeArabic(p.category);
+        const activeCat = normalizeArabic(selectedCategory);
+        
+        return dbCat === activeCat || dbCat.includes(activeCat) || activeCat.includes(dbCat);
       });
 
   return (
@@ -53,16 +66,13 @@ export default function Home({ productsData }) {
           style={{ backgroundImage: 'radial-gradient(circle at center, #0e5234 0%, #0b422a 65%, #07301e 100%)' }}
         >
           
-
           <div className="bg-[#10b981]/20 text-[#10b981] text-[10px] font-black tracking-wider uppercase px-3 py-1 rounded-full border border-[#10b981]/30 mb-4 animate-pulse">
             {lang === 'en' ? "🍃 100% Pure & Authentic Quality" : `🍃 جودة نقية وأصلية ${formatNumber(100)}%`}
           </div>
 
-
           <h1 className="text-3xl md:text-5xl font-black mb-4 tracking-tight max-w-4xl mx-auto leading-tight drop-shadow-md">
             {lang === 'en' ? "Welcome to Oshbat El Attar Shop" : "مرحباً بكم في محل عشبة العطار"}
           </h1>
-
 
           <p className="text-xs md:text-sm text-stone-300 font-medium leading-relaxed max-w-2xl mx-auto opacity-90 drop-shadow-xs">
             {lang === 'en' 
@@ -70,7 +80,6 @@ export default function Home({ productsData }) {
               : "اكتشف تشكيلتنا الفاخرة من التوابل المحكمة الغلق، الأعشاب البرية النادرة، والزيوت الطبيعية النقية. نشحن لكافة أنحاء الجمهورية مع ضمان الفحص الكامل عند باب بيتك قبل الدفع."
             }
           </p>
-
 
           <button 
             onClick={scrollToProducts}
@@ -82,9 +91,7 @@ export default function Home({ productsData }) {
         </div>
       </div>
 
-
       <div ref={productsSectionRef} className="container mx-auto px-4 py-10 scroll-mt-6">
-        
         
         <div className="flex flex-wrap gap-2 mb-10 overflow-x-auto pb-2">
           {CATEGORIES.map((cat) => (
@@ -99,7 +106,6 @@ export default function Home({ productsData }) {
             </button>
           ))}
         </div>
-
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {filteredProducts.map((product) => {
