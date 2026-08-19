@@ -9,15 +9,16 @@ export default function Home({ productsData }) {
 
   const productsSectionRef = useRef(null);
 
+
   const CATEGORIES = [
     { id: 'All', label: lang === 'en' ? "All Products" : "كل المنتجات" },
-    { id: 'أعشاب طبيعية وعطرية', label: lang === 'en' ? "Medicinal Herbs" : "أعشاب طبيعية وعطرية" },
-    { id: 'توابل وبهارات', label: lang === 'en' ? "Spices & Seasonings" : "توابل وبهارات" },
-    { id: 'حبوب وبقوليات', label: lang === 'en' ? "Grains & Legumes" : "حبوب وبقوليات" },
-    { id: 'زيوت طبيعية', label: lang === 'en' ? "Natural Oils" : "زيوت طبيعية" }
+    { id: 'herbs', label: lang === 'en' ? "Medicinal Herbs" : "أعشاب طبيعية وعطرية" },
+    { id: 'spices', label: lang === 'en' ? "Spices & Seasonings" : "توابل وبهارات" },
+    { id: 'grains', label: lang === 'en' ? "Grains & Legumes" : "حبوب وبقوليات" },
+    { id: 'oils', label: lang === 'en' ? "Natural Oils" : "زيوت طبيعية" }
   ];
 
-
+  // دالة تحويل الأرقام إلى أرقام عربية شرق-آسيوية
   const formatNumber = (num) => {
     if (num === undefined || num === null) return '';
     if (lang === 'en') return num;
@@ -43,17 +44,34 @@ export default function Home({ productsData }) {
       .toLowerCase()
       .replace(/[أإآ]/g, 'ا')
       .replace(/ة/g, 'ه')
-      .replace(/\s+/g, ' '); 
+      .replace(/\s+/g, ' ');
   };
 
 
   const filteredProducts = selectedCategory === 'All' 
     ? productsData 
     : (productsData || []).filter(p => {
-        const dbCat = normalizeArabic(p.category);
-        const activeCat = normalizeArabic(selectedCategory);
-        
-        return dbCat === activeCat || dbCat.includes(activeCat) || activeCat.includes(dbCat);
+        const dbCat = String(p.category || '').toLowerCase().trim();
+        const dbCatNorm = normalizeArabic(p.category);
+
+
+        if (selectedCategory === 'herbs') {
+          return dbCat.includes('herb') || dbCat.includes('medicinal') || dbCatNorm.includes('اعشاب') || dbCatNorm.includes('عطريه');
+        }
+
+        if (selectedCategory === 'spices') {
+          return dbCat.includes('spice') || dbCat.includes('seasoning') || dbCatNorm.includes('توابل') || dbCatNorm.includes('بهارات');
+        }
+        // إذا ضغط المستخدم على قسم الحبوب
+        if (selectedCategory === 'grains') {
+          return dbCat.includes('grain') || dbCat.includes('legume') || dbCatNorm.includes('حبوب') || dbCatNorm.includes('بقوليات');
+        }
+
+        if (selectedCategory === 'oils') {
+          return dbCat.includes('oil') || dbCatNorm.includes('زيوت') || dbCatNorm.includes('زيت');
+        }
+
+        return false;
       });
 
   return (
@@ -66,10 +84,12 @@ export default function Home({ productsData }) {
           style={{ backgroundImage: 'radial-gradient(circle at center, #0e5234 0%, #0b422a 65%, #07301e 100%)' }}
         >
           
+
           <div className="bg-[#10b981]/20 text-[#10b981] text-[10px] font-black tracking-wider uppercase px-3 py-1 rounded-full border border-[#10b981]/30 mb-4 animate-pulse">
             {lang === 'en' ? "🍃 100% Pure & Authentic Quality" : `🍃 جودة نقية وأصلية ${formatNumber(100)}%`}
           </div>
 
+          {/* العنوان النظيف بدون أي أيقونات لفرع الشجرة */}
           <h1 className="text-3xl md:text-5xl font-black mb-4 tracking-tight max-w-4xl mx-auto leading-tight drop-shadow-md">
             {lang === 'en' ? "Welcome to Oshbat El Attar Shop" : "مرحباً بكم في محل عشبة العطار"}
           </h1>
@@ -81,6 +101,7 @@ export default function Home({ productsData }) {
             }
           </p>
 
+
           <button 
             onClick={scrollToProducts}
             className="mt-6 bg-[#10b981] hover:bg-emerald-400 hover:scale-103 text-stone-900 font-black text-xs px-6 py-2.5 rounded-xl transition-all shadow-md flex items-center gap-2"
@@ -91,8 +112,10 @@ export default function Home({ productsData }) {
         </div>
       </div>
 
+
       <div ref={productsSectionRef} className="container mx-auto px-4 py-10 scroll-mt-6">
         
+
         <div className="flex flex-wrap gap-2 mb-10 overflow-x-auto pb-2">
           {CATEGORIES.map((cat) => (
             <button
@@ -106,6 +129,7 @@ export default function Home({ productsData }) {
             </button>
           ))}
         </div>
+
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {filteredProducts.map((product) => {
