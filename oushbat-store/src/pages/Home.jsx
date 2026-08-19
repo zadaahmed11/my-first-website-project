@@ -48,11 +48,8 @@ export default function Home({ productsData }) {
             {lang === 'en' ? "🍃 100% Pure & Authentic Quality" : "🍃 جودة نقية وأصلية 100%"}
           </div>
 
-          <h1 className="text-3xl md:text-5xl font-black mb-4 tracking-tight max-w-4xl mx-auto leading-tight drop-shadow-md flex flex-col sm:flex-row items-center justify-center gap-3">
-            <span className="text-4xl md:text-5xl text-[#10b981]">🌿</span>
-            <span>
-              {lang === 'en' ? "Welcome to Oshbat El Attar Shop" : "مرحباً بكم في محل عشبة العطار"}
-            </span>
+          <h1 className="text-3xl md:text-5xl font-black mb-4 tracking-tight max-w-4xl mx-auto leading-tight drop-shadow-md">
+            {lang === 'en' ? "Welcome to Oshbat El Attar Shop" : "مرحباً بكم في محل عشبة العطار"}
           </h1>
 
           <p className="text-xs md:text-sm text-stone-300 font-medium leading-relaxed max-w-2xl mx-auto opacity-90 drop-shadow-xs">
@@ -88,7 +85,6 @@ export default function Home({ productsData }) {
           ))}
         </div>
 
-        {/* شبكة المنتجات الكاملة */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {filteredProducts.map((product) => {
             const currentName = lang === 'en' ? product.name_en : product.name_ar;
