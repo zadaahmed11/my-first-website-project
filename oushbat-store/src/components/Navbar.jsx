@@ -15,7 +15,7 @@ export default function Navbar() {
       <div className="container mx-auto flex justify-between items-center">
         
         <div className="flex items-center gap-3">
-          <span className="text-4xl text-emerald-700 font-bold">🌿</span>
+          <span className="text-3xl text-emerald-700 font-bold">🌿</span>
           <div className="flex flex-col">
             <Link to="/" className="text-xl font-black text-emerald-900 tracking-wide leading-none">
               {t('logo')}
