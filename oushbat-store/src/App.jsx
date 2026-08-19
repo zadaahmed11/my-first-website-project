@@ -17,21 +17,28 @@ export default function App() {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        // جلب البيانات الصافية من جدولكِ في Supabase
+        // 1. جلب البيانات الصافية من جدولكِ الحقيقي في Supabase
         const { data, error } = await supabase
           .from('products')
           .select('*');
 
         if (error) throw error;
 
-
         if (!data || data.length === 0) {
           setDbError("الجدول متصل بنجاح، لكنه فارغ تماماً ولا يحتوي على أي صفوف بيانات داخل Supabase حالياً!");
           return;
         }
 
+        const formattedData = data.map((item) => ({
+          ...item,
+          price: Number(item.price || 0),
+          name_en: item.name_en || "Premium Product",
+          name_ar: item.name_ar || "منتج فاخر",
+          desc_en: item.desc_en || "Premium organic quality product harvested directly from nature.",
+          desc_ar: item.desc_ar || "منتج عضوي ذو جودة عالية مستخلص من الطبيعة النظيفة مباشرة."
+        }));
 
-        setProductsData(data);
+        setProductsData(formattedData);
       } catch (error) {
         console.error('Database connection error:', error.message);
         setDbError(error.message);
@@ -41,7 +48,6 @@ export default function App() {
     };
     fetchProducts();
   }, []);
-
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-stone-50">
@@ -49,7 +55,6 @@ export default function App() {
       </div>
     );
   }
-
 
   if (dbError) {
     return (
