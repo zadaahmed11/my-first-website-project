@@ -3,7 +3,7 @@ import { useCart } from '../context/CartContext';
 import { useLanguage } from '../context/LanguageContext';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
-import { X, MapPin, ShoppingBag, Send } from 'lucide-react';
+import { X, MapPin, ShoppingBag, Send, ArrowLeft } from 'lucide-react';
 
 export default function Checkout() {
   const { cart, addToCart, removeFromCart, getCartTotal, clearCart } = useCart();
@@ -119,8 +119,29 @@ export default function Checkout() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-12 max-w-6xl animate-fadeIn">
-      <h2 className="text-2xl font-black text-stone-900 mb-8 border-b pb-4">{t('checkoutTitle')}</h2>
+    
+  <div className="container mx-auto px-4 py-12 max-w-6xl animate-fadeIn">
+    
+    <div className="flex gap-2 mb-6 select-none">
+      <button 
+        onClick={() => navigate('/')} 
+        className="flex items-center gap-1.5 px-3 py-1.5 border border-stone-200 hover:border-stone-400 text-stone-600 rounded-lg text-[11px] font-black cursor-pointer transition-all bg-white"
+      >
+        <ShoppingBag className="w-3.5 h-3.5" />
+        {lang === 'en' ? "Home" : "الرئيسية"}
+      </button>
+      
+      <button 
+        onClick={() => navigate('/cart')} 
+        className="flex items-center gap-1.5 px-3 py-1.5 border border-stone-200 hover:border-stone-400 text-stone-600 rounded-lg text-[11px] font-black cursor-pointer transition-all bg-white"
+      >
+        <ArrowLeft className="w-3.5 h-3.5" />
+        {lang === 'en' ? "Back to Cart" : "العودة للسلة"}
+      </button>
+    </div>
+
+    <h2 className="text-2xl font-black text-stone-900 mb-8 border-b pb-4">{t('checkoutTitle')}</h2>
+
       
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
         
