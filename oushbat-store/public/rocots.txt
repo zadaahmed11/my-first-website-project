@@ -12,4 +12,4 @@ Disallow: /admin
 Disallow: /dashboard
 Disallow: /supabase/
 
-Sitemap: >https://oushbat-el-attar.vercel.app/
+Sitemap: >https://el-attar.vercel.app/

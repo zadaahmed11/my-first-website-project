@@ -1,8 +1,8 @@
-https://oushbat-el-attar.vercel.app/
-https://oushbat-el-attar.vercel.app/cart
-https://oushbat-el-attar.vercel.app/checkout
-https://oushbat-el-attar.vercel.app/category/oils
-https://oushbat-el-attar.vercel.app/category/herbs
-https://oushbat-el-attar.vercel.app/category/spices
-https://oushbat-el-attar.vercel.app/product/olive-oil
-https://oushbat-el-attar.vercel.app/product/black-seed-oil
+https://el-attar.vercel.app/
+https://el-attar.vercel.app/cart
+https://el-attar.vercel.app/checkout
+https://el-attar.vercel.app/category/oils
+https://el-attar.vercel.app/category/herbs
+https://el-attar.vercel.app/category/spices
+https://el-attar.vercel.app/product/olive-oil
+https://el-attar.vercel.app/product/black-seed-oil
