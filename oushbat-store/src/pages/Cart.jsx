@@ -23,19 +23,13 @@ export default function Cart() {
                   String(item.category || '').toLowerCase().trim().includes('زيوت') || 
                   String(item.category || '').toLowerCase().trim().includes('oil');
 
-
-                  
     const baseOriginalUnit = item.initialUnitVal || item.selectedUnit || 1.0;
-    
-
     const finalUnitVal = baseOriginalUnit + fractionVal;
     const newPrice = basePrice * finalUnitVal;
-
 
     const label = isOil ? (lang === 'en' ? 'Liter' : 'لتر') : (lang === 'en' ? 'KG' : 'كيلو');
     const displayQty = finalUnitVal % 1 === 0 ? finalUnitVal.toFixed(0) : finalUnitVal.toFixed(3);
     const text = `${convertNumbers(displayQty)} ${label}`;
-
 
     addToCart({
       ...item,
@@ -92,7 +86,7 @@ export default function Cart() {
       </div>
     );
   }
-    return (
+  return (
     <div className="container mx-auto px-4 py-12 max-w-2xl animate-fadeIn">
       <h2 className="text-xl font-black text-stone-900 mb-8 border-b pb-4">
         {lang === 'en' ? "Your Shopping Cart" : "عربة التسوق الخاصة بك"}
@@ -105,32 +99,30 @@ export default function Cart() {
           const currentName = lang === 'en' ? item.name_en : item.name_ar;
 
           return (
-
-            <div key={item.id} className="bg-white p-5 rounded-2xl shadow-3xs border border-stone-100 grid grid-cols-1 md:grid-cols-3 gap-4 items-center relative overflow-hidden pr-10 rtl:pl-10 rtl:pr-5">
+            <div key={item.id} className="bg-white p-4 rounded-2xl shadow-3xs border border-stone-100 grid grid-cols-12 gap-2 items-center relative overflow-hidden pt-7">
               
-
               <button 
                 onClick={() => removeFromCart(item.id)}
-                className="absolute top-3 right-3 ltr:left-auto ltr:right-3 rtl:right-auto rtl:left-3 p-1.5 rounded-full bg-red-50 text-red-500 hover:bg-red-100 hover:text-red-700 transition-all shadow-3xs cursor-pointer z-10"
+                className="absolute top-1.5 right-1.5 ltr:left-auto ltr:right-1.5 rtl:right-auto rtl:left-1.5 w-5 h-5 flex items-center justify-center rounded-full bg-red-50 text-red-500 hover:bg-red-100 hover:text-red-700 transition-all shadow-3xs cursor-pointer z-20"
                 title={lang === 'en' ? "Remove Item" : "حذف المنتج"}
               >
-                <X className="w-3.5 h-3.5" strokeWidth={3} />
+                <X className="w-2.5 h-2.5" strokeWidth={3.5} />
               </button>
 
 
-              <div className="flex items-center gap-3 w-full">
-                <img src={item.image_url} alt={currentName} className="w-14 h-14 object-cover rounded-xl border border-stone-100/60 flex-shrink-0" />
+              <div className="col-span-12 md:col-span-5 flex items-center gap-3 w-full">
+                <img src={item.image_url} alt={currentName} className="w-12 h-14 object-cover rounded-xl border border-stone-100/60 flex-shrink-0" />
                 <div className="flex flex-col min-w-0">
-                  <h3 className="text-sm font-black text-stone-900 tracking-tight leading-tight truncate">{currentName}</h3>
-                  <span className="text-[10px] font-black bg-stone-100 text-stone-600 px-2 py-0.5 rounded-md mt-1 w-fit border border-stone-200/30">
+                  <h3 className="text-xs font-black text-stone-900 tracking-tight leading-tight truncate">{currentName}</h3>
+                  <span className="text-[9px] font-black bg-stone-100 text-stone-600 px-2 py-0.5 rounded-md mt-1 w-fit border border-stone-200/20">
                     {item.quantityText}
                   </span>
                 </div>
               </div>
 
 
-              <div className="flex items-center gap-2 w-full justify-start md:justify-center">
-                <label className="text-[10px] font-bold text-stone-400 whitespace-nowrap">
+              <div className="col-span-12 sm:col-span-6 md:col-span-4 flex items-center gap-1.5 w-full justify-start md:justify-center">
+                <label className="text-[9px] font-bold text-stone-400 whitespace-nowrap">
                   {lang === 'en' ? "Add:" : "إضافة:"}
                 </label>
                 <select
@@ -142,9 +134,9 @@ export default function Cart() {
                     if (val === 0.25) key = 'fractionText_1_4';
                     if (val === 0.5) key = 'fractionText_1_2';
                     if (val === 1.0) key = 'fractionText_1';
-                    handleAccumulativeDropdown(item, val, key);
+                    handleDropdownChange(item, val, key);
                   }}
-                  className="w-full max-w-[130px] border border-stone-200 rounded-xl p-1.5 bg-stone-50 text-[11px] font-black focus:outline-hidden focus:ring-1 focus:ring-emerald-700 cursor-pointer text-stone-700"
+                  className="w-full max-w-[115px] border border-stone-200 rounded-xl p-1 bg-stone-50 text-[10px] font-black focus:outline-hidden focus:ring-1 focus:ring-emerald-700 cursor-pointer text-stone-700"
                 >
                   <option value="" disabled>{lang === 'en' ? "Add weight" : "وزن زائد +"}</option>
                   <option value="0.125">{lang === 'en' ? "1/8 fraction" : "1/8 ثمن"}</option>
@@ -154,17 +146,15 @@ export default function Cart() {
                 </select>
               </div>
 
-
-              <div className="flex items-center justify-between md:justify-end gap-2 bg-stone-50 border border-stone-200/40 p-2 rounded-xl w-full md:w-auto ltr:md:ml-auto rtl:md:mr-auto min-w-[125px]">
+              <div className="col-span-12 sm:col-span-6 md:col-span-3 flex items-center justify-between md:justify-end gap-2 bg-stone-50 border border-stone-200/40 p-1.5 rounded-xl w-full md:w-auto ltr:md:ml-auto rtl:md:mr-auto min-w-[115px]">
                 <button
                   onClick={() => handleMinusStep(item)}
                   className="p-1 rounded-md bg-stone-200 text-stone-600 hover:bg-stone-300 hover:text-stone-900 transition shadow-3xs cursor-pointer"
                   title={lang === 'en' ? "Reduce" : "تنقيص -"}
                 >
-                  <Minus className="w-3 h-3" strokeWidth={3} />
+                  <Minus className="w-2.5 h-2.5" strokeWidth={3.5} />
                 </button>
-
-                <p className="text-xs font-black text-[#0b422a] whitespace-nowrap">
+                <p className="text-[11px] font-black text-[#0b422a] whitespace-nowrap">
                   {convertNumbers(item.currentPrice.toFixed(2))} {t('currency')}
                 </p>
               </div>
@@ -177,21 +167,21 @@ export default function Cart() {
 
       <div className="mt-8 bg-stone-950 text-stone-100 p-5 rounded-2xl flex flex-col sm:flex-row justify-between items-center gap-4 shadow-md border border-stone-800">
         <div className="text-center sm:text-left rtl:sm:text-right">
-          <span className="text-stone-400 block text-[11px] font-medium tracking-wide">{lang === 'en' ? "Total Amount:" : "المجموع الإجمالي الكلي:"}</span>
-          <span className="text-xl font-black text-amber-400">
+          <span className="text-stone-400 block text-[10px] font-medium tracking-wide">{lang === 'en' ? "Total Amount:" : "المجموع الإجمالي الكلي:"}</span>
+          <span className="text-lg font-black text-amber-400">
             {convertNumbers(getCartTotal().toFixed(2))} {t('currency')}
           </span>
         </div>
         <div className="flex gap-2.5 w-full sm:w-auto">
           <button 
             onClick={() => navigate('/')} 
-            className="bg-stone-800 border border-stone-700 px-4 py-2.5 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition hover:bg-stone-700 shadow-2xs cursor-pointer w-1/2 sm:w-auto"
+            className="bg-stone-800 border border-stone-700 px-4 py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition hover:bg-stone-700 shadow-2xs cursor-pointer w-1/2 sm:w-auto"
           >
             <ArrowLeft className="w-3.5 h-3.5" /> {t('continueShopping')}
           </button>
           <button 
             onClick={() => navigate('/checkout')} 
-            className="bg-[#0b422a] text-white px-5 py-2.5 rounded-xl font-black text-xs shadow-md hover:bg-emerald-900 transition w-1/2 sm:w-auto text-center transform hover:scale-101 cursor-pointer"
+            className="bg-[#0b422a] text-white px-5 py-2 rounded-xl font-black text-xs shadow-md hover:bg-emerald-900 transition w-1/2 sm:w-auto text-center transform hover:scale-101 cursor-pointer"
           >
             {lang === 'en' ? "Checkout 🚀" : "إلى الدفع والشحن 🚀"}
           </button>
@@ -200,4 +190,3 @@ export default function Cart() {
     </div>
   );
 }
-
