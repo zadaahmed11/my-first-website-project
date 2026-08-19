@@ -16,7 +16,6 @@ export default function Cart() {
     return String(numStr).replace(/[0-9]/g, (d) => String.fromCharCode(arabicZero + parseInt(d)));
   };
 
-
   const handleDropdownAction = (item, actionType, fractionVal) => {
     const basePrice = Number(item.price || 0);
     const currentUnit = item.selectedUnit || 1.0;
@@ -48,7 +47,6 @@ export default function Cart() {
   if (!cart || cart.length === 0) {
     return (
       <div className="min-h-[70vh] flex flex-col items-center justify-center bg-stone-50/40 px-4 py-16 animate-fadeIn">
-        
         <div className="w-56 h-56 relative mb-6 flex items-center justify-center bg-white rounded-full p-4 border border-stone-100 shadow-2xs animate-bounce [animation-duration:3s]">
           <svg viewBox="0 0 24 24" className="w-40 h-40" fill="none" xmlns="http://w3.org">
             <circle cx="12" cy="12" r="10" fill="#fef3c7" />
@@ -69,11 +67,11 @@ export default function Cart() {
         >
           {lang === 'en' ? "Start shopping" : "ابدأ التسوق الآن 🛒"}
         </button>
-
       </div>
     );
   }
-   return (
+
+  return (
     <div className="container mx-auto px-4 py-12 max-w-4xl animate-fadeIn">
       <h2 className="text-xl font-black text-stone-900 mb-8 border-b pb-4">
         {lang === 'en' ? "Your Shopping Cart" : "عربة التسوق الخاصة بك"}
@@ -87,7 +85,7 @@ export default function Cart() {
           const labelUnit = isOil ? (lang === 'en' ? 'L' : 'لتر') : (lang === 'en' ? 'KG' : 'كيلو');
 
           return (
-            <div key={item.id} className="bg-white p-5 rounded-2xl shadow-3xs border border-stone-100 flex flex-col md:flex-row gap-6 items-start md:items-center justify-between relative overflow-hidden pt-8">
+            <div key={item.id} className="bg-white p-5 rounded-2xl shadow-3xs border border-stone-100 flex flex-col md:flex-row gap-6 items-start md:items-center justify-between relative overflow-visible pt-8">
               
               <button 
                 onClick={() => removeFromCart(item.id)}
@@ -107,7 +105,7 @@ export default function Cart() {
                 </div>
               </div>
 
-              <div className="flex items-center gap-2 w-full md:w-1/3 justify-start md:justify-center flex-shrink-0">
+              <div className="flex items-center gap-2 w-full md:w-1/3 justify-start md:justify-center flex-shrink-0 relative z-30">
                 <label className="text-[10px] font-bold text-stone-400 whitespace-nowrap">
                   {lang === 'en' ? "Add weight:" : "إضافة وزن:"}
                 </label>
@@ -117,7 +115,7 @@ export default function Cart() {
                     const [action, valStr] = e.target.value.split(':');
                     handleDropdownAction(item, action, parseFloat(valStr));
                   }}
-                  className="w-full max-w-[140px] border border-stone-200 rounded-xl p-1.5 bg-stone-50 text-[11px] font-black focus:outline-hidden focus:ring-1 focus:ring-emerald-700 cursor-pointer text-stone-700 shadow-3xs"
+                  className="w-full max-w-[140px] border border-stone-200 rounded-xl p-1.5 bg-white text-[11px] font-black focus:outline-hidden focus:ring-1 focus:ring-emerald-700 cursor-pointer text-stone-700 shadow-3xs"
                 >
                   <option value="" disabled>{lang === 'en' ? "Modify weight" : "تعديل الوزن"}</option>
                   
@@ -137,7 +135,7 @@ export default function Cart() {
                 </select>
               </div>
 
-              <div className="flex items-center justify-end bg-stone-50 border border-stone-200/40 py-2 px-4 rounded-xl w-full md:w-1/4 flex-shrink-0 shadow-3xs">
+              <div className="flex items-center justify-center md:justify-end bg-stone-50 border border-stone-200/40 py-2 px-4 rounded-xl w-full md:w-auto md:min-w-[120px] flex-shrink-0 shadow-3xs">
                 <p className="text-xs font-black text-[#0b422a] whitespace-nowrap tracking-tight">
                   {convertNumbers(item.currentPrice.toFixed(2))} {t('currency')}
                 </p>
@@ -146,29 +144,6 @@ export default function Cart() {
             </div>
           );
         })}
-      </div>
-
-      <div className="mt-8 bg-stone-950 text-stone-100 p-5 rounded-2xl flex flex-col sm:flex-row justify-between items-center gap-4 shadow-md border border-stone-800">
-        <div className="text-center sm:text-left rtl:sm:text-right">
-          <span className="text-stone-400 block text-[10px] font-medium tracking-wide">{lang === 'en' ? "Total Amount:" : "المجموع الإجمالي الكلي:"}</span>
-          <span className="text-lg font-black text-amber-400">
-            {convertNumbers(getCartTotal().toFixed(2))} {t('currency')}
-          </span>
-        </div>
-        <div className="flex gap-2.5 w-full sm:w-auto">
-          <button 
-            onClick={() => navigate('/')} 
-            className="bg-stone-800 border border-stone-700 px-4 py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition hover:bg-stone-700 shadow-2xs cursor-pointer w-1/2 sm:w-auto"
-          >
-            <ArrowLeft className="w-3.5 h-3.5" /> {t('continueShopping')}
-          </button>
-          <button 
-            onClick={() => navigate('/checkout')} 
-            className="bg-[#0b422a] text-white px-5 py-2 rounded-xl font-black text-xs shadow-md hover:bg-emerald-900 transition w-1/2 sm:w-auto text-center transform hover:scale-101 cursor-pointer"
-          >
-            {lang === 'en' ? "Checkout 🚀" : "إلى الدفع والشحن 🚀"}
-          </button>
-        </div>
       </div>
     </div>
   );
