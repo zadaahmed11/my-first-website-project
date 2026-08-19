@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { CartProvider } from './context/CartContext';
-import { LanguageProvider } from './context/LanguageContext'; // استدعاء لغة السيستم الحية
+import { LanguageProvider } from './context/LanguageContext';
 import { supabase } from './supabaseClient';
 import Navbar from './components/Navbar';
 import Home from './pages/Home';
@@ -12,24 +12,29 @@ import Checkout from './pages/Checkout';
 export default function App() {
   const [productsData, setProductsData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [dbError, setDbError] = useState(null);
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const { data, error } = await supabase.from('products').select('*');
+        // جلب البيانات الصافية من جدولكِ في Supabase
+        const { data, error } = await supabase
+          .from('products')
+          .select('*');
+
         if (error) throw error;
 
-        const formattedData = (data || []).map((item) => ({
-          id: item.id,
-          name: item.name || item.title || 'Product',
-          category: item.category || 'General',
-          description: item.description || 'Premium Quality Attar Product',
-          pricePerKg: Number(item.pricePerKg || item.price || 0),
-          image: item.image || item.image_url || 'https://unsplash.com'
-        }));
-        setProductsData(formattedData);
+
+        if (!data || data.length === 0) {
+          setDbError("الجدول متصل بنجاح، لكنه فارغ تماماً ولا يحتوي على أي صفوف بيانات داخل Supabase حالياً!");
+          return;
+        }
+
+
+        setProductsData(data);
       } catch (error) {
         console.error('Database connection error:', error.message);
+        setDbError(error.message);
       } finally {
         setLoading(false);
       }
@@ -41,6 +46,24 @@ export default function App() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-stone-50">
         <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-emerald-800"></div>
+      </div>
+    );
+  }
+
+
+  if (dbError) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-stone-50 p-6 text-center">
+        <div className="bg-red-50 border border-red-200 p-6 rounded-2xl max-w-md shadow-xs">
+          <span className="text-3xl">⚠️</span>
+          <h2 className="text-base font-bold text-red-800 mt-2">تنبيه اتصال قاعدة البيانات</h2>
+          <p className="text-xs text-stone-600 mt-2 bg-white p-3 rounded-lg border font-mono text-left">
+            {dbError}
+          </p>
+          <p className="text-xs text-stone-500 mt-3">
+            تأكدي من إضافة صفوف ممتلئة بالأسماء والوصف الحقيقي داخل جدول <code className="bg-stone-100 px-1 py-0.5 rounded text-red-600">products</code> في لوحة تحكم Supabase.
+          </p>
+        </div>
       </div>
     );
   }
