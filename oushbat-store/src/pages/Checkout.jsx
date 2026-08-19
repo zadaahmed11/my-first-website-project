@@ -226,6 +226,7 @@ export default function Checkout() {
                 allowFullScreen="" 
                 loading="lazy"
               ></iframe>
+
             </div>
           </div>
 
