@@ -143,8 +143,9 @@ export default function ProductDetails({ productsData }) {
 
   const currentName = lang === 'en' ? (product.name_en || product.name_ar || '') : (product.name_ar || product.name_en || '');
   const currentDesc = lang === 'en' ? (product.desc_en || product.desc_ar || '') : (product.desc_ar || product.desc_en || '');
+
    return (
-    <div className="container mx-auto px-4 py-12 max-w-1xl animate-fadeIn" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
+    <div className="container mx-auto px-4 py-12 max-w-3xl animate-fadeIn" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
       <div className="bg-white rounded-3xl shadow-lg overflow-hidden grid grid-cols-1 md:grid-cols-2 gap-6 p-5 md:p-6 border border-stone-100">
         
 
