@@ -13,10 +13,26 @@ export default function Checkout() {
   const WHATSAPP_NUMBER = "201121777574"; 
 
   const [formData, setFormData] = useState({ name: '', address: '', phone: '', notes: '' });
+
   const [location, setLocation] = useState({ lat: 30.0444, lng: 31.2357 });
   const [geoError, setGeoError] = useState('');
   
   const [touched, setTouched] = useState({ name: false, address: false, phone: false });
+
+
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setLocation({ lat: position.coords.latitude, lng: position.coords.longitude });
+        },
+        () => {
+
+          console.log("Using default location parameters.");
+        }
+      );
+    }
+  }, []);
 
   const convertNumbers = (numStr) => {
     if (!numStr || lang === 'en') return String(numStr || '');
@@ -49,20 +65,22 @@ export default function Checkout() {
         setGeoError('');
       },
       (error) => {
-        setGeoError(lang === 'en' ? 'Unable to retrieve location' : 'فشل الحصول على الموقع، يرجى تفعيل الـ GPS');
+        setGeoError(lang === 'en' ? 'Unable to retrieve location' : 'يرجى تفعيل الـ GPS في جهازك للسماح للمتصفح برؤية موقعك');
       }
     );
   };
+
   const isNameInvalid = touched.name && !formData.name.trim();
   const isAddressInvalid = (touched.address || touched.phone) && (!formData.name.trim() || !formData.address.trim());
   const isPhoneInvalid = touched.phone && (!formData.name.trim() || !formData.address.trim() || !formData.phone.trim());
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setTouched({ name: true, address: true, phone: true });
     if (!formData.name.trim() || !formData.address.trim() || !formData.phone.trim()) return;
 
-    const googleMapsUrl = `https://google.com${location.lat},${location.lng}`;
+
+    const googleMapsUrl =`https://google.com{location.lat},${location.lng}&z=15&output=embed`;
+`;
 
     try {
       const { error } = await supabase.from('orders').insert([
@@ -189,7 +207,6 @@ export default function Checkout() {
               className="w-full p-3 text-sm border border-stone-200 rounded-xl bg-stone-50/50 focus:ring-2 focus:ring-emerald-600 focus:outline-hidden font-medium"
             ></textarea>
           </div>
-          
           <div className="pt-2">
             <button 
               type="submit" 
@@ -201,6 +218,7 @@ export default function Checkout() {
             </button>
           </div>
         </form>
+
         <div className="lg:col-span-5 space-y-6">
           <div className="bg-white p-5 rounded-3xl shadow-2xs border border-stone-200/60">
             <div className="flex items-center justify-between mb-2">
@@ -217,16 +235,16 @@ export default function Checkout() {
             {geoError && <p className="text-[10px] text-red-500 font-bold mb-2">{geoError}</p>}
             
             <div className="w-full h-48 rounded-2xl overflow-hidden border border-stone-100 bg-stone-100 shadow-inner relative">
+
               <iframe 
                 title="Delivery Location Map" 
-                src={`https://google.com${location.lat},${location.lng}&t=&z=15&ie=UTF8&iwloc=&output=embed`} 
+                src={`https://google.com{location.lat},${location.lng}&z=15&output=embed`}
                 width="100%" 
                 height="100%" 
                 style={{ border: 0 }} 
                 allowFullScreen="" 
                 loading="lazy"
               ></iframe>
-
             </div>
           </div>
 
