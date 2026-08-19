@@ -39,17 +39,22 @@ export default function Cart() {
     return (
       <div className="min-h-[70vh] flex flex-col items-center justify-center bg-stone-50/40 px-4 py-16 animate-fadeIn">
         
-        <div className="w-56 h-56 relative mb-6 drop-shadow-xs flex items-center justify-center bg-white rounded-full p-4 border border-stone-100 shadow-2xs">
-          <img 
-            src="https://i.pinimg.com/736x/7e/e4/de/7ee4de44590df3aed123b49639148bb7.jpg" 
-            alt="Empty Cart"
-            className="w-full h-full object-contain animate-bounce [animation-duration:3s]" 
-          />
+        <div className="w-56 h-56 relative mb-6 flex items-center justify-center bg-white rounded-full p-4 border border-stone-100 shadow-2xs animate-bounce [animation-duration:3s]">
+          <svg viewBox="0 0 24 24" className="w-40 h-40" fill="none" xmlns="http://w3.org">
+            <circle cx="12" cy="12" r="10" fill="#fef3c7" />
+
+            <path d="M3 3H5L6.68 14.39C6.8 15.17 7.47 15.75 8.26 15.75H17.74C18.53 15.75 19.2 15.17 19.32 14.39L21 4H6.5" stroke="#1e293b" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            <circle cx="9" cy="20" r="1.5" fill="#f59e0b" stroke="#1e293b" strokeWidth="1.5"/>
+            <circle cx="17" cy="20" r="1.5" fill="#f59e0b" stroke="#1e293b" strokeWidth="1.5"/>
+            <path d="M12 7V13M9 10H15" stroke="#f59e0b" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
         </div>
+
 
         <h2 className="text-xl md:text-2xl font-black text-stone-800 text-center mb-8 tracking-tight">
           {lang === 'en' ? "Your shopping cart is empty, for now." : "عربة التسوق الخاصة بك فارغة، في الوقت الحالي."}
         </h2>
+
 
         <button 
           onClick={() => navigate('/')} 
@@ -71,10 +76,7 @@ export default function Cart() {
       <div className="space-y-4">
         {cart.map((item) => {
           const categoryText = String(item.category || '').toLowerCase().trim();
-          const isOil = categoryText.includes('زيت') || 
-                        categoryText.includes('زيوت') || 
-                        categoryText.includes('oil') || 
-                        categoryText.includes('oils');
+          const isOil = categoryText.includes('زيت') || categoryText.includes('زيوت') || categoryText.includes('oil') || categoryText.includes('oils');
           const currentName = lang === 'en' ? item.name_en : item.name_ar;
 
           return (
