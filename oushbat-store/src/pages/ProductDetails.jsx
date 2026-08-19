@@ -41,7 +41,7 @@ export default function ProductDetails({ productsData }) {
     return String(numStr).replace(/[0-9]/g, (d) => String.fromCharCode(arabicZero + parseInt(d)));
   };
 
-  // تنظيف المدخلات من الأرقام العربية وتحويلها لإنجليزية لتجنب أخطاء العمليات الحسابية
+
   const handleArabicInputClean = (val) => {
     if (!val) return '';
     return String(val).replace(/[٠-٩]/g, (d) => String(d.charCodeAt(0) - 1632));
@@ -52,13 +52,13 @@ export default function ProductDetails({ productsData }) {
     if (product) {
       setSelectedPreset({ 
         fraction: 1.0, 
-        fractionText: isOil ? '1 L' : '1 KG', 
+        fractionText: isOil ? (lang === 'en' ? '1 L' : '١ لتر') : (lang === 'en' ? '1 KG' : '١ كيلو'), 
         key: 'fractionText_1' 
       });
       setInputPrice('');
       setInputQty('');
     }
-  }, [product, isOil]);
+  }, [product, isOil, lang]);
 
 
   const handlePriceChange = (val) => {
@@ -73,7 +73,7 @@ export default function ProductDetails({ productsData }) {
     }
   };
 
-
+  // إدارة تغيير حقل الوزن يدويًا وحساب السعر المقابل
   const handleQtyChange = (val) => {
     const cleanVal = handleArabicInputClean(val);
     setInputQty(cleanVal);
@@ -89,13 +89,13 @@ export default function ProductDetails({ productsData }) {
 
   const handlePresetSelect = (fraction, fractionTextKey) => {
     let labelText = '';
-    if (fractionTextKey === 'fractionText_1_8') labelText = '1/8';
-    if (fractionTextKey === 'fractionText_1_4') labelText = '1/4';
-    if (fractionTextKey === 'fractionText_1_2') labelText = '1/2';
+    if (fractionTextKey === 'fractionText_1_8') labelText = lang === 'en' ? '1/8' : '١/٨';
+    if (fractionTextKey === 'fractionText_1_4') labelText = lang === 'en' ? '1/4' : '١/٤';
+    if (fractionTextKey === 'fractionText_1_2') labelText = lang === 'en' ? '1/2' : '١/٢';
     if (fractionTextKey === 'fractionText_1') {
-      labelText = isOil ? '1 L' : '1 KG';
+      labelText = isOil ? (lang === 'en' ? '1 L' : '١ لتر') : (lang === 'en' ? '1 KG' : '١ كيلو');
     } else {
-      labelText = `${labelText} ${unitLabel}`;
+      labelText = lang === 'en' ? `${labelText} ${unitLabel}` : `${labelText} ${unitLabel}`;
     }
 
     setSelectedPreset({ fraction, fractionText: labelText, key: fractionTextKey });
@@ -106,16 +106,16 @@ export default function ProductDetails({ productsData }) {
 
   const basePrice = Number(product.price || 0);
   let displayPrice = "0.00";
-  let displayWeightText = isOil ? (lang === 'en' ? '1 Liter' : '1 لتر') : (lang === 'en' ? '1 KG' : '1 كيلو');
+  let displayWeightText = isOil ? (lang === 'en' ? '1 Liter' : '١ لتر') : (lang === 'en' ? '1 KG' : '١ كيلو');
 
   if (selectedPreset) {
     displayPrice = (basePrice * selectedPreset.fraction).toFixed(2);
     displayWeightText = selectedPreset.key === 'fractionText_1' 
-      ? `[1 ${unitLabel.toUpperCase()}]` 
+      ? (lang === 'en' ? `[1 ${unitLabel.toUpperCase()}]` : `[١ ${unitLabel}]`)
       : `[${selectedPreset.fractionText}]`;
   } else if (inputQty && inputPrice) {
     displayPrice = parseFloat(inputPrice).toFixed(2);
-    displayWeightText = `[${inputQty} ${unitLabel.toUpperCase()}]`;
+    displayWeightText = `[${convertNumbers(inputQty)} ${unitLabel}]`;
   }
 
 
@@ -124,7 +124,9 @@ export default function ProductDetails({ productsData }) {
 
     if (selectedPreset) {
       finalPrice = basePrice * selectedPreset.fraction;
-      finalQtyText = selectedPreset.key === 'fractionText_1' ? `1 ${unitLabel}` : selectedPreset.fractionText;
+      finalQtyText = selectedPreset.key === 'fractionText_1' 
+        ? (lang === 'en' ? `1 ${unitLabel}` : `١ ${unitLabel}`) 
+        : selectedPreset.fractionText;
       finalUnitVal = selectedPreset.fraction;
     } else if (inputQty && inputPrice) {
       finalPrice = parseFloat(inputPrice);
@@ -143,7 +145,7 @@ export default function ProductDetails({ productsData }) {
   const currentName = lang === 'en' ? (product.name_en || product.name_ar || '') : (product.name_ar || product.name_en || '');
   const currentDesc = lang === 'en' ? (product.desc_en || product.desc_ar || '') : (product.desc_ar || product.desc_en || '');
   return (
-    <div className="container mx-auto px-4 py-12 max-w-4xl animate-fadeIn">
+    <div className="container mx-auto px-4 py-12 max-w-4xl animate-fadeIn" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
       <div className="bg-white rounded-3xl shadow-lg overflow-hidden grid grid-cols-1 md:grid-cols-2 gap-6 p-5 md:p-6 border border-stone-100">
         
 
@@ -157,7 +159,8 @@ export default function ProductDetails({ productsData }) {
             
             <div className="mt-5">
               <h1 className="text-2xl font-black text-stone-900 mb-2">{currentName}</h1>
-              <p className="text-stone-500 text-xs mt-2 leading-relaxed antialiased font-medium">
+
+              <p className="text-stone-700 text-sm mt-3 leading-relaxed antialiased font-bold">
                 {currentDesc || (lang === 'en' ? "Premium organic quality product harvested directly from the pure nature." : "منتج عضوي ذو جودة عالية مستخلص من الطبيعة النظيفة مباشرة إليك.")}
               </p>
             </div>
@@ -168,18 +171,20 @@ export default function ProductDetails({ productsData }) {
         <div className="flex flex-col justify-between bg-stone-50 p-5 rounded-2xl border border-stone-200/60 shadow-3xs">
           <div>
             <p className="text-xs text-stone-400 mb-4">
-              Original Price: <span className="font-bold text-stone-700">{convertNumbers(product.price)} EGP</span> / {unitLabel}
+              {lang === 'en' ? 'Original Price:' : 'السعر الأصلي:'} <span className="font-bold text-stone-700">{convertNumbers(product.price)} EGP</span> / {unitLabel}
             </p>
 
 
             <div className="mb-5">
-              <label className="block text-[11px] font-bold text-stone-600 mb-2">Select Preset Weight (Independent):</label>
+              <label className="block text-[11px] font-bold text-stone-600 mb-2">
+                {lang === 'en' ? 'Select Preset Weight (Independent):' : 'اختر الوزن المجهز (منفصل):'}
+              </label>
               <div className="grid grid-cols-4 gap-2">
                 {[
-                  { label: '1/8', val: 0.125, key: 'fractionText_1_8' },
-                  { label: '1/4', val: 0.25, key: 'fractionText_1_4' },
-                  { label: '1/2', val: 0.5, key: 'fractionText_1_2' },
-                  { label: isOil ? '1 L' : '1 KG', val: 1.0, key: 'fractionText_1' }
+                  { label: lang === 'en' ? '1/8' : '١/٨', val: 0.125, key: 'fractionText_1_8' },
+                  { label: lang === 'en' ? '1/4' : '١/٤', val: 0.25, key: 'fractionText_1_4' },
+                  { label: lang === 'en' ? '1/2' : '١/٢', val: 0.5, key: 'fractionText_1_2' },
+                  { label: isOil ? (lang === 'en' ? '1 L' : '١ لتر') : (lang === 'en' ? '1 KG' : '١ كيلو'), val: 1.0, key: 'fractionText_1' }
                 ].map((item) => (
                   <button
                     key={item.key}
@@ -200,36 +205,43 @@ export default function ProductDetails({ productsData }) {
 
             <div className="space-y-3 pt-3 border-t border-stone-200/60">
               <div>
-                <label className="block text-[10px] font-bold text-stone-400 mb-1">Enter Price (EGP):</label>
+                <label className="block text-[10px] font-bold text-stone-400 mb-1">
+                  {lang === 'en' ? 'Enter Price (EGP):' : 'أدخل السعر (جنيه):'}
+                </label>
                 <input 
                   type="text" 
-                  placeholder="EGP"
+                  placeholder={lang === 'en' ? "EGP" : "جنيه"}
                   value={convertNumbers(inputPrice)} 
                   onChange={(e) => handlePriceChange(e.target.value)}
-                  className="w-full bg-white border border-stone-200 rounded-xl px-3 py-2 text-xs font-bold text-stone-800 focus:outline-hidden focus:border-stone-400"
+                  className="w-full bg-white border border-stone-200 rounded-xl px-3 py-2 text-xs font-bold text-stone-800 focus:outline-none focus:border-stone-400"
                 />
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold text-stone-400 mb-1">Enter Quantity ({unitLabel}):</label>
+                <label className="block text-[10px] font-bold text-stone-400 mb-1">
+                  {lang === 'en' ? `Enter Quantity (${unitLabel}):` : `أدخل الكمية (${unitLabel}):`}
+                </label>
                 <input 
                   type="text" 
-                  placeholder="0.00"
+                  placeholder={convertNumbers("0.00")}
                   value={convertNumbers(inputQty)} 
                   onChange={(e) => handleQtyChange(e.target.value)}
-                  className="w-full bg-white border border-stone-200 rounded-xl px-3 py-2 text-xs font-bold text-stone-800 focus:outline-hidden focus:border-stone-400"
+                  className="w-full bg-white border border-stone-200 rounded-xl px-3 py-2 text-xs font-bold text-stone-800 focus:outline-none focus:border-stone-400"
                 />
               </div>
             </div>
 
-            {/* حقل الاختيار الحالي التلقائي التحديث */}
+
             <div className="mt-6 pt-4 border-t border-stone-200/60">
-              <span className="block text-[11px] font-bold text-stone-700 mb-1">Current Selection:</span>
+              <span className="block text-[11px] font-bold text-stone-700 mb-1">
+                {lang === 'en' ? 'Current Selection:' : 'الاختيار الحالي:'}
+              </span>
               <div className="text-sm font-black text-stone-900">
-                {convertNumbers(displayPrice)} EGP <span className="text-stone-500 font-bold">{displayWeightText}</span>
+                {convertNumbers(displayPrice)} {lang === 'en' ? 'EGP' : 'جنيه مصري'} <span className="text-stone-500 font-bold">{displayWeightText}</span>
               </div>
             </div>
           </div>
+
 
           <div className="mt-6 space-y-2.5">
             <button
@@ -237,7 +249,7 @@ export default function ProductDetails({ productsData }) {
               onClick={handleAddToCartAction}
               className="w-full bg-[#0b291b] text-white text-xs font-black py-3 rounded-xl hover:bg-[#071d13] transition-all flex items-center justify-center gap-2 shadow-xs cursor-pointer"
             >
-              Add to Cart & Continue Shopping 🛒
+              {lang === 'en' ? 'Add to Cart & Continue Shopping 🛒' : 'أضف إلى السلة ومتابعة التسوق 🛒'}
             </button>
 
             <button
@@ -245,7 +257,16 @@ export default function ProductDetails({ productsData }) {
               onClick={() => navigate('/checkout')}
               className="w-full bg-[#d97706] text-white text-xs font-black py-3 rounded-xl hover:bg-[#b45309] transition-all flex items-center justify-center gap-2 shadow-xs cursor-pointer"
             >
-              Proceed to Checkout & Shipping 🚀
+              {lang === 'en' ? 'Proceed to Checkout & Shipping 🚀' : 'الاستمرار في الدفع والشحن 🚀'}
+            </button>
+
+
+            <button
+              type="button"
+              onClick={() => navigate('/')}
+              className="w-full bg-stone-200 text-stone-700 text-xs font-bold py-2.5 rounded-xl hover:bg-stone-300 transition-all flex items-center justify-center gap-2 cursor-pointer"
+            >
+              {lang === 'en' ? 'Back to Home 🏠' : 'العودة للرئيسية 🏠'}
             </button>
           </div>
         </div>
