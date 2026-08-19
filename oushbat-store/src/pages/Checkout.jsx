@@ -80,7 +80,7 @@ export default function Checkout() {
 
 
     const googleMapsUrl =`https://google.com{location.lat},${location.lng}&z=15&output=embed`;
-`;
+;
 
     try {
       const { error } = await supabase.from('orders').insert([
@@ -235,7 +235,6 @@ export default function Checkout() {
             {geoError && <p className="text-[10px] text-red-500 font-bold mb-2">{geoError}</p>}
             
             <div className="w-full h-48 rounded-2xl overflow-hidden border border-stone-100 bg-stone-100 shadow-inner relative">
-
               <iframe 
                 title="Delivery Location Map" 
                 src={`https://google.com{location.lat},${location.lng}&z=15&output=embed`}
