@@ -6,7 +6,6 @@ export default function Home({ productsData }) {
   const { t, lang } = useLanguage();
   const [selectedCategory, setSelectedCategory] = useState('All');
   
-
   const productsSectionRef = useRef(null);
 
   const CATEGORIES = [
@@ -39,47 +38,29 @@ export default function Home({ productsData }) {
   return (
     <div className="bg-stone-50 min-h-screen text-stone-800 pb-20">
       
-
       <div className="container mx-auto px-4 pt-6">
         <div 
-          className="relative text-white py-14 px-6 text-center shadow-lg rounded-3xl overflow-hidden flex flex-col items-center justify-center border border-[#10b981]/10"
-          style={{ backgroundImage: 'radial-gradient(circle at center, #0e5234 0%, #0b422a 60%, #07301e 100%)' }}
+          className="relative text-white py-16 px-6 text-center shadow-lg rounded-3xl overflow-hidden flex flex-col items-center justify-center border border-[#10b981]/10"
+          style={{ backgroundImage: 'radial-gradient(circle at center, #0e5234 0%, #0b422a 65%, #07301e 100%)' }}
         >
           
-
           <div className="bg-[#10b981]/20 text-[#10b981] text-[10px] font-black tracking-wider uppercase px-3 py-1 rounded-full border border-[#10b981]/30 mb-4 animate-pulse">
             🍃 100% Pure & Authentic Quality
           </div>
 
-
-          <h1 className="text-3xl md:text-5xl font-black mb-3 tracking-tight max-w-2xl mx-auto leading-tight drop-shadow-md flex flex-col items-center justify-center gap-2">
-            {lang === 'en' ? (
-              <>
-                <div className="flex items-center gap-2">
-                  <span className="text-4xl text-[#10b981]">🌿</span>
-                  <span>Welcome to Oshbat El Attar</span>
-                </div>
-                <span>Shop</span>
-              </>
-            ) : (
-              <>
-                <div className="flex items-center gap-2">
-                  <span className="text-4xl text-[#10b981]">🌿</span>
-                  <span>مرحباً بكم في محل</span>
-                </div>
-                <span>عشبة العطار</span>
-              </>
-            )}
+          <h1 className="text-3xl md:text-5xl font-black mb-4 tracking-tight max-w-4xl mx-auto leading-tight drop-shadow-md flex flex-col sm:flex-row items-center justify-center gap-3">
+            <span className="text-4xl md:text-5xl text-[#10b981] animate-bounce">🌿</span>
+            <span>
+              {lang === 'en' ? "Welcome to Oshbat El Attar Shop" : "مرحباً بكم في محل عشبة العطار"}
+            </span>
           </h1>
 
-
-          <p className="text-xs md:text-sm text-stone-300 font-medium leading-relaxed max-w-xl mx-auto opacity-90 drop-shadow-xs">
+          <p className="text-xs md:text-sm text-stone-300 font-medium leading-relaxed max-w-2xl mx-auto opacity-90 drop-shadow-xs">
             {lang === 'en' 
               ? "Discover our premium selection of securely sealed spices, rare wild herbs, and pure natural oils. Delivered anywhere in Egypt with full inspection guarantee at your doorstep before payment."
               : "اكتشف تشكيلتنا الفاخرة من التوابل المحكمة الغلق، الأعشاب البرية النادرة، والزيوت الطبيعية النقية. نشحن لكافة أنحاء الجمهورية مع ضمان الفحص الكامل عند باب بيتك قبل الدفع."
             }
           </p>
-
 
           <button 
             onClick={scrollToProducts}
@@ -91,10 +72,8 @@ export default function Home({ productsData }) {
         </div>
       </div>
 
-
       <div ref={productsSectionRef} className="container mx-auto px-4 py-10 scroll-mt-6">
         
-
         <div className="flex flex-wrap gap-2 mb-10 overflow-x-auto pb-2">
           {CATEGORIES.map((cat) => (
             <button
@@ -109,7 +88,7 @@ export default function Home({ productsData }) {
           ))}
         </div>
 
-
+        {/* شبكة المنتجات الكاملة */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {filteredProducts.map((product) => {
             const currentName = lang === 'en' ? product.name_en : product.name_ar;
