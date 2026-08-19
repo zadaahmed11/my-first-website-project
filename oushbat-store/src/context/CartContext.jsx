@@ -7,8 +7,19 @@ export const CartProvider = ({ children }) => {
 
   const addToCart = (product, unit, quantityText, calculatedPrice) => {
     setCart((prevCart) => {
-      const filtered = prevCart.filter((item) => item.id !== product.id);
-      return [...filtered, { ...product, selectedUnit: unit, quantityText, currentPrice: calculatedPrice }];
+      const exists = prevCart.find((item) => item.id === product.id);
+
+      if (exists) {
+
+        return prevCart.map((item) =>
+          item.id === product.id
+            ? { ...item, selectedUnit: unit, quantityText, currentPrice: calculatedPrice }
+            : item
+        );
+      }
+
+
+      return [...prevCart, { ...product, selectedUnit: unit, quantityText, currentPrice: calculatedPrice }];
     });
   };
 
@@ -19,7 +30,7 @@ export const CartProvider = ({ children }) => {
   const clearCart = () => setCart([]);
   
   const getCartTotal = () => {
-    return cart.reduce((total, item) => total + item.currentPrice, 0);
+    return cart.reduce((total, item) => total + (item.currentPrice || 0), 0);
   };
 
   return (

@@ -17,8 +17,9 @@ export default function Cart() {
   };
 
   const handleDropdownAction = (item, actionType, fractionVal) => {
-    const basePrice = Number(item.price || 0);
-    const currentUnit = item.selectedUnit || 1.0;
+
+    const basePrice = Number(item.price || 0); 
+    const currentUnit = item.selectedUnit || 1.0; 
     const isOil = String(item.category || '').toLowerCase().trim().includes('زيت') || 
                   String(item.category || '').toLowerCase().trim().includes('زيوت') || 
                   String(item.category || '').toLowerCase().trim().includes('oil');
@@ -114,6 +115,7 @@ export default function Cart() {
                   onChange={(e) => {
                     const [action, valStr] = e.target.value.split(':');
                     handleDropdownAction(item, action, parseFloat(valStr));
+                    e.target.value = ""; 
                   }}
                   className="w-full max-w-[140px] border border-stone-200 rounded-xl p-1.5 bg-white text-[11px] font-black focus:outline-hidden focus:ring-1 focus:ring-emerald-700 cursor-pointer text-stone-700 shadow-3xs"
                 >
@@ -137,7 +139,7 @@ export default function Cart() {
 
               <div className="flex items-center justify-center md:justify-end bg-stone-50 border border-stone-200/40 py-2 px-4 rounded-xl w-full md:w-auto md:min-w-[120px] flex-shrink-0 shadow-3xs">
                 <p className="text-xs font-black text-[#0b422a] whitespace-nowrap tracking-tight">
-                  {convertNumbers(item.currentPrice.toFixed(2))} {t('currency')}
+                  {convertNumbers((item.currentPrice || 0).toFixed(2))} {t('currency')}
                 </p>
               </div>
 
