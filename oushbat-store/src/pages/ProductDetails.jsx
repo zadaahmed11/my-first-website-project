@@ -81,15 +81,19 @@ export default function ProductDetails({ productsData }) {
     }
   };
 
+
   const handlePresetSelect = (fraction, fractionTextKey) => {
-    let text = t(fractionTextKey);
+    let labelText = '';
+    if (fractionTextKey === 'fractionText_1_8') labelText = lang === 'en' ? '1/8' : 'ثمن';
+    if (fractionTextKey === 'fractionText_1_4') labelText = lang === 'en' ? '1/4' : 'ربع';
+    if (fractionTextKey === 'fractionText_1_2') labelText = lang === 'en' ? '1/2' : 'نصف';
     if (fractionTextKey === 'fractionText_1') {
-      text = isOil ? (lang === 'en' ? '1 Liter' : '1 لتر') : (lang === 'en' ? '1 KG' : '1 كيلو');
-    } else {
-      const fractionLabel = fractionTextKey === 'fractionText_1_8' ? '1/8' : fractionTextKey === 'fractionText_1_4' ? '1/4' : '1/2';
-      text = lang === 'en' ? `${fractionLabel} ${unitLabel}` : `${fractionLabel} ${text}`;
+      labelText = isOil ? (lang === 'en' ? '1 Liter' : '1 لتر') : (lang === 'en' ? '1 KG' : '1 كيلو');
+    } else if (fractionTextKey !== 'fractionText_1') {
+      labelText = lang === 'en' ? `${labelText} ${unitLabel}` : `${labelText} ${unitLabel}`;
     }
-    setSelectedPreset({ fraction, fractionText: text, key: fractionTextKey });
+
+    setSelectedPreset({ fraction, fractionText: labelText, key: fractionTextKey });
     setInputPrice('');
     setInputQty('');
   };
@@ -104,15 +108,15 @@ export default function ProductDetails({ productsData }) {
       finalUnitVal = selectedPreset.fraction;
     } else if (inputQty && inputPrice) {
       finalPrice = parseFloat(inputPrice);
-      finalQtyText = `${inputQty} ${unitLabel}`;
+      finalQtyText = lang === 'en' ? `${inputQty} ${unitLabel}` : `${convertNumbers(inputQty)} ${unitLabel}`;
       finalUnitVal = parseFloat(inputQty);
     } else {
-      alert(lang === 'en' ? 'Please configure weight!' : 'الرجاء تحديد ">الوزن أولاً!');
+      alert(lang === 'en' ? 'Please configure weight!' : 'الرجاء تحديد الوزن أولاً!');
       return;
     }
 
     addToCart(product, finalUnitVal, finalQtyText, finalPrice);
-    alert(lang === 'en' ? 'Added successfully!' : 'تم إضافة الوزن المختار للعربة بنجاح!');
+    alert(lang === 'en' ? 'Added successfully!' : 'تم إضافة الوزن المختار لعربة التسوق بنجاح!');
     navigate('/'); 
   };
 
@@ -175,7 +179,7 @@ export default function ProductDetails({ productsData }) {
               </div>
             </div>
 
-            {/* الـ Inputs التفاعلية المترجمة */}
+
             <div className="space-y-3 pt-2 border-t border-stone-200/40">
               <div>
                 <label className="block text-[9px] font-semibold text-stone-400 mb-0.5">{t('enterPrice')}</label>
@@ -214,7 +218,7 @@ export default function ProductDetails({ productsData }) {
                   {selectedPreset 
                     ? `${convertNumbers(Number(product.price * selectedPreset.fraction).toFixed(2))} ${t('currency')} [${selectedPreset.fractionText}]` 
                     : inputPrice && inputQty 
-                    ? `${convertNumbers(parseFloat(inputPrice).toFixed(2))} ${t('currency')} [${convertNumbers(inputQty)} ${unitLabel}]` 
+                    ? `${convertNumbers(parseFloat(inputPrice).toFixed(2))} ${t('currency')} [${lang === 'en' ? inputQty : convertNumbers(inputQty)} ${unitLabel}]` 
                     : '...'}
                 </span>
               </p>
