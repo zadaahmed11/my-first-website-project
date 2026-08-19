@@ -16,25 +16,31 @@ export default function Cart() {
     return String(numStr).replace(/[0-9]/g, (d) => String.fromCharCode(arabicZero + parseInt(d)));
   };
 
-
-  const handleAccumulativeDropdown = (item, fractionVal, fractionTextKey) => {
+  const handleDropdownAction = (item, actionType, fractionVal) => {
     const basePrice = Number(item.price || 0);
+    const currentUnit = item.selectedUnit || 1.0;
     const isOil = String(item.category || '').toLowerCase().trim().includes('زيت') || 
                   String(item.category || '').toLowerCase().trim().includes('زيوت') || 
                   String(item.category || '').toLowerCase().trim().includes('oil');
 
-    const baseOriginalUnit = item.initialUnitVal || item.selectedUnit || 1.0;
-    const finalUnitVal = baseOriginalUnit + fractionVal;
-    const newPrice = basePrice * finalUnitVal;
+    let finalUnitVal = currentUnit;
 
+    if (actionType === 'increase') {
+      finalUnitVal = currentUnit + fractionVal;
+    } else if (actionType === 'decrease') {
+      if (currentUnit <= fractionVal) {
+        removeFromCart(item.id);
+        return;
+      }
+      finalUnitVal = currentUnit - fractionVal;
+    }
+
+    const newPrice = basePrice * finalUnitVal;
     const label = isOil ? (lang === 'en' ? 'Liter' : 'لتر') : (lang === 'en' ? 'KG' : 'كيلو');
     const displayQty = finalUnitVal % 1 === 0 ? finalUnitVal.toFixed(0) : finalUnitVal.toFixed(3);
     const text = `${convertNumbers(displayQty)} ${label}`;
 
-    addToCart({
-      ...item,
-      initialUnitVal: baseOriginalUnit,
-    }, finalUnitVal, text, newPrice);
+    addToCart(item, finalUnitVal, text, newPrice);
   };
 
   const handleMinusStep = (item) => {
@@ -97,10 +103,13 @@ export default function Cart() {
           const categoryText = String(item.category || '').toLowerCase().trim();
           const isOil = categoryText.includes('زيت') || categoryText.includes('زيوت') || categoryText.includes('oil') || categoryText.includes('oils');
           const currentName = lang === 'en' ? item.name_en : item.name_ar;
+          const labelUnit = isOil ? (lang === 'en' ? 'L' : 'لتر') : (lang === 'en' ? 'KG' : 'كيلو');
 
           return (
+
             <div key={item.id} className="bg-white p-4 rounded-2xl shadow-3xs border border-stone-100 grid grid-cols-12 gap-2 items-center relative overflow-hidden pt-7">
               
+
               <button 
                 onClick={() => removeFromCart(item.id)}
                 className="absolute top-1.5 right-1.5 ltr:left-auto ltr:right-1.5 rtl:right-auto rtl:left-1.5 w-5 h-5 flex items-center justify-center rounded-full bg-red-50 text-red-500 hover:bg-red-100 hover:text-red-700 transition-all shadow-3xs cursor-pointer z-20"
@@ -113,7 +122,7 @@ export default function Cart() {
               <div className="col-span-12 md:col-span-5 flex items-center gap-3 w-full">
                 <img src={item.image_url} alt={currentName} className="w-12 h-14 object-cover rounded-xl border border-stone-100/60 flex-shrink-0" />
                 <div className="flex flex-col min-w-0">
-                  <h3 className="text-xs font-black text-stone-900 tracking-tight leading-tight truncate">{currentName}</h3>
+                  <h3 className="text-sm font-black text-stone-900 tracking-tight leading-tight truncate">{currentName}</h3>
                   <span className="text-[9px] font-black bg-stone-100 text-stone-600 px-2 py-0.5 rounded-md mt-1 w-fit border border-stone-200/20">
                     {item.quantityText}
                   </span>
@@ -123,26 +132,32 @@ export default function Cart() {
 
               <div className="col-span-12 sm:col-span-6 md:col-span-4 flex items-center gap-1.5 w-full justify-start md:justify-center">
                 <label className="text-[9px] font-bold text-stone-400 whitespace-nowrap">
-                  {lang === 'en' ? "Add:" : "إضافة:"}
+                  {lang === 'en' ? "Weight:" : "الوزن:"}
                 </label>
                 <select
                   value="" 
                   onChange={(e) => {
-                    const val = parseFloat(e.target.value);
-                    let key = 'customText';
-                    if (val === 0.125) key = 'fractionText_1_8';
-                    if (val === 0.25) key = 'fractionText_1_4';
-                    if (val === 0.5) key = 'fractionText_1_2';
-                    if (val === 1.0) key = 'fractionText_1';
-                    handleDropdownChange(item, val, key);
+                    const [action, valStr] = e.target.value.split(':');
+                    handleDropdownAction(item, action, parseFloat(valStr));
                   }}
-                  className="w-full max-w-[115px] border border-stone-200 rounded-xl p-1 bg-stone-50 text-[10px] font-black focus:outline-hidden focus:ring-1 focus:ring-emerald-700 cursor-pointer text-stone-700"
+                  className="w-full max-w-[130px] border border-stone-200 rounded-xl p-1 bg-stone-50 text-[10px] font-black focus:outline-hidden focus:ring-1 focus:ring-emerald-700 cursor-pointer text-stone-700"
                 >
-                  <option value="" disabled>{lang === 'en' ? "Add weight" : "وزن زائد +"}</option>
-                  <option value="0.125">{lang === 'en' ? "1/8 fraction" : "1/8 ثمن"}</option>
-                  <option value="0.25">{lang === 'en' ? "1/4 fraction" : "1/4 ربع"}</option>
-                  <option value="0.5">{lang === 'en' ? "1/2 fraction" : "1/2 نصف"}</option>
-                  <option value="1.0">{isOil ? (lang === 'en' ? "1 Liter" : "1 لتر") : (lang === 'en' ? "1 KG" : "1 كيلو")}</option>
+                  <option value="" disabled>{lang === 'en' ? "Modify weight" : "تعديل الوزن"}</option>
+                  
+
+                  <optgroup label={lang === 'en' ? "➕ Increase weight" : "➕ زيادة الوزن"}>
+                    <option value="increase:0.125">{lang === 'en' ? "+ 1/8 fraction" : "+ ثمن الكيلو"}</option>
+                    <option value="increase:0.25">{lang === 'en' ? "+ 1/4 fraction" : "+ ربع كيلو"}</option>
+                    <option value="increase:0.5">{lang === 'en' ? "+ 1/2 fraction" : "+ نصف كيلو"}</option>
+                    <option value={`increase:1.0`}>{lang === 'en' ? `+ 1 ${labelUnit}` : `+ 1 ${labelUnit}`}</option>
+                  </optgroup>
+
+                  <optgroup label={lang === 'en' ? "➖ Decrease weight" : "➖ تنقيص الوزن"}>
+                    <option value="decrease:0.125">{lang === 'en' ? "- 1/8 fraction" : "- ثمن الكيلو"}</option>
+                    <option value="decrease:0.25">{lang === 'en' ? "- 1/4 fraction" : "- ربع كيلو"}</option>
+                    <option value="decrease:0.5">{lang === 'en' ? "- 1/2 fraction" : "- نصف كيلو"}</option>
+                    <option value={`decrease:1.0`}>{lang === 'en' ? `- 1 ${labelUnit}` : `- 1 ${labelUnit}`}</option>
+                  </optgroup>
                 </select>
               </div>
 
@@ -164,7 +179,7 @@ export default function Cart() {
         })}
       </div>
 
-
+      {/* شريط المجموع الكلي النهائي المنسق بالألوان الفخمة المعتمدة للبراند */}
       <div className="mt-8 bg-stone-950 text-stone-100 p-5 rounded-2xl flex flex-col sm:flex-row justify-between items-center gap-4 shadow-md border border-stone-800">
         <div className="text-center sm:text-left rtl:sm:text-right">
           <span className="text-stone-400 block text-[10px] font-medium tracking-wide">{lang === 'en' ? "Total Amount:" : "المجموع الإجمالي الكلي:"}</span>
