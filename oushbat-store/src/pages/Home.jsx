@@ -16,6 +16,12 @@ export default function Home({ productsData }) {
     { id: 'زيوت طبيعية', label: lang === 'en' ? "Natural Oils" : "زيوت طبيعية" }
   ];
 
+  const formatNumber = (num) => {
+    if (num === undefined || num === null) return '';
+    if (lang === 'en') return num;
+    return String(num).replace(/[0-9]/g, (d) => '٠١٢٣٤٥٦٧٨٩'[d]);
+  };
+
   const cleanProductName = (name) => {
     if (!name) return '';
     return name
@@ -45,7 +51,7 @@ export default function Home({ productsData }) {
         >
           
           <div className="bg-[#10b981]/20 text-[#10b981] text-[10px] font-black tracking-wider uppercase px-3 py-1 rounded-full border border-[#10b981]/30 mb-4 animate-pulse">
-            {lang === 'en' ? "🍃 100% Pure & Authentic Quality" : "🍃 جودة نقية وأصلية 100%"}
+            {lang === 'en' ? "🍃 100% Pure & Authentic Quality" : `🍃 جودة نقية وأصلية ${formatNumber(100)}%`}
           </div>
 
           <h1 className="text-3xl md:text-5xl font-black mb-4 tracking-tight max-w-4xl mx-auto leading-tight drop-shadow-md">
@@ -59,6 +65,7 @@ export default function Home({ productsData }) {
             }
           </p>
 
+          {/* زر التصفح مع الـ Scroll السلس واللمعة */}
           <button 
             onClick={scrollToProducts}
             className="mt-6 bg-[#10b981] hover:bg-emerald-400 hover:scale-103 text-stone-900 font-black text-xs px-6 py-2.5 rounded-xl transition-all shadow-md flex items-center gap-2"
@@ -69,8 +76,10 @@ export default function Home({ productsData }) {
         </div>
       </div>
 
+      {/* قسم المنتجات */}
       <div ref={productsSectionRef} className="container mx-auto px-4 py-10 scroll-mt-6">
         
+        {/* فلاتر الأقسام التفاعلية */}
         <div className="flex flex-wrap gap-2 mb-10 overflow-x-auto pb-2">
           {CATEGORIES.map((cat) => (
             <button
@@ -113,10 +122,17 @@ export default function Home({ productsData }) {
 
                 <div className="pt-4 border-t border-stone-100 flex items-center justify-between">
                   <div className="flex flex-col">
-                    <span className="text-[9px] font-bold text-stone-400 uppercase tracking-wide">{t('basePriceLabel')}</span>
+                    <span className="text-[9px] font-bold text-stone-400 uppercase tracking-wide">
+                      {lang === 'en' ? "Base Price" : "السعر الأساسي"}
+                    </span>
                     <span className="text-[#0b422a] font-black text-base mt-0.5">
-                      {product.price} <span className="text-xs font-bold text-stone-500">{t('currency')}</span>
-                      <span className="text-[10px] text-stone-400 font-normal"> / {String(product.category).trim() === 'زيوت طبيعية' ? t('perLiter') : t('perKg')}</span>
+                      {/* 💡 هنا تم تمرير قيمة السعر داخل دالة formatNumber ليتحول الرقم تلقائياً للعربية */}
+                      {formatNumber(product.price)} <span className="text-xs font-bold text-stone-500">{lang === 'en' ? "EGP" : "جنيه"}</span>
+                      <span className="text-[10px] text-stone-400 font-normal">
+                        {' '}/ {String(product.category).trim() === 'زيوت طبيعية' 
+                          ? (lang === 'en' ? "Liter" : "لتر") 
+                          : (lang === 'en' ? "Kg" : "كيلو")}
+                      </span>
                     </span>
                   </div>
                   
@@ -124,7 +140,7 @@ export default function Home({ productsData }) {
                     to={`/product/${product.id}`}
                     className="bg-[#0b422a] hover:bg-emerald-800 text-white px-5 py-2.5 rounded-xl text-xs font-black transition-all shadow-2xs"
                   >
-                    {t('detailsBtn')}
+                    {lang === 'en' ? "Details" : "التفاصيل"}
                   </Link>
                 </div>
 
