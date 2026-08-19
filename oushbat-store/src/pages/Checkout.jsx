@@ -62,7 +62,7 @@ export default function Checkout() {
     setTouched({ name: true, address: true, phone: true });
     if (!formData.name.trim() || !formData.address.trim() || !formData.phone.trim()) return;
 
-    const googleMapsUrl = `https://google.com{location.lat},${location.lng}`;
+    const googleMapsUrl = `https://google.com${location.lat},${location.lng}`;
 
     try {
       const { error } = await supabase.from('orders').insert([
