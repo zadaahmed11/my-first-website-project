@@ -14,6 +14,7 @@ export default function Navbar() {
     <nav className="bg-white text-stone-800 py-5 px-8 sticky top-0 z-50 shadow-2xs border-b border-stone-100">
       <div className="container mx-auto flex justify-between items-center">
         
+        {/* اللوجو والاسم المترجم */}
         <div className="flex items-center gap-3">
           <span className="text-2xl text-emerald-700 font-bold">🍃</span>
           <div className="flex flex-col">
@@ -26,6 +27,7 @@ export default function Navbar() {
           </div>
         </div>
         
+
         <div className="flex items-center gap-6">
           <div className="hidden lg:flex items-center gap-4 text-xs font-semibold text-stone-500">
             <span>{lang === 'en' ? "Cash on Delivery 🤝" : "الدفع عند الاستلام 🤝"}</span>
@@ -33,6 +35,7 @@ export default function Navbar() {
             <span>{lang === 'en' ? "Fast shipping 📦" : "شحن سريع وآمن 📦"}</span>
           </div>
 
+          {/* زر تبديل اللغة */}
           <button 
             onClick={toggleLanguage}
             className="bg-emerald-50 text-emerald-800 border border-emerald-100 px-4 py-1.5 rounded-lg text-xs font-bold hover:bg-emerald-100 transition-all"
@@ -40,13 +43,14 @@ export default function Navbar() {
             {lang === 'en' ? 'العربية' : 'English'}
           </button>
 
+          {/* أيقونة العربة الفنية المحسنة */}
           <div 
-            className="relative p-2 bg-stone-50 hover:bg-emerald-50 rounded-xl cursor-pointer text-stone-700 hover:text-emerald-800 transition-all"
+            className="relative p-2.5 bg-stone-50 hover:bg-emerald-50 rounded-xl cursor-pointer text-stone-700 hover:text-emerald-800 transition-all border border-stone-100/60"
             onClick={() => setIsOpen(!isOpen)}
           >
             <ShoppingCart className="w-5 h-5" />
             {cart.length > 0 && (
-              <span className="absolute -top-1.5 -right-1.5 bg-amber-500 text-stone-900 text-[10px] font-black rounded-full w-4 h-4 flex items-center justify-center">
+              <span className="absolute -top-1.5 -right-1.5 bg-amber-500 text-stone-900 text-[10px] font-black rounded-full w-4 h-4 flex items-center justify-center shadow-xs">
                 {cart.length}
               </span>
             )}
@@ -54,6 +58,7 @@ export default function Navbar() {
         </div>
       </div>
 
+      {/* شاشة العربة المصغرة */}
       {isOpen && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-xs z-50 flex justify-end text-stone-900 animate-fadeIn">
           <div className="bg-white w-full max-w-md h-full p-6 flex flex-col justify-between shadow-2xl">
@@ -72,10 +77,11 @@ export default function Navbar() {
                 <div className="space-y-4 overflow-y-auto max-h-[65vh]">
                   {cart.map((item) => (
                     <div key={item.id} className="flex gap-4 items-center border-b pb-3">
+                      <img src={item.image_url} alt="product" className="w-14 h-14 object-cover rounded-xl border" />
                       <div className="flex-1">
                         <h4 className="font-bold text-sm text-stone-800">{lang === 'en' ? item.name_en : item.name_ar}</h4>
                         <p className="text-xs text-stone-400">{item.quantityText}</p>
-                        <p className="text-emerald-700 text-xs font-bold mt-0.5">{item.currentPrice} {t('currency')}</p>
+                        <p className="text-emerald-700 text-xs font-bold mt-0.5">{item.currentPrice.toFixed(2)} {t('currency')}</p>
                       </div>
                     </div>
                   ))}

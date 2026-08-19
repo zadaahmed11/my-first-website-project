@@ -26,14 +26,14 @@ function AppContent() {
           return;
         }
 
-
+        // صب البيانات الحقيقية من Supabase وضمان قراءتها باسم price الصحيح
         const formattedData = data.map((item) => ({
           ...item,
           price: Number(item.price || 0),
           name_en: item.name_en || "Premium Herb",
           name_ar: item.name_ar || "عشبة فاخرة",
-          desc_en: item.desc_en || "Premium organic quality product.",
-          desc_ar: item.desc_ar || "منتج عضوي ذو جودة عالية."
+          desc_en: item.desc_en || "Premium organic quality product harvested directly from nature.",
+          desc_ar: item.desc_ar || "منتج عضوي ذو جودة عالية مستخلص من الطبيعة النظيفة مباشرة."
         }));
 
         setProductsData(formattedData);
@@ -69,7 +69,7 @@ function AppContent() {
         <Navbar />
         <main className="flex-grow">
           <Routes>
-
+            {/* استخدام الـ key يجبر الصفحات على حرق الكاش القديم وقلب الداتا فوراً عند تغيير اللغة */}
             <Route path="/" element={<Home key={lang} productsData={productsData} />} />
             <Route path="/product/:id" element={<ProductDetails key={lang} productsData={productsData} />} />
             <Route path="/cart" element={<Cart key={lang} />} />
