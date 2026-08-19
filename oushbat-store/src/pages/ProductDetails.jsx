@@ -144,8 +144,9 @@ export default function ProductDetails({ productsData }) {
 
   const currentName = lang === 'en' ? (product.name_en || product.name_ar || '') : (product.name_ar || product.name_en || '');
   const currentDesc = lang === 'en' ? (product.desc_en || product.desc_ar || '') : (product.desc_ar || product.desc_en || '');
-  return (
-    <div className="container mx-auto px-4 py-12 max-w-4xl animate-fadeIn" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
+   return (
+    // تعديل: تم تصغير حجم الحاوية هنا إلى max-w-2xl ليصبح التصميم ملموماً وأنيقاً
+    <div className="container mx-auto px-4 py-12 max-w-2xl animate-fadeIn" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
       <div className="bg-white rounded-3xl shadow-lg overflow-hidden grid grid-cols-1 md:grid-cols-2 gap-6 p-5 md:p-6 border border-stone-100">
         
 
@@ -159,9 +160,8 @@ export default function ProductDetails({ productsData }) {
             
             <div className="mt-5">
               <h1 className="text-2xl font-black text-stone-900 mb-2">{currentName}</h1>
-
               <p className="text-stone-700 text-sm mt-3 leading-relaxed antialiased font-bold">
-                {currentDesc || (lang === 'en' ? "Premium organic quality product harvested directly from the pure nature." : "منتج عضوي ذو جودة عالية مستخلص من الطبيعة النظيفة مباشرة إليك.")}
+                {currentDesc || (lang === 'en' ? "Premium organic quality product harvested directly from the pure nature." : "منتج عضوي ذو جودة عالية مستخلص من الطبيعة Nظيفة مباشرة إليك.")}
               </p>
             </div>
           </div>
@@ -242,7 +242,6 @@ export default function ProductDetails({ productsData }) {
             </div>
           </div>
 
-
           <div className="mt-6 space-y-2.5">
             <button
               type="button"
@@ -259,7 +258,6 @@ export default function ProductDetails({ productsData }) {
             >
               {lang === 'en' ? 'Proceed to Checkout & Shipping 🚀' : 'الاستمرار في الدفع والشحن 🚀'}
             </button>
-
 
             <button
               type="button"
