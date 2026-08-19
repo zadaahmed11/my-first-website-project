@@ -219,7 +219,7 @@ export default function Checkout() {
             <div className="w-full h-48 rounded-2xl overflow-hidden border border-stone-100 bg-stone-100 shadow-inner relative">
               <iframe 
                 title="Delivery Location Map" 
-                src={`https://google.com{location.lat},${location.lng}&t=&z=15&ie=UTF8&iwloc=&output=embed`} 
+                src={`https://google.com${location.lat},${location.lng}&t=&z=15&ie=UTF8&iwloc=&output=embed`} 
                 width="100%" 
                 height="100%" 
                 style={{ border: 0 }} 
