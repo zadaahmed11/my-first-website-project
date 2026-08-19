@@ -16,21 +16,31 @@ export default function Cart() {
     return String(numStr).replace(/[0-9]/g, (d) => String.fromCharCode(arabicZero + parseInt(d)));
   };
 
-  const handleDropdownChange = (item, fractionVal, fractionTextKey) => {
+
+  const handleAccumulativeDropdown = (item, fractionVal, fractionTextKey) => {
     const basePrice = Number(item.price || 0);
     const isOil = String(item.category || '').toLowerCase().trim().includes('زيت') || 
                   String(item.category || '').toLowerCase().trim().includes('زيوت') || 
                   String(item.category || '').toLowerCase().trim().includes('oil');
+
+
                   
-    const currentUnit = item.selectedUnit || 1.0;
-    const finalUnitVal = currentUnit + fractionVal;
-    const newPrice = basePrice * finalUnitVal;
+    const baseOriginalUnit = item.initialUnitVal || item.selectedUnit || 1.0;
     
+
+    const finalUnitVal = baseOriginalUnit + fractionVal;
+    const newPrice = basePrice * finalUnitVal;
+
+
     const label = isOil ? (lang === 'en' ? 'Liter' : 'لتر') : (lang === 'en' ? 'KG' : 'كيلو');
     const displayQty = finalUnitVal % 1 === 0 ? finalUnitVal.toFixed(0) : finalUnitVal.toFixed(3);
     const text = `${convertNumbers(displayQty)} ${label}`;
 
-    addToCart(item, finalUnitVal, text, newPrice);
+
+    addToCart({
+      ...item,
+      initialUnitVal: baseOriginalUnit,
+    }, finalUnitVal, text, newPrice);
   };
 
   const handleMinusStep = (item) => {
@@ -53,7 +63,6 @@ export default function Cart() {
 
     addToCart(item, finalUnitVal, text, newPrice);
   };
-
 
   if (!cart || cart.length === 0) {
     return (
@@ -83,7 +92,7 @@ export default function Cart() {
       </div>
     );
   }
-  return (
+    return (
     <div className="container mx-auto px-4 py-12 max-w-2xl animate-fadeIn">
       <h2 className="text-xl font-black text-stone-900 mb-8 border-b pb-4">
         {lang === 'en' ? "Your Shopping Cart" : "عربة التسوق الخاصة بك"}
@@ -97,7 +106,7 @@ export default function Cart() {
 
           return (
 
-            <div key={item.id} className="bg-white p-5 rounded-2xl shadow-3xs border border-stone-100 flex flex-col md:flex-row gap-4 items-start md:items-center justify-between relative overflow-hidden">
+            <div key={item.id} className="bg-white p-5 rounded-2xl shadow-3xs border border-stone-100 grid grid-cols-1 md:grid-cols-3 gap-4 items-center relative overflow-hidden pr-10 rtl:pl-10 rtl:pr-5">
               
 
               <button 
@@ -109,10 +118,10 @@ export default function Cart() {
               </button>
 
 
-              <div className="flex items-center gap-3.5 w-full md:w-auto pt-2 md:pt-0">
-                <img src={item.image_url} alt={currentName} className="w-14 h-14 object-cover rounded-xl border border-stone-100/60" />
-                <div className="flex flex-col">
-                  <h3 className="text-sm font-black text-stone-900 tracking-tight leading-tight max-w-[180px] truncate">{currentName}</h3>
+              <div className="flex items-center gap-3 w-full">
+                <img src={item.image_url} alt={currentName} className="w-14 h-14 object-cover rounded-xl border border-stone-100/60 flex-shrink-0" />
+                <div className="flex flex-col min-w-0">
+                  <h3 className="text-sm font-black text-stone-900 tracking-tight leading-tight truncate">{currentName}</h3>
                   <span className="text-[10px] font-black bg-stone-100 text-stone-600 px-2 py-0.5 rounded-md mt-1 w-fit border border-stone-200/30">
                     {item.quantityText}
                   </span>
@@ -120,48 +129,44 @@ export default function Cart() {
               </div>
 
 
-              <div className="w-full md:w-auto flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5 ltr:ml-auto rtl:mr-auto">
-                
-
-                <div className="flex items-center gap-2 min-w-[160px]">
-                  <label className="text-[10px] font-bold text-stone-400 whitespace-nowrap">
-                    {lang === 'en' ? "Add weight:" : "إضافة وزن:"}
-                  </label>
-                  <select
-                    value="" 
-                    onChange={(e) => {
-                      const val = parseFloat(e.target.value);
-                      let key = 'customText';
-                      if (val === 0.125) key = 'fractionText_1_8';
-                      if (val === 0.25) key = 'fractionText_1_4';
-                      if (val === 0.5) key = 'fractionText_1_2';
-                      if (val === 1.0) key = 'fractionText_1';
-                      handleDropdownChange(item, val, key);
-                    }}
-                    className="w-full border border-stone-200 rounded-xl p-1.5 bg-stone-50 text-[11px] font-black focus:outline-hidden focus:ring-1 focus:ring-emerald-700 cursor-pointer text-stone-700"
-                  >
-                    <option value="" disabled>{lang === 'en' ? "Add +" : "اختر للزيادة +"}</option>
-                    <option value="0.125">{lang === 'en' ? "1/8 fraction" : "1/8 ثمن"}</option>
-                    <option value="0.25">{lang === 'en' ? "1/4 fraction" : "1/4 ربع"}</option>
-                    <option value="0.5">{lang === 'en' ? "1/2 fraction" : "1/2 نصف"}</option>
-                    <option value="1.0">{isOil ? (lang === 'en' ? "1 Liter" : "1 لتر") : (lang === 'en' ? "1 KG" : "1 كيلو")}</option>
-                  </select>
-                </div>
+              <div className="flex items-center gap-2 w-full justify-start md:justify-center">
+                <label className="text-[10px] font-bold text-stone-400 whitespace-nowrap">
+                  {lang === 'en' ? "Add:" : "إضافة:"}
+                </label>
+                <select
+                  value="" 
+                  onChange={(e) => {
+                    const val = parseFloat(e.target.value);
+                    let key = 'customText';
+                    if (val === 0.125) key = 'fractionText_1_8';
+                    if (val === 0.25) key = 'fractionText_1_4';
+                    if (val === 0.5) key = 'fractionText_1_2';
+                    if (val === 1.0) key = 'fractionText_1';
+                    handleAccumulativeDropdown(item, val, key);
+                  }}
+                  className="w-full max-w-[130px] border border-stone-200 rounded-xl p-1.5 bg-stone-50 text-[11px] font-black focus:outline-hidden focus:ring-1 focus:ring-emerald-700 cursor-pointer text-stone-700"
+                >
+                  <option value="" disabled>{lang === 'en' ? "Add weight" : "وزن زائد +"}</option>
+                  <option value="0.125">{lang === 'en' ? "1/8 fraction" : "1/8 ثمن"}</option>
+                  <option value="0.25">{lang === 'en' ? "1/4 fraction" : "1/4 ربع"}</option>
+                  <option value="0.5">{lang === 'en' ? "1/2 fraction" : "1/2 نصف"}</option>
+                  <option value="1.0">{isOil ? (lang === 'en' ? "1 Liter" : "1 لتر") : (lang === 'en' ? "1 KG" : "1 كيلو")}</option>
+                </select>
+              </div>
 
 
-                <div className="flex items-center justify-between sm:justify-end gap-2 bg-stone-50 border border-stone-200/40 p-2 rounded-xl min-w-[120px]">
-                  <button
-                    onClick={() => handleMinusStep(item)}
-                    className="p-1 rounded-md bg-stone-200 text-stone-600 hover:bg-stone-300 hover:text-stone-900 transition shadow-3xs cursor-pointer"
-                    title={lang === 'en' ? "Reduce" : "تنقيص -"}
-                  >
-                    <Minus className="w-3 h-3" strokeWidth={3} />
-                  </button>
-                  <p className="text-xs font-black text-[#0b422a] whitespace-nowrap">
-                    {convertNumbers(item.currentPrice.toFixed(2))} {t('currency')}
-                  </p>
-                </div>
+              <div className="flex items-center justify-between md:justify-end gap-2 bg-stone-50 border border-stone-200/40 p-2 rounded-xl w-full md:w-auto ltr:md:ml-auto rtl:md:mr-auto min-w-[125px]">
+                <button
+                  onClick={() => handleMinusStep(item)}
+                  className="p-1 rounded-md bg-stone-200 text-stone-600 hover:bg-stone-300 hover:text-stone-900 transition shadow-3xs cursor-pointer"
+                  title={lang === 'en' ? "Reduce" : "تنقيص -"}
+                >
+                  <Minus className="w-3 h-3" strokeWidth={3} />
+                </button>
 
+                <p className="text-xs font-black text-[#0b422a] whitespace-nowrap">
+                  {convertNumbers(item.currentPrice.toFixed(2))} {t('currency')}
+                </p>
               </div>
 
             </div>
@@ -195,3 +200,4 @@ export default function Cart() {
     </div>
   );
 }
+
