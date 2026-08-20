@@ -251,12 +251,12 @@ function ProductPricingForm({
 function ProductActionButtons({ lang, onCartAction, onNavigate }) {
   return (
     <div className="mt-8 space-y-4">
-      <div className="flex flex-row gap-3 items-stretch w-full">
+      <div className="flex flex-col sm:flex-row gap-3 items-stretch w-full">
         
         <button
           type="button"
           onClick={() => onCartAction('cart')}
-          className="flex-1 min-h-[52px] bg-[#0b291b] text-white text-[11px] sm:text-xs font-extrabold px-2 py-2 rounded-xl transition-all duration-200 hover:bg-[#113f2a] hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] flex items-center justify-center text-center shadow-xs cursor-pointer"
+          className="flex-1 min-h-[52px] bg-[#0b291b] text-white text-xs font-extrabold px-3 py-2 rounded-xl transition-all duration-200 hover:bg-[#113f2a] hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] flex items-center justify-center text-center shadow-xs cursor-pointer"
         >
           {lang === 'en' ? 'Add to Cart & Shop' : 'إضافة للسلة والتسوق'}
         </button>
@@ -264,7 +264,7 @@ function ProductActionButtons({ lang, onCartAction, onNavigate }) {
         <button
           type="button"
           onClick={() => onCartAction('checkout')}
-          className="flex-1 min-h-[52px] bg-[#e27b13] text-white text-[11px] sm:text-xs font-extrabold px-2 py-2 rounded-xl transition-all duration-200 hover:bg-[#f38a1f] hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] flex items-center justify-center text-center shadow-xs cursor-pointer"
+          className="flex-1 min-h-[52px] bg-[#e27b13] text-white text-xs font-extrabold px-3 py-2 rounded-xl transition-all duration-200 hover:bg-[#f38a1f] hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] flex items-center justify-center text-center shadow-xs cursor-pointer"
         >
           {lang === 'en' ? 'Proceed to Checkout' : 'الاستمرار وإتمام الشراء'}
         </button>
