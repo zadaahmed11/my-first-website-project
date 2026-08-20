@@ -14,19 +14,18 @@ export default function Navbar() {
     <nav className="bg-white text-stone-800 py-3 md:py-5 px-4 md:px-8 sticky top-0 z-50 shadow-2xs border-b border-stone-100">
       <div className="container mx-auto flex justify-between items-center gap-2">
         
+    <div className="flex items-center gap-2 md:gap-3 min-w-0 flex-1 sm:flex-initial">
+      <span className="text-xl md:text-2xl text-emerald-700 font-bold shrink-0">🌿</span>
+      <div className="flex flex-col min-w-0">
+        <Link to="/" className="text-base md:text-xl font-black text-emerald-900 tracking-wide leading-none truncate whitespace-nowrap">
+          {t('logo')}
+        </Link>
+        <span className="text-[9px] md:text-[10px] text-emerald-600 mt-1 font-bold tracking-wider leading-none">
+          {lang === 'en' ? "Pure Nature • Authentic Quality" : "طبيعة نقية • جودة أصيلة"}
+        </span>
+    </div>
+    </div>
 
-        <div className="flex items-center gap-2 md:gap-3 min-w-0 flex-1 sm:flex-initial">
-          <span className="text-xl md:text-2xl text-emerald-700 font-bold shrink-0">🌿</span>
-          <div className="flex flex-col min-w-0">
-            <Link to="/" className="text-base md:text-xl font-black text-emerald-900 tracking-wide leading-none truncate whitespace-nowrap">
-              {t('logo')}
-            </Link>
-            {/* إخفاء الوصف تماماً على الموبايل لتوفير مساحة عمودية، ويظهر من شاشات md فما فوق */}
-            <span className="hidden md:block text-[10px] text-stone-400 mt-1 font-medium">
-              {lang === 'en' ? "Pure nature and authentic quality straight to your doorstep" : "الطبيعة النقية مباشرة إلى باب منزلك"}
-            </span>
-          </div>
-        </div>
         
 
 
