@@ -112,19 +112,17 @@ export default function ProductDetails({ productsData }) {
     return null;
   };
   const handleCartAction = (target) => {
-    const config = getConfiguration();
-    if (!config) {
-      alert(lang === 'en' ? 'Please configure weight!' : 'الرجاء تحديد الوزن أولاً!');
-      return;
-    }
-    addToCart(product, config.finalUnitVal, config.finalQtyText, config.finalPrice);
-    if (target === 'checkout') {
-      navigate('/checkout');
-    } else {
-      alert(lang === 'en' ? 'Added successfully!' : 'تم إضافة الوزن المختار لعربة التسوق بنجاح!');
-      navigate('/');
-    }
-  };
+  const config = getConfiguration();
+  if (!config) return;
+
+  addToCart(product, config.finalUnitVal, config.finalQtyText, config.finalPrice);
+  
+  if (target === 'checkout') {
+    navigate('/checkout');
+  } else {
+    navigate('/');
+  }
+};
 
   let displayPrice = "0.00";
   let displayWeightText = isOil ? (lang === 'en' ? '1 Liter' : '١ لتر') : (lang === 'en' ? '1 KG' : '١ كيلو');
