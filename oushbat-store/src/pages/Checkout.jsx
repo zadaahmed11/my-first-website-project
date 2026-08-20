@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useCart } from '../context/CartContext';
 import { useLanguage } from '../context/LanguageContext';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '../supabaseClient';
 import { X, ShoppingBag, Send, ArrowLeft } from 'lucide-react';
 
 export default function Checkout() {
@@ -46,11 +45,9 @@ export default function Checkout() {
 
 
   const isAddressInvalid = touched.address && (!isNameValid || !isPhoneValid || !formData.address.trim());
-
     const handleSubmit = (e) => {
     e.preventDefault();
     setTouched({ name: true, phone: true, address: true });
-
 
     if (!isNameValid) {
       alert(lang === 'en' ? 'Please enter a full name (at least two words).' : 'برجاء إدخال الاسم ثنائي على الأقل.');
@@ -66,29 +63,26 @@ export default function Checkout() {
     }
 
 
-    let message = `*طلب جديد 🛒*\n\n`;
-    message += `👤 *الاسم:* ${formData.name}\n`;
-    message += `📞 *الرقم:* ${cleanPhone}\n`;
-    message += `📍 *العنوان:* ${formData.address}\n`;
-    if (formData.notes) message += `📝 *ملاحظات:* ${formData.notes}\n\n`;
-    message += `📦 *المنتجات المطلوبة:*\n`;
+    let message = lang === 'en' ? `*New Order 🛒*\n\n` : `*طلب جديد 🛒*\n\n`;
+    message += `${lang === 'en' ? '👤 Name:' : '👤 الاسم:'} ${formData.name}\n`;
+    message += `${lang === 'en' ? '📞 Phone:' : '📞 الرقم:'} ${cleanPhone}\n`;
+    message += `${lang === 'en' ? '📍 Address:' : '📍 العنوان:'} ${formData.address}\n`;
+    if (formData.notes) message += `${lang === 'en' ? '📝 Notes:' : '📝 ملاحظات:'} ${formData.notes}\n\n`;
+    message += `${lang === 'en' ? '📦 Requested Products:' : '📦 المنتجات المطلوبة:'}\n`;
     
     cart.forEach((item, index) => {
       const name = lang === 'en' ? item.name_en : item.name_ar;
       message += `${index + 1}. ${name} [${item.quantityText}] -> ${item.currentPrice.toFixed(2)} ${t('currency')}\n`;
     });
 
-    message += `\n💰 *الإجمالي النهائي:* ${getCartTotal().toFixed(2)} ${t('currency')}`;
+    message += `\n${lang === 'en' ? '💰 Final Total:' : '💰 الإجمالي النهائي:'} ${getCartTotal().toFixed(2)} ${t('currency')}`;
 
     const encodedMessage = encodeURIComponent(message);
-
-
-    window.open(`https://wa.me{WHATSAPP_NUMBER}?text=${encodedMessage}`, '_blank');
+    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodedMessage}`, '_blank');
     alert(t('alertSuccess'));
     clearCart(); 
     navigate('/'); 
   };
-
 
   const cleanProductName = (name) => {
     if (!name) return '';
@@ -96,7 +90,7 @@ export default function Checkout() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-12 max-w-6xl animate-fadeIn">
+    <div className="container mx-auto px-4 py-12 max-w-6xl animate-fadeIn" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
       
       <div className="flex gap-2 mb-6 select-none">
         <button 
@@ -125,7 +119,7 @@ export default function Checkout() {
           
 
           <div>
-            <label className="block text-xs font-bold text-stone-700 mb-1">Name</label>
+            <label className="block text-xs font-bold text-stone-700 mb-1">{lang === 'en' ? 'Name' : 'الاسم'}</label>
             <input 
               type="text" 
               value={formData.name} 
@@ -154,7 +148,7 @@ export default function Checkout() {
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-stone-700 mb-1">Address</label>
+            <label className="block text-xs font-bold text-stone-700 mb-1">{lang === 'en' ? 'Address' : 'العنوان'}</label>
             <input 
               type="text" 
               disabled={!isNameValid || !isPhoneValid}
