@@ -136,7 +136,7 @@ export default function Home({ productsData }) {
                     to={`/product/${product.id}`}
                     className="bg-stone-100 hover:bg-[#10b981] hover:text-white transition-all text-stone-700 font-bold text-[11px] px-4 py-2 rounded-xl"
                   >
-                    {lang === 'en' ? "Details" : "التفاصيل"}
+                   {lang === 'en' ? "Add to cart" : "أضف إلى السلة"}
                   </Link>
                 </div>
               </div>
