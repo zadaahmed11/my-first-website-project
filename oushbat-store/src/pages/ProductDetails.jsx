@@ -9,7 +9,6 @@ export default function ProductDetails({ productsData }) {
   const { addToCart } = useCart();
   const { t, lang } = useLanguage();
 
-
   const product = (productsData || []).find((p) => p.id === parseInt(id));
 
   if (!product) {
@@ -19,7 +18,6 @@ export default function ProductDetails({ productsData }) {
       </div>
     );
   }
-
 
   const categoryText = String(product.category || '').toLowerCase().trim();
   const isOil = categoryText.includes('زيت') || 
@@ -33,7 +31,6 @@ export default function ProductDetails({ productsData }) {
   const [inputQty, setInputQty] = useState('');
   const [selectedPreset, setSelectedPreset] = useState(null);
 
-
   const convertNumbers = (numStr) => {
     if (!numStr) return '';
     if (lang === 'en') return String(numStr);
@@ -41,12 +38,10 @@ export default function ProductDetails({ productsData }) {
     return String(numStr).replace(/[0-9]/g, (d) => String.fromCharCode(arabicZero + parseInt(d)));
   };
 
-
   const handleArabicInputClean = (val) => {
     if (!val) return '';
     return String(val).replace(/[٠-٩]/g, (d) => String(d.charCodeAt(0) - 1632));
   };
-
 
   useEffect(() => {
     if (product) {
@@ -59,7 +54,6 @@ export default function ProductDetails({ productsData }) {
       setInputQty('');
     }
   }, [product, isOil, lang]);
-
 
   const handlePriceChange = (val) => {
     const cleanVal = handleArabicInputClean(val);
@@ -85,7 +79,6 @@ export default function ProductDetails({ productsData }) {
     }
   };
 
-
   const handlePresetSelect = (fraction, fractionTextKey) => {
     let labelText = '';
     if (fractionTextKey === 'fractionText_1_8') labelText = lang === 'en' ? '1/8' : '١/٨';
@@ -102,7 +95,6 @@ export default function ProductDetails({ productsData }) {
     setInputQty('');
   };
 
-
   const basePrice = Number(product.price || 0);
   let displayPrice = "0.00";
   let displayWeightText = isOil ? (lang === 'en' ? '1 Liter' : '١ لتر') : (lang === 'en' ? '1 KG' : '١ كيلو');
@@ -117,8 +109,7 @@ export default function ProductDetails({ productsData }) {
     displayWeightText = `[${convertNumbers(inputQty)} ${unitLabel}]`;
   }
 
-
-  const handleAddToCartAction = () => {
+  const getConfiguration = () => {
     let finalPrice = 0, finalQtyText = '', finalUnitVal = 0;
 
     if (selectedPreset) {
@@ -127,28 +118,43 @@ export default function ProductDetails({ productsData }) {
         ? (lang === 'en' ? `1 ${unitLabel}` : `١ ${unitLabel}`) 
         : selectedPreset.fractionText;
       finalUnitVal = selectedPreset.fraction;
+      return { finalPrice, finalQtyText, finalUnitVal };
     } else if (inputQty && inputPrice) {
       finalPrice = parseFloat(inputPrice);
       finalQtyText = `${inputQty} ${unitLabel}`;
       finalUnitVal = parseFloat(inputQty);
-    } else {
+      return { finalPrice, finalQtyText, finalUnitVal };
+    }
+    return null;
+  };
+  const handleAddToCartAction = () => {
+    const config = getConfiguration();
+    if (!config) {
       alert(lang === 'en' ? 'Please configure weight!' : 'الرجاء تحديد الوزن أولاً!');
       return;
     }
-
-    addToCart(product, finalUnitVal, finalQtyText, finalPrice);
+    addToCart(product, config.finalUnitVal, config.finalQtyText, config.finalPrice);
     alert(lang === 'en' ? 'Added successfully!' : 'تم إضافة الوزن المختار لعربة التسوق بنجاح!');
     navigate('/'); 
+  };
+
+  const handleProceedAction = () => {
+    const config = getConfiguration();
+    if (!config) {
+      alert(lang === 'en' ? 'Please configure weight!' : 'الرجاء تحديد الوزن أولاً!');
+      return;
+    }
+    addToCart(product, config.finalUnitVal, config.finalQtyText, config.finalPrice);
+    navigate('/checkout');
   };
 
   const currentName = lang === 'en' ? (product.name_en || product.name_ar || '') : (product.name_ar || product.name_en || '');
   const currentDesc = lang === 'en' ? (product.desc_en || product.desc_ar || '') : (product.desc_ar || product.desc_en || '');
 
-   return (
+  return (
     <div className="container mx-auto px-4 py-12 max-w-3xl animate-fadeIn" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
       <div className="bg-white rounded-3xl shadow-lg overflow-hidden grid grid-cols-1 md:grid-cols-2 gap-6 p-5 md:p-6 border border-stone-100">
         
-
         <div className="flex flex-col justify-between h-full">
           <div>
             <div className="relative rounded-2xl overflow-hidden h-72 bg-stone-50 border border-stone-100 shadow-2xs">
@@ -160,19 +166,17 @@ export default function ProductDetails({ productsData }) {
             <div className="mt-5">
               <h1 className="text-2xl font-black text-stone-900 mb-2">{currentName}</h1>
               <p className="text-stone-700 text-sm mt-3 leading-relaxed antialiased font-bold">
-                {currentDesc || (lang === 'en' ? "Premium organic quality product harvested directly from the pure nature." : "منتج عضوي ذو جودة عالية مستخلص من الطبيعة Nظيفة مباشرة إليك.")}
+                {currentDesc || (lang === 'en' ? "Premium organic quality product harvested directly from the pure nature." : "منتج عضوي ذو جودة عالية مستخلص من الطبيعة نظيفة مباشرة إليك.")}
               </p>
             </div>
           </div>
         </div>
-
 
         <div className="flex flex-col justify-between bg-stone-50 p-5 rounded-2xl border border-stone-200/60 shadow-3xs">
           <div>
             <p className="text-xs text-stone-400 mb-4">
               {lang === 'en' ? 'Original Price:' : 'السعر الأصلي:'} <span className="font-bold text-stone-700">{convertNumbers(product.price)} EGP</span> / {unitLabel}
             </p>
-
 
             <div className="mb-5">
               <label className="block text-[11px] font-bold text-stone-600 mb-2">
@@ -200,7 +204,6 @@ export default function ProductDetails({ productsData }) {
                 ))}
               </div>
             </div>
-
 
             <div className="space-y-3 pt-3 border-t border-stone-200/60">
               <div>
@@ -230,7 +233,6 @@ export default function ProductDetails({ productsData }) {
               </div>
             </div>
 
-
             <div className="mt-6 pt-4 border-t border-stone-200/60">
               <span className="block text-[11px] font-bold text-stone-700 mb-1">
                 {lang === 'en' ? 'Current Selection:' : 'الاختيار الحالي:'}
@@ -242,21 +244,23 @@ export default function ProductDetails({ productsData }) {
           </div>
 
           <div className="mt-6 space-y-2.5">
-            <button
-              type="button"
-              onClick={handleAddToCartAction}
-              className="w-full bg-[#0b291b] text-white text-xs font-black py-3 rounded-xl hover:bg-[#071d13] transition-all flex items-center justify-center gap-2 shadow-xs cursor-pointer"
-            >
-              {lang === 'en' ? 'Add to Cart & Continue Shopping 🛒' : 'أضف إلى السلة ومتابعة التسوق 🛒'}
-            </button>
+            <div className="grid grid-cols-2 gap-2.5">
+              <button
+                type="button"
+                onClick={handleAddToCartAction}
+                className="w-full bg-[#0b291b] text-white text-[11px] md:text-xs font-black py-3 rounded-xl hover:bg-[#071d13] transition-all flex items-center justify-center gap-1.5 shadow-xs cursor-pointer"
+              >
+                {lang === 'en' ? 'Add & Shop 🛒' : 'إضافة وتسوّق 🛒'}
+              </button>
 
-            <button
-              type="button"
-              onClick={() => navigate('/checkout')}
-              className="w-full bg-[#d97706] text-white text-xs font-black py-3 rounded-xl hover:bg-[#b45309] transition-all flex items-center justify-center gap-2 shadow-xs cursor-pointer"
-            >
-              {lang === 'en' ? 'Proceed to Checkout & Shipping 🚀' : 'الاستمرار في الدفع والشحن 🚀'}
-            </button>
+              <button
+                type="button"
+                onClick={handleProceedAction}
+                className="w-full bg-[#d97706] text-white text-[11px] md:text-xs font-black py-3 rounded-xl hover:bg-[#b45309] transition-all flex items-center justify-center gap-1.5 shadow-xs cursor-pointer"
+              >
+                {lang === 'en' ? 'Proceed 🚀' : 'استمرار والدفع 🚀'}
+              </button>
+            </div>
 
             <button
               type="button"
@@ -266,8 +270,8 @@ export default function ProductDetails({ productsData }) {
               {lang === 'en' ? 'Back to Home 🏠' : 'العودة للرئيسية 🏠'}
             </button>
           </div>
-        </div>
 
+        </div>
       </div>
     </div>
   );
