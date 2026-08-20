@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useCart } from '../context/CartContext';
 import { useLanguage } from '../context/LanguageContext';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
-import { X, MapPin, ShoppingBag, Send, ArrowLeft } from 'lucide-react';
+import { X, ShoppingBag, Send, ArrowLeft } from 'lucide-react';
 
 export default function Checkout() {
   const { cart, addToCart, removeFromCart, getCartTotal, clearCart } = useCart();
@@ -13,26 +13,7 @@ export default function Checkout() {
   const WHATSAPP_NUMBER = "201121777574"; 
 
   const [formData, setFormData] = useState({ name: '', address: '', phone: '', notes: '' });
-
-  const [location, setLocation] = useState({ lat: 30.0444, lng: 31.2357 });
-  const [geoError, setGeoError] = useState('');
-  
   const [touched, setTouched] = useState({ name: false, address: false, phone: false });
-
-
-  useEffect(() => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setLocation({ lat: position.coords.latitude, lng: position.coords.longitude });
-        },
-        () => {
-
-          console.log("Using default location parameters.");
-        }
-      );
-    }
-  }, []);
 
   const convertNumbers = (numStr) => {
     if (!numStr || lang === 'en') return String(numStr || '');
@@ -54,44 +35,43 @@ export default function Checkout() {
     addToCart(item, finalUnitVal, text, basePrice * finalUnitVal);
   };
 
-  const handleGetLocation = () => {
-    if (!navigator.geolocation) {
-      setGeoError(lang === 'en' ? 'Geolocation not supported' : 'متصفحك لا يدعم تحديد الموقع الجغرافي');
-      return;
-    }
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        setLocation({ lat: position.coords.latitude, lng: position.coords.longitude });
-        setGeoError('');
-      },
-      (error) => {
-        setGeoError(lang === 'en' ? 'Unable to retrieve location' : 'يرجى تفعيل الـ GPS في جهازك للسماح للمتصفح برؤية موقعك');
-      }
-    );
-  };
 
-  const isNameInvalid = touched.name && !formData.name.trim();
-  const isAddressInvalid = (touched.address || touched.phone) && (!formData.name.trim() || !formData.address.trim());
-  const isPhoneInvalid = touched.phone && (!formData.name.trim() || !formData.address.trim() || !formData.phone.trim());
+  const isNameValid = formData.name.trim().split(/\s+/).length >= 2;
+  const isNameInvalid = touched.name && !isNameValid;
+
+
+  const cleanPhone = formData.phone.replace(/\s+/g, '');
+  const isPhoneValid = /^[0-9]{11}$/.test(cleanPhone);
+  const isPhoneInvalid = touched.phone && (!isNameValid || !isPhoneValid);
+
+  const isAddressInvalid = touched.address && (!isNameValid || !isPhoneValid || !formData.address.trim());
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setTouched({ name: true, address: true, phone: true });
-    if (!formData.name.trim() || !formData.address.trim() || !formData.phone.trim()) return;
+    setTouched({ name: true, phone: true, address: true });
 
-
-    const googleMapsUrl =`https://google.com/${location.lat},${location.lng}&z=15&output=embed`;
-;
+    // التحقق النهائي الصارم قبل الإرسال
+    if (!isNameValid) {
+      alert(lang === 'en' ? 'Please enter a full name (at least two words).' : 'برجاء إدخال الاسم ثنائي على الأقل.');
+      return;
+    }
+    if (!isPhoneValid) {
+      alert(lang === 'en' ? 'Phone number must be exactly 11 digits.' : 'رقم الهاتف يجب أن يتكون من 11 رقماً بالضبط.');
+      return;
+    }
+    if (!formData.address.trim()) {
+      alert(lang === 'en' ? 'Please enter your address.' : 'برجاء إدخال العنوان.');
+      return;
+    }
 
     try {
       const { error } = await supabase.from('orders').insert([
         {
           customer_name: formData.name,
           address: formData.address,
-          phone: formData.phone,
+          phone: cleanPhone,
           notes: formData.notes,
           total_price: Number(getCartTotal()),
           items: cart, 
-          google_maps_link: googleMapsUrl,
           created_at: new Date()
         }
       ]);
@@ -99,21 +79,20 @@ export default function Checkout() {
 
       let message = `*طلب جديد 🛒*\n\n`;
       message += `👤 *الاسم:* ${formData.name}\n`;
+      message += `📞 *الرقم:* ${cleanPhone}\n`;
       message += `📍 *العنوان:* ${formData.address}\n`;
-      message += `📞 *الرقم:* ${formData.phone}\n`;
-      if (formData.notes) message += `📝 *ملاحظات:* ${formData.notes}\n`;
-      message += `🗺️ *رابط الموقع الماب:* ${googleMapsUrl}\n\n`;
+      if (formData.notes) message += `📝 *ملاحظات:* ${formData.notes}\n\n`;
       message += `📦 *المنتجات المطلوبة:*\n`;
       
       cart.forEach((item, index) => {
         const name = lang === 'en' ? item.name_en : item.name_ar;
         message += `${index + 1}. ${name} [${item.quantityText}] -> ${item.currentPrice.toFixed(2)} ${t('currency')}\n`;
       });
-      
+
       message += `\n💰 *الإجمالي النهائي:* ${getCartTotal().toFixed(2)} ${t('currency')}`;
 
       const encodedMessage = encodeURIComponent(message);
-      window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodedMessage}`, '_blank');
+      window.open(`https://wa.me{WHATSAPP_NUMBER}?text=${encodedMessage}`, '_blank');
 
       alert(t('alertSuccess'));
       clearCart(); 
@@ -157,45 +136,49 @@ export default function Checkout() {
         <form onSubmit={handleSubmit} className="lg:col-span-7 bg-white p-6 md:p-8 rounded-3xl shadow-2xs border border-stone-200/60 space-y-4">
           <h3 className="text-base font-bold text-[#0b422a] border-b pb-2 mb-2">{t('shippingDetails')}</h3>
           
+
           <div>
-            <label className="block text-xs font-bold text-stone-700 mb-1">{t('fullName')}</label>
+            <label className="block text-xs font-bold text-stone-700 mb-1">Name</label>
             <input 
               type="text" 
               value={formData.name} 
               onFocus={() => setTouched(p => ({ ...p, name: true }))}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })} 
-              placeholder={t('namePlaceholder')} 
+              placeholder={lang === 'en' ? 'First and Last name...' : 'الاسم الأول واللقب (اسم ثنائي)...'} 
               className={`w-full p-3 text-sm border rounded-xl bg-stone-50/50 focus:ring-2 focus:ring-emerald-600 focus:outline-hidden font-medium transition-all ${isNameInvalid ? 'border-red-500 bg-red-50/30' : 'border-stone-200'}`} 
             />
-            {isNameInvalid && <span className="text-[10px] text-red-500 font-bold mt-1 block">{lang === 'en' ? 'Please fill your name first.' : 'برجاء كتابة الاسم أولاً بالترتيب.'}</span>}
+            {isNameInvalid && <span className="text-[10px] text-red-500 font-bold mt-1 block">{lang === 'en' ? 'Please enter at least two names.' : 'برجاء كتابة اسم ثنائي على الأقل.'}</span>}
           </div>
           
-          <div>
-            <label className="block text-xs font-bold text-stone-700 mb-1">{t('fullAddress')}</label>
-            <input 
-              type="text" 
-              disabled={!formData.name.trim()}
-              value={formData.address} 
-              onFocus={() => setTouched(p => ({ ...p, address: true }))}
-              onChange={(e) => setFormData({ ...formData, address: e.target.value })} 
-              placeholder={!formData.name.trim() ? (lang === 'en' ? 'Fill name first...' : 'اكتب الاسم أولاً لتتمكن من التعديل...') : t('addressPlaceholder')} 
-              className={`w-full p-3 text-sm border rounded-xl focus:ring-2 focus:ring-emerald-600 focus:outline-hidden font-medium transition-all ${!formData.name.trim() ? 'bg-stone-100/80 cursor-not-allowed' : 'bg-stone-50/50'} ${isAddressInvalid ? 'border-red-500 bg-red-50/30' : 'border-stone-200'}`} 
-            />
-            {isAddressInvalid && !formData.name.trim() && <span className="text-[10px] text-red-500 font-bold mt-1 block">{lang === 'en' ? 'You must provide a name before the address.' : 'يجب إدخال الاسم قبل الانتقال لحقل العنوان.'}</span>}
-          </div>
-          
+
           <div>
             <label className="block text-xs font-bold text-stone-700 mb-1">{t('phone')}</label>
             <input 
               type="tel" 
-              disabled={!formData.name.trim() || !formData.address.trim()}
+              disabled={!isNameValid}
               value={formData.phone} 
               onFocus={() => setTouched(p => ({ ...p, phone: true }))}
               onChange={(e) => setFormData({ ...formData, phone: e.target.value })} 
               placeholder="01xxxxxxxxx" 
-              className={`w-full p-3 text-sm border rounded-xl focus:ring-2 focus:ring-emerald-600 focus:outline-hidden font-bold transition-all ${(!formData.name.trim() || !formData.address.trim()) ? 'bg-stone-100/80 cursor-not-allowed' : 'bg-stone-50/50'} ${isPhoneInvalid ? 'border-red-500 bg-red-50/30' : 'border-stone-200'}`} 
+              className={`w-full p-3 text-sm border rounded-xl focus:ring-2 focus:ring-emerald-600 focus:outline-hidden font-bold transition-all ${!isNameValid ? 'bg-stone-100/80 cursor-not-allowed' : 'bg-stone-50/50'} ${isPhoneInvalid ? 'border-red-500 bg-red-50/30' : 'border-stone-200'}`} 
             />
-            {isPhoneInvalid && (!formData.name.trim() || !formData.address.trim()) && <span className="text-[10px] text-red-500 font-bold mt-1 block">{lang === 'en' ? 'Please complete Name and Address before phone number.' : 'يرجى استكمال الاسم والعنوان أولاً قبل كتابة الرقم.'}</span>}
+            {isPhoneInvalid && !isNameValid && <span className="text-[10px] text-red-500 font-bold mt-1 block">{lang === 'en' ? 'Please complete Name correctly first.' : 'يرجى استكمال الاسم بشكل صحيح أولاً.'}</span>}
+            {touched.phone && isNameValid && !isPhoneValid && <span className="text-[10px] text-red-500 font-bold mt-1 block">{lang === 'en' ? 'Phone number must be exactly 11 digits.' : 'يجب أن يتكون رقم الهاتف من 11 رقماً بالضبط.'}</span>}
+          </div>
+
+          <div>
+            <label className="block text-xs font-bold text-stone-700 mb-1">Address</label>
+            <input 
+              type="text" 
+              disabled={!isNameValid || !isPhoneValid}
+              value={formData.address} 
+              onFocus={() => setTouched(p => ({ ...p, address: true }))}
+              onChange={(e) => setFormData({ ...formData, address: e.target.value })} 
+              placeholder={(!isNameValid || !isPhoneValid) ? (lang === 'en' ? 'Fill Name and Phone first...' : 'اكتب الاسم والهاتف أولاً للتعديل...') : (lang === 'en' ? 'Enter city, street, building number...' : 'أدخل المدينة، اسم الشارع، رقم المبنى...')} 
+              className={`w-full p-3 text-sm border rounded-xl focus:ring-2 focus:ring-emerald-600 focus:outline-hidden font-medium transition-all ${(!isNameValid || !isPhoneValid) ? 'bg-stone-100/80 cursor-not-allowed' : 'bg-stone-50/50'} ${isAddressInvalid ? 'border-red-500 bg-red-50/30' : 'border-stone-200'}`} 
+            />
+            {isAddressInvalid && (!isNameValid || !isPhoneValid) && <span className="text-[10px] text-red-500 font-bold mt-1 block">{lang === 'en' ? 'You must provide a valid Name and Phone before the address.' : 'يجب إدخال الاسم والهاتف بشكل صحيح قبل حقل العنوان.'}</span>}
+            {isAddressInvalid && isNameValid && isPhoneValid && !formData.address.trim() && <span className="text-[10px] text-red-500 font-bold mt-1 block">{lang === 'en' ? 'Address cannot be empty.' : 'العنوان لا يمكن أن يكون فارغاً.'}</span>}
           </div>
           
           <div>
@@ -207,6 +190,7 @@ export default function Checkout() {
               className="w-full p-3 text-sm border border-stone-200 rounded-xl bg-stone-50/50 focus:ring-2 focus:ring-emerald-600 focus:outline-hidden font-medium"
             ></textarea>
           </div>
+
           <div className="pt-2">
             <button 
               type="submit" 
@@ -220,33 +204,6 @@ export default function Checkout() {
         </form>
 
         <div className="lg:col-span-5 space-y-6">
-          <div className="bg-white p-5 rounded-3xl shadow-2xs border border-stone-200/60">
-            <div className="flex items-center justify-between mb-2">
-              <h3 className="text-sm font-bold text-stone-800">{t('geoTitle')}</h3>
-              <button 
-                type="button"
-                onClick={handleGetLocation}
-                className="flex items-center gap-1 bg-emerald-50 hover:bg-emerald-100 text-[#0b422a] text-[10px] font-black px-3 py-1.5 rounded-xl border border-emerald-200 transition-all cursor-pointer"
-              >
-                <MapPin className="w-3 h-3" />
-                {lang === 'en' ? 'Get My Location' : 'تحديد موقعي الحالي 🎯'}
-              </button>
-            </div>
-            {geoError && <p className="text-[10px] text-red-500 font-bold mb-2">{geoError}</p>}
-            
-            <div className="w-full h-48 rounded-2xl overflow-hidden border border-stone-100 bg-stone-100 shadow-inner relative">
-              <iframe 
-                title="Delivery Location Map" 
-                src={`https://google.com/${location.lat},${location.lng}&z=15&output=embed`}
-                width="100%" 
-                height="100%" 
-                style={{ border: 0 }} 
-                allowFullScreen="" 
-                loading="lazy"
-              ></iframe>
-            </div>
-          </div>
-
           <div className="bg-white p-5 rounded-3xl border border-stone-200/60 shadow-2xs">
             <h4 className="font-black text-sm text-stone-800 mb-4 border-b pb-2 flex items-center justify-between">
               <span>{t('orderSummary')}</span>
@@ -325,8 +282,8 @@ export default function Checkout() {
               </>
             )}
           </div>
-
         </div>
+
       </div>
     </div>
   );
