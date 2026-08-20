@@ -248,35 +248,30 @@ function ProductPricingForm({
 }
 
 
-function ProductActionButtons({ lang, onCartAction, onNavigate }) {
+function ProductActionButtons({ onCartAction, onNavigate }) {
   return (
-    <div className="mt-8 space-y-4">
-      <div className="flex flex-col sm:flex-row gap-3 items-stretch w-full">
-        
+    <div className="mt-6 flex flex-col gap-3">
+      <div className="grid grid-cols-2 gap-2">
         <button
-          type="button"
-          onClick={() => onCartAction('cart')}
-          className="flex-1 min-h-[52px] bg-[#0b291b] text-white text-xs font-extrabold px-3 py-2 rounded-xl transition-all duration-200 hover:bg-[#113f2a] hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] flex items-center justify-center text-center shadow-xs cursor-pointer"
+          type="button" onClick={() => onCartAction('cart')}
+          className="w-full bg-[#0b291b] text-white text-[11px] md:text-xs font-black py-3.5 rounded-xl hover:bg-[#071d13] transition-all flex items-center justify-center text-center shadow-md active:scale-[0.99] cursor-pointer min-h-[48px] whitespace-nowrap"
         >
-          {lang === 'en' ? 'Add to Cart & Shop' : 'إضافة للسلة والتسوق'}
+          Add & Shop
         </button>
 
         <button
-          type="button"
-          onClick={() => onCartAction('checkout')}
-          className="flex-1 min-h-[52px] bg-[#e27b13] text-white text-xs font-extrabold px-3 py-2 rounded-xl transition-all duration-200 hover:bg-[#f38a1f] hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] flex items-center justify-center text-center shadow-xs cursor-pointer"
+          type="button" onClick={() => onCartAction('checkout')}
+          className="w-full bg-[#d97706] text-white text-[11px] md:text-xs font-black py-3.5 rounded-xl hover:bg-[#b45309] transition-all flex items-center justify-center text-center shadow-md active:scale-[0.99] cursor-pointer min-h-[48px] whitespace-nowrap"
         >
-          {lang === 'en' ? 'Proceed to Checkout' : 'الاستمرار وإتمام الشراء'}
+          Checkout
         </button>
-        
       </div>
 
       <button
-        type="button"
-        onClick={onNavigate}
-        className="w-full bg-stone-200/70 text-stone-600 text-xs font-bold py-3 rounded-xl transition-all duration-200 hover:bg-stone-300/80 flex items-center justify-center gap-2 cursor-pointer"
+        type="button" onClick={onNavigate}
+        className="w-full bg-stone-200 text-stone-700 text-xs font-bold py-3 rounded-xl hover:bg-stone-300 transition-all flex items-center justify-center gap-2 cursor-pointer"
       >
-        <span>{lang === 'en' ? '◀ Back to Home' : '◀ العودة للرئيسية'}</span>
+        ◀ Back to Home
       </button>
     </div>
   );
