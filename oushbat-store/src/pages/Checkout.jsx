@@ -45,6 +45,7 @@ export default function Checkout() {
 
 
   const isAddressInvalid = touched.address && (!isNameValid || !isPhoneValid || !formData.address.trim());
+
     const handleSubmit = (e) => {
     e.preventDefault();
     setTouched({ name: true, phone: true, address: true });
@@ -61,7 +62,6 @@ export default function Checkout() {
       alert(lang === 'en' ? 'Please enter your address.' : 'برجاء إدخال العنوان.');
       return;
     }
-
 
     let message = lang === 'en' ? `*New Order 🛒*\n\n` : `*طلب جديد 🛒*\n\n`;
     message += `${lang === 'en' ? '👤 Name:' : '👤 الاسم:'} ${formData.name}\n`;
@@ -117,7 +117,7 @@ export default function Checkout() {
         <form onSubmit={handleSubmit} className="lg:col-span-7 bg-white p-6 md:p-8 rounded-3xl shadow-2xs border border-stone-200/60 space-y-4">
           <h3 className="text-base font-bold text-[#0b422a] border-b pb-2 mb-2">{t('shippingDetails')}</h3>
           
-
+          {/* 1. حقل الاسم المترجم */}
           <div>
             <label className="block text-xs font-bold text-stone-700 mb-1">{lang === 'en' ? 'Name' : 'الاسم'}</label>
             <input 
