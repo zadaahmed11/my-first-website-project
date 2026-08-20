@@ -112,17 +112,16 @@ export default function ProductDetails({ productsData }) {
     return null;
   };
   const handleCartAction = (target) => {
-  const config = getConfiguration();
-  if (!config) return;
+    const config = getConfiguration();
+    if (!config) return;
 
-  addToCart(product, config.finalUnitVal, config.finalQtyText, config.finalPrice);
-  
-  if (target === 'checkout') {
-    navigate('/checkout');
-  } else {
-    navigate('/');
-  }
-};
+    addToCart(product, config.finalUnitVal, config.finalQtyText, config.finalPrice);
+    if (target === 'checkout') {
+      navigate('/checkout');
+    } else {
+      navigate('/');
+    }
+  };
 
   let displayPrice = "0.00";
   let displayWeightText = isOil ? (lang === 'en' ? '1 Liter' : '١ لتر') : (lang === 'en' ? '1 KG' : '١ كيلو');
@@ -161,7 +160,6 @@ export default function ProductDetails({ productsData }) {
   );
 }
 
-
 function ProductInfoSection({ currentName, currentDesc, imageUrl, lang }) {
   return (
     <div className="flex flex-col justify-between h-full">
@@ -181,7 +179,6 @@ function ProductInfoSection({ currentName, currentDesc, imageUrl, lang }) {
     </div>
   );
 }
-
 
 function ProductPricingForm({
   lang, productPrice, unitLabel, isOil, selectedPreset, inputPrice, inputQty, 
@@ -238,15 +235,14 @@ function ProductPricingForm({
       <div className="mt-6 pt-4 border-t border-stone-200/60">
         <span className="block text-[11px] font-bold text-stone-700 mb-1">{lang === 'en' ? 'Current Selection:' : 'الاختيار الحالي:'}</span>
         <div className="text-sm font-black text-stone-900">
-          {convertNumbers(displayPrice)} {lang === 'en' ? 'EGP' : 'جنيه مصري'} <span className="text-stone-500 font-bold">{displayWeightText}</span>
+          {convertNumbers(displayPrice)} {lang === 'en' ? 'EGP' : 'جنيه'} <span className="text-stone-500 font-bold">{displayWeightText}</span>
         </div>
       </div>
     </div>
   );
 }
 
-
-function ProductActionButtons({ onCartAction, onNavigate }) {
+function ProductActionButtons({ lang, onCartAction, onNavigate }) {
   return (
     <div className="mt-6 flex flex-col gap-3">
       <div className="grid grid-cols-2 gap-2">
@@ -254,14 +250,14 @@ function ProductActionButtons({ onCartAction, onNavigate }) {
           type="button" onClick={() => onCartAction('cart')}
           className="w-full bg-[#0b291b] text-white text-xs md:text-sm font-black py-3.5 rounded-xl hover:bg-[#071d13] transition-all flex items-center justify-center text-center shadow-md active:scale-[0.99] cursor-pointer min-h-[48px] whitespace-nowrap"
         >
-          Add & Shop
+          {lang === 'en' ? 'Add & Shop' : 'إضافة وتسوق'}
         </button>
 
         <button
           type="button" onClick={() => onCartAction('checkout')}
           className="w-full bg-[#d97706] text-white text-xs md:text-sm font-black py-3.5 rounded-xl hover:bg-[#b45309] transition-all flex items-center justify-center text-center shadow-md active:scale-[0.99] cursor-pointer min-h-[48px] whitespace-nowrap"
         >
-          Checkout
+          {lang === 'en' ? 'Checkout' : 'الدفع'}
         </button>
       </div>
 
@@ -269,7 +265,7 @@ function ProductActionButtons({ onCartAction, onNavigate }) {
         type="button" onClick={onNavigate}
         className="w-full bg-stone-200 text-stone-700 text-xs font-bold py-3 rounded-xl hover:bg-stone-300 transition-all flex items-center justify-center gap-2 cursor-pointer"
       >
-        ◀ Back to Home
+        {lang === 'en' ? '◀ Back to Home' : '◀ العودة للرئيسية'}
       </button>
     </div>
   );
