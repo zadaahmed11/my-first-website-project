@@ -3,7 +3,6 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useLanguage } from '../context/LanguageContext';
 
-
 const useProductHelpers = (lang, isOil, unitLabel) => {
   const convertNumbers = (numStr) => {
     if (!numStr) return '';
@@ -26,7 +25,6 @@ const useProductHelpers = (lang, isOil, unitLabel) => {
 
   return { convertNumbers, handleArabicInputClean, getPresetLabel };
 };
-
 
 export default function ProductDetails({ productsData }) {
   const { id } = useParams();
@@ -113,117 +111,7 @@ export default function ProductDetails({ productsData }) {
     }
     return null;
   };
-
-  const config = getConfiguration();
-
-  return (
-    <div className="min-h-screen bg-stone-50 py-8 px-4 flex justify-center items-center">
-
-      <div className="w-full max-w-4xl bg-white rounded-2xl shadow-xl overflow-hidden md:flex p-6 md:p-8 gap-8 border border-stone-100">
-        
-
-        <div className="w-full md:w-1/2 flex items-center justify-center bg-stone-50 rounded-xl p-4">
-          <img 
-            src={product.image || 'https://placeholder.com'} 
-            alt={product.name} 
-            className="max-h-80 object-contain drop-shadow-md transform hover:scale-105 transition-transform duration-300"
-          />
-        </div>
-
-        <div className="w-full md:w-1/2 flex flex-col justify-between mt-6 md:mt-0">
-          <div>
-            <h1 className="text-2xl md:text-3xl font-bold text-stone-800 mb-2">
-              {lang === 'en' ? product.name : product.nameAr || product.name}
-            </h1>
-            <p className="text-stone-500 mb-6 text-sm">
-              {lang === 'en' ? 'Price per unit:' : 'سعر الوحدة:'} <span className="font-semibold text-emerald-600">{convertNumbers(basePrice)}</span> {lang === 'en' ? `EGP / ${unitLabel}` : `جنية / ${unitLabel}`}
-            </p>
-
-
-            <div className="grid grid-cols-4 gap-2 mb-6">
-              {[
-                { fraction: 0.125, key: 'fractionText_1_8' },
-                { fraction: 0.25, key: 'fractionText_1_4' },
-                { fraction: 0.5, key: 'fractionText_1_2' },
-                { fraction: 1.0, key: 'fractionText_1' }
-              ].map((item) => (
-                <button
-                  key={item.key}
-                  onClick={() => handlePresetSelect(item.fraction, item.key)}
-                  className={`py-2 px-1 rounded-lg font-medium text-xs md:text-sm border transition-all ${
-                    selectedPreset?.key === item.key
-                      ? 'bg-emerald-600 text-white border-emerald-600 shadow-md shadow-emerald-100'
-                      : 'bg-stone-50 text-stone-600 border-stone-200 hover:bg-stone-100'
-                  }`}
-                >
-                  {getPresetLabel(item.key)}
-                </button>
-              ))}
-            </div>
-
-
-            <div className="space-y-4 mb-8">
-              <div>
-                <label className="block text-xs font-semibold text-stone-500 mb-1">
-                  {lang === 'en' ? `Quantity (${unitLabel})` : `الكمية (${unitLabel})`}
-                </label>
-                <input
-                  type="text"
-                  value={convertNumbers(inputQty)}
-                  onChange={(e) => handleQtyChange(e.target.value)}
-                  placeholder={lang === 'en' ? 'Enter quantity' : 'أدخل الكمية'}
-                  className="w-full px-4 py-2.5 bg-stone-50 border border-stone-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all text-stone-700"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-stone-500 mb-1">
-                  {lang === 'en' ? 'Price (EGP)' : 'السعر (جنية)'}
-                </label>
-                <input
-                  type="text"
-                  value={convertNumbers(inputPrice)}
-                  onChange={(e) => handlePriceChange(e.target.value)}
-                  placeholder={lang === 'en' ? 'Enter price' : 'أدخل السعر'}
-                  className="w-full px-4 py-2.5 bg-stone-50 border border-stone-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all text-stone-700"
-                />
-              </div>
-            </div>
-          </div>
-
-
-          <div className="border-t border-stone-100 pt-4">
-            {config && (
-              <div className="flex justify-between items-center mb-4 bg-emerald-50/50 p-3 rounded-xl border border-emerald-100/50">
-                <span className="text-sm text-stone-600 font-medium">
-                  {lang === 'en' ? 'Total:' : 'الإجمالي:'} <span className="text-xs text-stone-400">({convertNumbers(config.finalQtyText)})</span>
-                </span>
-                <span className="text-lg font-bold text-emerald-700">
-                  {convertNumbers(config.finalPrice.toFixed(2))} {lang === 'en' ? 'EGP' : 'جنية'}
-                </span>
-              </div>
-            )}
-
-
-            <button
-              disabled={!config}
-              onClick={() => addToCart(product, config)}
-              className={`w-full py-4 px-6 rounded-xl font-bold text-center tracking-wide transition-all ${
-                config
-                  ? 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg shadow-emerald-600/20 active:scale-[0.99]'
-                  : 'bg-stone-200 text-stone-400 cursor-not-allowed'
-              }`}
-            >
-              {lang === 'en' ? 'Add to Cart' : 'إضافة إلى السلة'}
-            </button>
-          </div>
-        </div>
-
-      </div>
-    </div>
-  );
-}
- const handleCartAction = (target) => {
+  const handleCartAction = (target) => {
     const config = getConfiguration();
     if (!config) {
       alert(lang === 'en' ? 'Please configure weight!' : 'الرجاء تحديد الوزن أولاً!');
@@ -273,7 +161,7 @@ export default function ProductDetails({ productsData }) {
       </div>
     </div>
   );
-
+}
 
 
 function ProductInfoSection({ currentName, currentDesc, imageUrl, lang }) {
@@ -350,7 +238,7 @@ function ProductPricingForm({
       </div>
 
       <div className="mt-6 pt-4 border-t border-stone-200/60">
-        <span className="block text-[11px] font-bold text-stone-700 mb-1">{lang === 'en' ? 'Current Selection:' : 'الاختياز الحالي:'}</span>
+        <span className="block text-[11px] font-bold text-stone-700 mb-1">{lang === 'en' ? 'Current Selection:' : 'الاختيار الحالي:'}</span>
         <div className="text-sm font-black text-stone-900">
           {convertNumbers(displayPrice)} {lang === 'en' ? 'EGP' : 'جنيه مصري'} <span className="text-stone-500 font-bold">{displayWeightText}</span>
         </div>
