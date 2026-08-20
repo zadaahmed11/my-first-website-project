@@ -16,7 +16,6 @@ export default function Home({ productsData }) {
     { id: 'oils', label: lang === 'en' ? "Natural Oils" : "زيوت طبيعية" }
   ];
 
-  // دالة تحويل الأرقام إلى أرقام عربية شرق-آسيوية
   const formatNumber = (num) => {
     if (num === undefined || num === null) return '';
     if (lang === 'en') return num;
@@ -28,10 +27,6 @@ export default function Home({ productsData }) {
     return name
       .replace(/(اعشاب|أعشاب|عشبة|عشبة العطار|توابل|بهارات|زيوت|زيت|حبوب|بقوليات|spices|herbs|oil|grains|oshbat)/gi, '')
       .trim();
-  };
-
-  const scrollToProducts = () => {
-    productsSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
   const normalizeArabic = (text) => {
@@ -53,53 +48,33 @@ export default function Home({ productsData }) {
         if (selectedCategory === 'herbs') {
           return dbCat.includes('herb') || dbCat.includes('medicinal') || dbCatNorm.includes('اعشاب') || dbCatNorm.includes('عطريه');
         }
-
         if (selectedCategory === 'spices') {
           return dbCat.includes('spice') || dbCat.includes('seasoning') || dbCatNorm.includes('توابل') || dbCatNorm.includes('بهارات');
         }
-
         if (selectedCategory === 'grains') {
           return dbCat.includes('grain') || dbCat.includes('legume') || dbCatNorm.includes('حبوب') || dbCatNorm.includes('بقوليات');
         }
-
         if (selectedCategory === 'oils') {
           return dbCat.includes('oil') || dbCatNorm.includes('زيوت') || dbCatNorm.includes('زيت');
         }
-
         return false;
       });
 
   return (
     <div className="bg-stone-50 min-h-screen text-stone-800 pb-20">
       
+      {/* قسم التصميم الكامل المجلوب حياً من Canva */}
       <div className="container mx-auto px-4 pt-6">
-        <div 
-          className="relative text-white py-16 px-6 text-center shadow-lg rounded-3xl overflow-hidden flex flex-col items-center justify-center border border-[#10b981]/10 bg-cover bg-center"
-          style={{ 
-            backgroundImage: 'linear-gradient(rgba(14, 18, 15, 0.8), rgba(14, 18, 15, 0.75)), url("https://www.canva.com/design/DAHSzf-orWY/LumagF7XYB95woOFDMK59g/view?embed")' 
-          }}
-        >
-          <div className="bg-[#10b981]/20 text-[#10b981] text-[10px] font-black tracking-wider uppercase px-3 py-1 rounded-full border border-[#10b981]/30 mb-4 animate-pulse">
-            {lang === 'en' ? "🍃 100% Pure & Authentic Quality" : `🍃 جودة نقية وأصلية ${formatNumber(100)}%`}
-          </div>
-
-          <h1 className="text-3xl md:text-5xl font-black mb-4 tracking-tight max-w-4xl mx-auto leading-tight drop-shadow-md">
-            {lang === 'en' ? "Welcome to Oshbat El Attar Shop" : "مرحباً بكم في محل عشبة العطار"}
-          </h1>
-
-          <p className="text-xs md:text-sm text-stone-300 font-medium leading-relaxed max-w-2xl mx-auto opacity-90 drop-shadow-xs">
-            {lang === 'en' 
-              ? "Discover our premium selection of securely sealed spices, rare wild herbs, and pure natural oils. Delivered anywhere in Egypt with full inspection guarantee at your doorstep before payment."
-              : "اكتشف تشكيلتنا الفاخرة من التوابل المحكمة الغلق، الأعشاب البرية النادرة، والزيوت الطبيعية النقية. نشحن لكافة أنحاء الجمهورية مع ضمان الفحص الكامل عند باب بيتك قبل الدفع."
-            }
-          </p>
-
-          <button 
-            onClick={scrollToProducts}
-            className="mt-6 bg-[#10b981] hover:bg-emerald-400 hover:scale-103 text-stone-900 font-black text-xs px-6 py-2.5 rounded-xl transition-all shadow-md flex items-center gap-2"
+        <div className="relative w-full shadow-lg rounded-3xl overflow-hidden border border-stone-200" style={{ paddingTop: '37%' }}>
+          <iframe 
+            loading="lazy" 
+            className="absolute top-0 left-0 w-full h-full border-none p-0 m-0"
+            src="https://canva.com" 
+            allowFullScreen={true} 
+            allow="fullscreen"
+            title="Grey Red Spice Business Facebook Cover"
           >
-            {lang === 'en' ? "Browse Products Now 🛒" : "تصفح المنتجات الآن 🛒"}
-          </button>
+          </iframe>
         </div>
       </div>
 
