@@ -49,7 +49,6 @@ export default function Checkout() {
     e.preventDefault();
     setTouched({ name: true, phone: true, address: true });
 
-    // التحقق النهائي الصارم قبل الإرسال
     if (!isNameValid) {
       alert(lang === 'en' ? 'Please enter a full name (at least two words).' : 'برجاء إدخال الاسم ثنائي على الأقل.');
       return;
@@ -92,7 +91,7 @@ export default function Checkout() {
       message += `\n💰 *الإجمالي النهائي:* ${getCartTotal().toFixed(2)} ${t('currency')}`;
 
       const encodedMessage = encodeURIComponent(message);
-      window.open(`https://wa.me{WHATSAPP_NUMBER}?text=${encodedMessage}`, '_blank');
+      window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodedMessage}`, '_blank');
 
       alert(t('alertSuccess'));
       clearCart(); 
