@@ -1,8 +1,10 @@
 import React, { useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
-import coverImage from '../assets/cover.png';
 
+
+import coverAr from '../assets/cover_ar.png';
+import coverEn from '../assets/cover_en.png';
 
 export default function Home({ productsData }) {
   const { t, lang } = useLanguage();
@@ -67,9 +69,10 @@ export default function Home({ productsData }) {
       
       <div className="container mx-auto px-4 pt-6">
         <div className="w-full shadow-lg rounded-3xl overflow-hidden border border-stone-200">
+
           <img 
-            src={coverImage} 
-            alt="Oshbat El Attar Banner Design" 
+            src={lang === 'en' ? coverEn : coverAr} 
+            alt={lang === 'en' ? "Oshbat El Attar Banner Design" : "تصميم غلاف عشبة العطار"} 
             className="w-full h-auto object-cover block"
           />
         </div>
@@ -134,9 +137,10 @@ export default function Home({ productsData }) {
                   
                   <Link 
                     to={`/product/${product.id}`}
-                    className="bg-stone-100 hover:bg-[#10b981] hover:text-white transition-all text-stone-700 font-bold text-[11px] px-4 py-2 rounded-xl"
+                    className="bg-stone-900 hover:bg-[#10b981] text-white transition-all font-bold text-[11px] px-3.5 py-2 rounded-xl flex items-center gap-1.5 shadow-sm"
                   >
-                   {lang === 'en' ? "Add to cart" : "أضف إلى السلة"}
+                    <span>{lang === 'en' ? "Add to cart" : "أضف إلى السلة"}</span>
+                    <span className="text-xs">🛒</span>
                   </Link>
                 </div>
               </div>
