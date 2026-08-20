@@ -2,6 +2,10 @@ import React, { useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 
+
+import coverAr from '../assets/cover_ar.png';
+import coverEn from '../assets/cover_en.png';
+
 export default function Home({ productsData }) {
   const { t, lang } = useLanguage();
   const [selectedCategory, setSelectedCategory] = useState('All');
@@ -64,28 +68,13 @@ export default function Home({ productsData }) {
     <div className="bg-stone-50 min-h-screen text-stone-800 pb-20">
       
       <div className="container mx-auto px-4 pt-6">
-        <div className="relative w-full shadow-lg rounded-3xl overflow-hidden border border-stone-200 min-h-[160px] md:min-h-[220px] flex items-center justify-center bg-stone-900">
-          
-          <div 
-            className="absolute inset-0 bg-cover bg-center z-0 scale-105"
-            style={{ 
-              backgroundImage: `url('https://unsplash.com')`, 
-              filter: 'brightness(0.35) contrast(1.15)'
-            }}
+        <div className="w-full shadow-lg rounded-3xl overflow-hidden border border-stone-200">
+
+          <img 
+            src={lang === 'en' ? coverEn : coverAr} 
+            alt={lang === 'en' ? "Oshbat El Attar Banner Design" : "تصميم غلاف عشبة العطار"} 
+            className="w-full h-auto object-cover block"
           />
-
-          <div className="relative z-10 text-center px-4 py-6 flex flex-col items-center justify-center max-w-xl">
-            <h1 className="text-2xl md:text-5xl font-black tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-amber-500 via-orange-400 to-amber-200 mb-1.5 md:mb-3 drop-shadow-sm font-sans">
-              {lang === 'en' ? "OUSHBAT EL ATTAR" : "عشبة العطار"}
-            </h1>
-            
-            <p className="text-[10px] md:text-xs font-bold text-stone-200 uppercase tracking-widest leading-relaxed max-w-[90%] md:max-w-full drop-shadow-xs opacity-90">
-              {lang === 'en' 
-                ? "Discover our premium section of securely sealed spices" 
-                : "اكتشف قسمنا الفاخر من التوابل والبهارات المختومة بإحكام"}
-            </p>
-          </div>
-
         </div>
       </div>
 
@@ -148,7 +137,7 @@ export default function Home({ productsData }) {
                   
                   <Link 
                     to={`/product/${product.id}`}
-                    className="bg-stone-900 text-white transition-all font-bold text-[11px] px-3.5 py-2 rounded-xl flex items-center gap-1.5 shadow-sm"
+                    className="bg-stone-900  text-white transition-all font-bold text-[11px] px-3.5 py-2 rounded-xl flex items-center gap-1.5 shadow-sm"
                   >
                     <span>{lang === 'en' ? "Add to cart" : "أضف إلى السلة"}</span>
                     <span className="text-xs">🛒</span>
