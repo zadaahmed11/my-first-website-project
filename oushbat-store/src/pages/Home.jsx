@@ -2,7 +2,6 @@ import React, { useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 
-
 import coverAr from '../assets/cover_ar.png';
 import coverEn from '../assets/cover_en.png';
 
@@ -69,7 +68,6 @@ export default function Home({ productsData }) {
       
       <div className="container mx-auto px-4 pt-6">
         <div className="w-full shadow-lg rounded-3xl overflow-hidden border border-stone-200">
-
           <img 
             src={lang === 'en' ? coverEn : coverAr} 
             alt={lang === 'en' ? "Oshbat El Attar Banner Design" : "تصميم غلاف عشبة العطار"} 
@@ -80,12 +78,12 @@ export default function Home({ productsData }) {
 
       <div ref={productsSectionRef} className="container mx-auto px-4 py-10 scroll-mt-6">
         
-        <div className="flex flex-wrap gap-2 mb-10 overflow-x-auto pb-2">
+        <div className="flex flex-row gap-2 mb-10 overflow-x-auto pb-3 whitespace-nowrap scrollbar-none [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
           {CATEGORIES.map((cat) => (
             <button
               key={cat.id}
               onClick={() => setSelectedCategory(cat.id)}
-              className={`px-5 py-2.5 rounded-xl font-bold transition-all text-xs whitespace-nowrap ${
+              className={`px-5 py-2.5 rounded-xl font-bold transition-all text-xs whitespace-nowrap shrink-0 ${
                 selectedCategory === cat.id ? 'bg-[#0b422a] text-white shadow-xs' : 'bg-white text-stone-600 border border-stone-200 hover:bg-stone-50'
               }`}
             >
