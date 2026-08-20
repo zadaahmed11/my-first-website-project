@@ -44,11 +44,14 @@ export default function Checkout() {
   const isPhoneValid = /^[0-9]{11}$/.test(cleanPhone);
   const isPhoneInvalid = touched.phone && (!isNameValid || !isPhoneValid);
 
+
   const isAddressInvalid = touched.address && (!isNameValid || !isPhoneValid || !formData.address.trim());
-  const handleSubmit = async (e) => {
+
+    const handleSubmit = async (e) => {
     e.preventDefault();
     setTouched({ name: true, phone: true, address: true });
 
+    // التحقق النهائي الصارم قبل الإرسال لمنع الدخول ببيانات فارغة أو خاطئة
     if (!isNameValid) {
       alert(lang === 'en' ? 'Please enter a full name (at least two words).' : 'برجاء إدخال الاسم ثنائي على الأقل.');
       return;
