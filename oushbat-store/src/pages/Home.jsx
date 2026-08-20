@@ -1,6 +1,8 @@
 import React, { useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
+import coverImage from './assets/cover.png';
+
 
 export default function Home({ productsData }) {
   const { t, lang } = useLanguage();
@@ -63,18 +65,13 @@ export default function Home({ productsData }) {
   return (
     <div className="bg-stone-50 min-h-screen text-stone-800 pb-20">
       
-      {/* قسم التصميم الكامل المجلوب حياً من Canva */}
       <div className="container mx-auto px-4 pt-6">
-        <div className="relative w-full shadow-lg rounded-3xl overflow-hidden border border-stone-200" style={{ paddingTop: '37%' }}>
-          <iframe 
-            loading="lazy" 
-            className="absolute top-0 left-0 w-full h-full border-none p-0 m-0"
-            src="https://canva.com" 
-            allowFullScreen={true} 
-            allow="fullscreen"
-            title="Grey Red Spice Business Facebook Cover"
-          >
-          </iframe>
+        <div className="w-full shadow-lg rounded-3xl overflow-hidden border border-stone-200">
+          <img 
+            src={coverImage} 
+            alt="Oshbat El Attar Banner Design" 
+            className="w-full h-auto object-cover block"
+          />
         </div>
       </div>
 
