@@ -253,13 +253,11 @@ export default function ProductDetails({ productsData }) {
   const currentDesc = lang === 'en' ? (product.desc_en || product.desc_ar || '') : (product.desc_ar || product.desc_en || '');
   
   return (
-    // ضبط الحاوية الخارجية (Container) لتصبح max-w-4xl لراحة أكبر في العرض
     <div className="container mx-auto px-4 py-12 max-w-4xl animate-fadeIn" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
       <div className="bg-white rounded-3xl shadow-xl overflow-hidden grid grid-cols-1 md:grid-cols-2 gap-8 p-6 md:p-8 border border-stone-100">
         
         <ProductInfoSection currentName={currentName} currentDesc={currentDesc} imageUrl={product.image_url} lang={lang} />
         
-        {/* زيادة الحشوة الداخلية لقسم التحكم والأسعار p-6 */}
         <div className="flex flex-col justify-between bg-stone-50 p-6 rounded-2xl border border-stone-200/60 shadow-3xs">
           <ProductPricingForm 
             lang={lang} productPrice={product.price} unitLabel={unitLabel} isOil={isOil}
@@ -352,7 +350,7 @@ function ProductPricingForm({
       </div>
 
       <div className="mt-6 pt-4 border-t border-stone-200/60">
-        <span className="block text-[11px] font-bold text-stone-700 mb-1">{lang === 'en' ? 'Current Selection:' : 'الاختيار الحالي:'}</span>
+        <span className="block text-[11px] font-bold text-stone-700 mb-1">{lang === 'en' ? 'Current Selection:' : 'الاختياز الحالي:'}</span>
         <div className="text-sm font-black text-stone-900">
           {convertNumbers(displayPrice)} {lang === 'en' ? 'EGP' : 'جنيه مصري'} <span className="text-stone-500 font-bold">{displayWeightText}</span>
         </div>
@@ -366,7 +364,6 @@ function ProductActionButtons({ lang, onCartAction, onNavigate }) {
   return (
     <div className="mt-6 space-y-3">
       <div className="grid grid-cols-2 gap-3">
-
         <button
           type="button" onClick={() => onCartAction('cart')}
           className="w-full bg-[#0b291b] text-white text-[11px] md:text-xs font-black py-4 rounded-xl hover:bg-[#071d13] transition-all flex items-center justify-center gap-1.5 shadow-md active:scale-[0.99] cursor-pointer"
