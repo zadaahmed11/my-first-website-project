@@ -254,14 +254,14 @@ function ProductActionButtons({ onCartAction, onNavigate }) {
       <div className="grid grid-cols-2 gap-2">
         <button
           type="button" onClick={() => onCartAction('cart')}
-          className="w-full bg-[#0b291b] text-white text-[11px] md:text-xs font-black py-3.5 rounded-xl hover:bg-[#071d13] transition-all flex items-center justify-center text-center shadow-md active:scale-[0.99] cursor-pointer min-h-[48px] whitespace-nowrap"
+          className="w-full bg-[#0b291b] text-white text-xs md:text-sm font-black py-3.5 rounded-xl hover:bg-[#071d13] transition-all flex items-center justify-center text-center shadow-md active:scale-[0.99] cursor-pointer min-h-[48px] whitespace-nowrap"
         >
           Add & Shop
         </button>
 
         <button
           type="button" onClick={() => onCartAction('checkout')}
-          className="w-full bg-[#d97706] text-white text-[11px] md:text-xs font-black py-3.5 rounded-xl hover:bg-[#b45309] transition-all flex items-center justify-center text-center shadow-md active:scale-[0.99] cursor-pointer min-h-[48px] whitespace-nowrap"
+          className="w-full bg-[#d97706] text-white text-xs md:text-sm font-black py-3.5 rounded-xl hover:bg-[#b45309] transition-all flex items-center justify-center text-center shadow-md active:scale-[0.99] cursor-pointer min-h-[48px] whitespace-nowrap"
         >
           Checkout
         </button>
