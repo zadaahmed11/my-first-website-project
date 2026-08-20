@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
-import coverImage from './assets/cover.png';
+import coverImage from '../assets/cover.png';
 
 
 export default function Home({ productsData }) {
