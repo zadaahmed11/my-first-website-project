@@ -114,7 +114,116 @@ export default function ProductDetails({ productsData }) {
     return null;
   };
 
-  const handleCartAction = (target) => {
+  const config = getConfiguration();
+
+  return (
+    <div className="min-h-screen bg-stone-50 py-8 px-4 flex justify-center items-center">
+
+      <div className="w-full max-w-4xl bg-white rounded-2xl shadow-xl overflow-hidden md:flex p-6 md:p-8 gap-8 border border-stone-100">
+        
+
+        <div className="w-full md:w-1/2 flex items-center justify-center bg-stone-50 rounded-xl p-4">
+          <img 
+            src={product.image || 'https://placeholder.com'} 
+            alt={product.name} 
+            className="max-h-80 object-contain drop-shadow-md transform hover:scale-105 transition-transform duration-300"
+          />
+        </div>
+
+        <div className="w-full md:w-1/2 flex flex-col justify-between mt-6 md:mt-0">
+          <div>
+            <h1 className="text-2xl md:text-3xl font-bold text-stone-800 mb-2">
+              {lang === 'en' ? product.name : product.nameAr || product.name}
+            </h1>
+            <p className="text-stone-500 mb-6 text-sm">
+              {lang === 'en' ? 'Price per unit:' : 'سعر الوحدة:'} <span className="font-semibold text-emerald-600">{convertNumbers(basePrice)}</span> {lang === 'en' ? `EGP / ${unitLabel}` : `جنية / ${unitLabel}`}
+            </p>
+
+
+            <div className="grid grid-cols-4 gap-2 mb-6">
+              {[
+                { fraction: 0.125, key: 'fractionText_1_8' },
+                { fraction: 0.25, key: 'fractionText_1_4' },
+                { fraction: 0.5, key: 'fractionText_1_2' },
+                { fraction: 1.0, key: 'fractionText_1' }
+              ].map((item) => (
+                <button
+                  key={item.key}
+                  onClick={() => handlePresetSelect(item.fraction, item.key)}
+                  className={`py-2 px-1 rounded-lg font-medium text-xs md:text-sm border transition-all ${
+                    selectedPreset?.key === item.key
+                      ? 'bg-emerald-600 text-white border-emerald-600 shadow-md shadow-emerald-100'
+                      : 'bg-stone-50 text-stone-600 border-stone-200 hover:bg-stone-100'
+                  }`}
+                >
+                  {getPresetLabel(item.key)}
+                </button>
+              ))}
+            </div>
+
+
+            <div className="space-y-4 mb-8">
+              <div>
+                <label className="block text-xs font-semibold text-stone-500 mb-1">
+                  {lang === 'en' ? `Quantity (${unitLabel})` : `الكمية (${unitLabel})`}
+                </label>
+                <input
+                  type="text"
+                  value={convertNumbers(inputQty)}
+                  onChange={(e) => handleQtyChange(e.target.value)}
+                  placeholder={lang === 'en' ? 'Enter quantity' : 'أدخل الكمية'}
+                  className="w-full px-4 py-2.5 bg-stone-50 border border-stone-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all text-stone-700"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-stone-500 mb-1">
+                  {lang === 'en' ? 'Price (EGP)' : 'السعر (جنية)'}
+                </label>
+                <input
+                  type="text"
+                  value={convertNumbers(inputPrice)}
+                  onChange={(e) => handlePriceChange(e.target.value)}
+                  placeholder={lang === 'en' ? 'Enter price' : 'أدخل السعر'}
+                  className="w-full px-4 py-2.5 bg-stone-50 border border-stone-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all text-stone-700"
+                />
+              </div>
+            </div>
+          </div>
+
+
+          <div className="border-t border-stone-100 pt-4">
+            {config && (
+              <div className="flex justify-between items-center mb-4 bg-emerald-50/50 p-3 rounded-xl border border-emerald-100/50">
+                <span className="text-sm text-stone-600 font-medium">
+                  {lang === 'en' ? 'Total:' : 'الإجمالي:'} <span className="text-xs text-stone-400">({convertNumbers(config.finalQtyText)})</span>
+                </span>
+                <span className="text-lg font-bold text-emerald-700">
+                  {convertNumbers(config.finalPrice.toFixed(2))} {lang === 'en' ? 'EGP' : 'جنية'}
+                </span>
+              </div>
+            )}
+
+
+            <button
+              disabled={!config}
+              onClick={() => addToCart(product, config)}
+              className={`w-full py-4 px-6 rounded-xl font-bold text-center tracking-wide transition-all ${
+                config
+                  ? 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg shadow-emerald-600/20 active:scale-[0.99]'
+                  : 'bg-stone-200 text-stone-400 cursor-not-allowed'
+              }`}
+            >
+              {lang === 'en' ? 'Add to Cart' : 'إضافة إلى السلة'}
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  );
+}
+ const handleCartAction = (target) => {
     const config = getConfiguration();
     if (!config) {
       alert(lang === 'en' ? 'Please configure weight!' : 'الرجاء تحديد الوزن أولاً!');
@@ -142,15 +251,16 @@ export default function ProductDetails({ productsData }) {
 
   const currentName = lang === 'en' ? (product.name_en || product.name_ar || '') : (product.name_ar || product.name_en || '');
   const currentDesc = lang === 'en' ? (product.desc_en || product.desc_ar || '') : (product.desc_ar || product.desc_en || '');
+  
   return (
-    <div className="container mx-auto px-4 py-12 max-w-3xl animate-fadeIn" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
-      <div className="bg-white rounded-3xl shadow-lg overflow-hidden grid grid-cols-1 md:grid-cols-2 gap-6 p-5 md:p-6 border border-stone-100">
+    // ضبط الحاوية الخارجية (Container) لتصبح max-w-4xl لراحة أكبر في العرض
+    <div className="container mx-auto px-4 py-12 max-w-4xl animate-fadeIn" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
+      <div className="bg-white rounded-3xl shadow-xl overflow-hidden grid grid-cols-1 md:grid-cols-2 gap-8 p-6 md:p-8 border border-stone-100">
         
-
         <ProductInfoSection currentName={currentName} currentDesc={currentDesc} imageUrl={product.image_url} lang={lang} />
         
-
-        <div className="flex flex-col justify-between bg-stone-50 p-5 rounded-2xl border border-stone-200/60 shadow-3xs">
+        {/* زيادة الحشوة الداخلية لقسم التحكم والأسعار p-6 */}
+        <div className="flex flex-col justify-between bg-stone-50 p-6 rounded-2xl border border-stone-200/60 shadow-3xs">
           <ProductPricingForm 
             lang={lang} productPrice={product.price} unitLabel={unitLabel} isOil={isOil}
             selectedPreset={selectedPreset} inputPrice={inputPrice} inputQty={inputQty}
@@ -165,20 +275,20 @@ export default function ProductDetails({ productsData }) {
       </div>
     </div>
   );
-}
+
 
 
 function ProductInfoSection({ currentName, currentDesc, imageUrl, lang }) {
   return (
     <div className="flex flex-col justify-between h-full">
       <div>
-        <div className="relative rounded-2xl overflow-hidden h-72 bg-stone-50 border border-stone-100 shadow-2xs">
+        <div className="relative rounded-2xl overflow-hidden h-80 bg-stone-50 border border-stone-100 shadow-2xs">
           <img src={imageUrl} alt={currentName} className="w-full h-full object-cover" />
           <span className="absolute top-3 left-3 bg-[#10b981] text-white font-black text-[9px] uppercase px-2 py-0.5 rounded-md shadow-xs">Pure</span>
           <span className="absolute bottom-3 right-3 bg-black/60 text-stone-200 font-extrabold text-[9px] px-2.5 py-1 rounded-md backdrop-blur-xs">WILD HERBS</span>
         </div>
         <div className="mt-5">
-          <h1 className="text-2xl font-black text-stone-900 mb-2">{currentName}</h1>
+          <h1 className="text-2xl md:text-3xl font-black text-stone-900 mb-2">{currentName}</h1>
           <p className="text-stone-700 text-sm mt-3 leading-relaxed antialiased font-bold">
             {currentDesc || (lang === 'en' ? "Premium organic quality product harvested directly from pure nature." : "منتج عضوي ذو جودة عالية مستخلص من الطبيعة النظيفة مباشرة إليك.")}
           </p>
@@ -212,7 +322,7 @@ function ProductPricingForm({
           ].map((item) => (
             <button
               key={item.key} type="button" onClick={() => onPresetSelect(item.val, item.key)}
-              className={`py-2 rounded-lg text-xs font-black border transition-all ${
+              className={`py-2.5 rounded-lg text-xs font-black border transition-all ${
                 selectedPreset?.key === item.key ? 'bg-[#0b291b] text-white border-[#0b291b] shadow-sm' : 'bg-white text-stone-700 border-stone-200 hover:bg-stone-100'
               }`}
             >
@@ -228,7 +338,7 @@ function ProductPricingForm({
           <input 
             type="text" placeholder={lang === 'en' ? "EGP" : "جنيه"} value={convertNumbers(inputPrice)} 
             onChange={(e) => onPriceChange(e.target.value)}
-            className="w-full bg-white border border-stone-200 rounded-xl px-3 py-2 text-xs font-bold text-stone-800 focus:outline-none focus:border-stone-400"
+            className="w-full bg-white border border-stone-200 rounded-xl px-3 py-2.5 text-xs font-bold text-stone-800 focus:outline-none focus:border-stone-400"
           />
         </div>
         <div>
@@ -236,7 +346,7 @@ function ProductPricingForm({
           <input 
             type="text" placeholder={convertNumbers("0.00")} value={convertNumbers(inputQty)} 
             onChange={(e) => onQtyChange(e.target.value)}
-            className="w-full bg-white border border-stone-200 rounded-xl px-3 py-2 text-xs font-bold text-stone-800 focus:outline-none focus:border-stone-400"
+            className="w-full bg-white border border-stone-200 rounded-xl px-3 py-2.5 text-xs font-bold text-stone-800 focus:outline-none focus:border-stone-400"
           />
         </div>
       </div>
@@ -254,18 +364,19 @@ function ProductPricingForm({
 
 function ProductActionButtons({ lang, onCartAction, onNavigate }) {
   return (
-    <div className="mt-6 space-y-2.5">
-      <div className="grid grid-cols-2 gap-2.5">
+    <div className="mt-6 space-y-3">
+      <div className="grid grid-cols-2 gap-3">
+
         <button
           type="button" onClick={() => onCartAction('cart')}
-          className="w-full bg-[#0b291b] text-white text-[11px] md:text-xs font-black py-3 rounded-xl hover:bg-[#071d13] transition-all flex items-center justify-center gap-1.5 shadow-xs cursor-pointer"
+          className="w-full bg-[#0b291b] text-white text-[11px] md:text-xs font-black py-4 rounded-xl hover:bg-[#071d13] transition-all flex items-center justify-center gap-1.5 shadow-md active:scale-[0.99] cursor-pointer"
         >
           <span>{lang === 'en' ? 'Add to cart & Shopping' : 'إضافة الي السله وتسوّق'}</span>
         </button>
 
         <button
           type="button" onClick={() => onCartAction('checkout')}
-          className="w-full bg-[#d97706] text-white text-[11px] md:text-xs font-black py-3 rounded-xl hover:bg-[#b45309] transition-all flex items-center justify-center gap-1.5 shadow-xs cursor-pointer"
+          className="w-full bg-[#d97706] text-white text-[11px] md:text-xs font-black py-4 rounded-xl hover:bg-[#b45309] transition-all flex items-center justify-center gap-1.5 shadow-md active:scale-[0.99] cursor-pointer"
         >
           <span>{lang === 'en' ? 'Proceed to checkout' : 'استمرار والدفع'}</span>
         </button>
@@ -273,7 +384,7 @@ function ProductActionButtons({ lang, onCartAction, onNavigate }) {
 
       <button
         type="button" onClick={onNavigate}
-        className="w-full bg-stone-200 text-stone-700 text-xs font-bold py-2.5 rounded-xl hover:bg-stone-300 transition-all flex items-center justify-center gap-2 cursor-pointer"
+        className="w-full bg-stone-200 text-stone-700 text-xs font-bold py-3 rounded-xl hover:bg-stone-300 transition-all flex items-center justify-center gap-2 cursor-pointer"
       >
         <span>{lang === 'en' ? '◀ Back to Home' : '◀ العودة للرئيسية'}</span>
       </button>
