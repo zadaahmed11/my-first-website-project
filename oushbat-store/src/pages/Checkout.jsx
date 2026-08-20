@@ -6,7 +6,7 @@ import { X, ShoppingBag, Send, ArrowLeft } from 'lucide-react';
 
 export default function Checkout() {
   const { cart, addToCart, removeFromCart, getCartTotal, clearCart } = useCart();
-  const { t, lang } = useLanguage();
+  const { lang } = useLanguage(); 
   const navigate = useNavigate();
 
   const WHATSAPP_NUMBER = "201121777574"; 
@@ -72,14 +72,14 @@ export default function Checkout() {
     
     cart.forEach((item, index) => {
       const name = lang === 'en' ? item.name_en : item.name_ar;
-      message += `${index + 1}. ${name} [${item.quantityText}] -> ${item.currentPrice.toFixed(2)} ${t('currency')}\n`;
+      message += `${index + 1}. ${name} [${item.quantityText}] -> ${item.currentPrice.toFixed(2)} ${lang === 'en' ? 'EGP' : 'ج.م'}\n`;
     });
 
-    message += `\n${lang === 'en' ? '💰 Final Total:' : '💰 الإجمالي النهائي:'} ${getCartTotal().toFixed(2)} ${t('currency')}`;
+    message += `\n${lang === 'en' ? '💰 Final Total:' : '💰 الإجمالي النهائي:'} ${getCartTotal().toFixed(2)} ${lang === 'en' ? 'EGP' : 'ج.م'}`;
 
     const encodedMessage = encodeURIComponent(message);
     window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodedMessage}`, '_blank');
-    alert(t('alertSuccess'));
+    alert(lang === 'en' ? 'Order sent successfully via WhatsApp!' : 'تم إرسال طلبك بنجاح عبر الواتساب!');
     clearCart(); 
     navigate('/'); 
   };
@@ -110,14 +110,18 @@ export default function Checkout() {
         </button>
       </div>
 
-      <h2 className="text-2xl font-black text-stone-900 mb-8 border-b pb-4">{t('checkoutTitle')}</h2>
+      <h2 className="text-2xl font-black text-stone-900 mb-8 border-b pb-4">
+        {lang === 'en' ? 'Checkout' : 'إتمام الطلب والدفع'}
+      </h2>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
         
         <form onSubmit={handleSubmit} className="lg:col-span-7 bg-white p-6 md:p-8 rounded-3xl shadow-2xs border border-stone-200/60 space-y-4">
-          <h3 className="text-base font-bold text-[#0b422a] border-b pb-2 mb-2">{t('shippingDetails')}</h3>
+          <h3 className="text-base font-bold text-[#0b422a] border-b pb-2 mb-2">
+            {lang === 'en' ? 'Shipping Details' : 'تفاصيل الشحن والتوصيل'}
+          </h3>
           
-          {/* 1. حقل الاسم المترجم */}
+
           <div>
             <label className="block text-xs font-bold text-stone-700 mb-1">{lang === 'en' ? 'Name' : 'الاسم'}</label>
             <input 
@@ -133,7 +137,7 @@ export default function Checkout() {
           
 
           <div>
-            <label className="block text-xs font-bold text-stone-700 mb-1">{t('phone')}</label>
+            <label className="block text-xs font-bold text-stone-700 mb-1">{lang === 'en' ? 'Phone Number' : 'رقم الهاتف'}</label>
             <input 
               type="tel" 
               disabled={!isNameValid}
@@ -163,11 +167,11 @@ export default function Checkout() {
           </div>
           
           <div>
-            <label className="block text-xs font-bold text-stone-700 mb-1">{t('notes')}</label>
+            <label className="block text-xs font-bold text-stone-700 mb-1">{lang === 'en' ? 'Order Notes (Optional)' : 'ملاحظات الطلب (اختياري)'}</label>
             <textarea 
               rows="2" value={formData.notes} 
               onChange={(e) => setFormData({ ...formData, notes: e.target.value })} 
-              placeholder={t('notesPlaceholder')} 
+              placeholder={lang === 'en' ? 'Any special instructions for delivery...' : 'أي تعليمات خاصة بالتوصيل أو الشحن...'} 
               className="w-full p-3 text-sm border border-stone-200 rounded-xl bg-stone-50/50 focus:ring-2 focus:ring-emerald-600 focus:outline-hidden font-medium"
             ></textarea>
           </div>
@@ -179,7 +183,7 @@ export default function Checkout() {
               className={`w-full flex items-center justify-center gap-2 text-white py-4 rounded-xl font-black text-sm shadow-md transition transform hover:scale-101 ${cart.length === 0 ? 'bg-stone-400 cursor-not-allowed' : 'bg-[#0b422a] hover:bg-emerald-800'}`}
             >
               <Send className="w-4 h-4" />
-              {t('confirmOrder')} ({convertNumbers(getCartTotal().toFixed(2))} {t('currency')})
+              {lang === 'en' ? 'Confirm Order' : 'تأكيد الطلب'} ({convertNumbers(getCartTotal().toFixed(2))} {lang === 'en' ? 'EGP' : 'ج.م'})
             </button>
           </div>
         </form>
@@ -187,7 +191,7 @@ export default function Checkout() {
         <div className="lg:col-span-5 space-y-6">
           <div className="bg-white p-5 rounded-3xl border border-stone-200/60 shadow-2xs">
             <h4 className="font-black text-sm text-stone-800 mb-4 border-b pb-2 flex items-center justify-between">
-              <span>{t('orderSummary')}</span>
+              <span>{lang === 'en' ? 'Order Summary' : 'ملخص الطلب'}</span>
               <span className="bg-stone-100 text-stone-700 px-2 py-0.5 rounded-md text-xs">{cart.length}</span>
             </h4>
             
@@ -217,7 +221,7 @@ export default function Checkout() {
                             <span className="text-[9px] font-black text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md block w-fit mt-0.5">{item.quantityText}</span>
                           </div>
                           <span className="text-xs font-black text-stone-900 whitespace-nowrap">
-                            {convertNumbers(item.currentPrice.toFixed(2))} {t('currency')}
+                            {convertNumbers(item.currentPrice.toFixed(2))} {lang === 'en' ? 'EGP' : 'ج.م'}
                           </span>
                         </div>
 
@@ -257,7 +261,7 @@ export default function Checkout() {
                     {lang === 'en' ? "Total Price:" : "إجمالي سعر الطلب:"}
                   </span>
                   <span className="text-sm font-black text-[#0b422a] bg-stone-50 border border-stone-100 px-3 py-1 rounded-xl">
-                    {convertNumbers(getCartTotal().toFixed(2))} {t('currency')}
+                    {convertNumbers(getCartTotal().toFixed(2))} {lang === 'en' ? 'EGP' : 'ج.م'}
                   </span>
                 </div>
               </>
