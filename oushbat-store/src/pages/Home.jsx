@@ -6,9 +6,7 @@ export default function Home({ productsData }) {
   const { t, lang } = useLanguage();
   const [selectedCategory, setSelectedCategory] = useState('All');
   
-
   const productsSectionRef = useRef(null);
-
 
   const CATEGORIES = [
     { id: 'All', label: lang === 'en' ? "All Products" : "كل المنتجات" },
@@ -36,7 +34,6 @@ export default function Home({ productsData }) {
     productsSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
-
   const normalizeArabic = (text) => {
     if (!text) return '';
     return String(text)
@@ -47,13 +44,11 @@ export default function Home({ productsData }) {
       .replace(/\s+/g, ' ');
   };
 
-
   const filteredProducts = selectedCategory === 'All' 
     ? productsData 
     : (productsData || []).filter(p => {
         const dbCat = String(p.category || '').toLowerCase().trim();
         const dbCatNorm = normalizeArabic(p.category);
-
 
         if (selectedCategory === 'herbs') {
           return dbCat.includes('herb') || dbCat.includes('medicinal') || dbCatNorm.includes('اعشاب') || dbCatNorm.includes('عطريه');
@@ -62,7 +57,7 @@ export default function Home({ productsData }) {
         if (selectedCategory === 'spices') {
           return dbCat.includes('spice') || dbCat.includes('seasoning') || dbCatNorm.includes('توابل') || dbCatNorm.includes('بهارات');
         }
-        // إذا ضغط المستخدم على قسم الحبوب
+
         if (selectedCategory === 'grains') {
           return dbCat.includes('grain') || dbCat.includes('legume') || dbCatNorm.includes('حبوب') || dbCatNorm.includes('بقوليات');
         }
@@ -77,19 +72,17 @@ export default function Home({ productsData }) {
   return (
     <div className="bg-stone-50 min-h-screen text-stone-800 pb-20">
       
-
       <div className="container mx-auto px-4 pt-6">
         <div 
-          className="relative text-white py-16 px-6 text-center shadow-lg rounded-3xl overflow-hidden flex flex-col items-center justify-center border border-[#10b981]/10"
-          style={{ backgroundImage: 'radial-gradient(circle at center, #0e5234 0%, #0b422a 65%, #07301e 100%)' }}
+          className="relative text-white py-16 px-6 text-center shadow-lg rounded-3xl overflow-hidden flex flex-col items-center justify-center border border-[#10b981]/10 bg-cover bg-center"
+          style={{ 
+            backgroundImage: 'linear-gradient(rgba(14, 18, 15, 0.8), rgba(14, 18, 15, 0.75)), url("https://www.canva.com/design/DAHSzf-orWY/LumagF7XYB95woOFDMK59g/view?embed")' 
+          }}
         >
-          
-
           <div className="bg-[#10b981]/20 text-[#10b981] text-[10px] font-black tracking-wider uppercase px-3 py-1 rounded-full border border-[#10b981]/30 mb-4 animate-pulse">
             {lang === 'en' ? "🍃 100% Pure & Authentic Quality" : `🍃 جودة نقية وأصلية ${formatNumber(100)}%`}
           </div>
 
-          {/* العنوان النظيف بدون أي أيقونات لفرع الشجرة */}
           <h1 className="text-3xl md:text-5xl font-black mb-4 tracking-tight max-w-4xl mx-auto leading-tight drop-shadow-md">
             {lang === 'en' ? "Welcome to Oshbat El Attar Shop" : "مرحباً بكم في محل عشبة العطار"}
           </h1>
@@ -101,21 +94,17 @@ export default function Home({ productsData }) {
             }
           </p>
 
-
           <button 
             onClick={scrollToProducts}
             className="mt-6 bg-[#10b981] hover:bg-emerald-400 hover:scale-103 text-stone-900 font-black text-xs px-6 py-2.5 rounded-xl transition-all shadow-md flex items-center gap-2"
           >
             {lang === 'en' ? "Browse Products Now 🛒" : "تصفح المنتجات الآن 🛒"}
           </button>
-
         </div>
       </div>
 
-
       <div ref={productsSectionRef} className="container mx-auto px-4 py-10 scroll-mt-6">
         
-
         <div className="flex flex-wrap gap-2 mb-10 overflow-x-auto pb-2">
           {CATEGORIES.map((cat) => (
             <button
@@ -129,7 +118,6 @@ export default function Home({ productsData }) {
             </button>
           ))}
         </div>
-
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {filteredProducts.map((product) => {
@@ -174,12 +162,11 @@ export default function Home({ productsData }) {
                   
                   <Link 
                     to={`/product/${product.id}`}
-                    className="bg-[#0b422a] hover:bg-emerald-800 text-white px-3.5 py-2 rounded-lg text-[11px] font-black transition-all shadow-2xs text-center whitespace-nowrap"
+                    className="bg-stone-100 hover:bg-[#10b981] hover:text-white transition-all text-stone-700 font-bold text-[11px] px-4 py-2 rounded-xl"
                   >
-                    {lang === 'en' ? "Add to Cart 🛒" : "أضف للعربة 🛒"}
+                    {lang === 'en' ? "Details" : "التفاصيل"}
                   </Link>
                 </div>
-
               </div>
             );
           })}
