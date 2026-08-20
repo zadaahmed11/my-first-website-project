@@ -250,7 +250,7 @@ export default function ProductDetails({ productsData }) {
                 onClick={handleAddToCartAction}
                 className="w-full bg-[#0b291b] text-white text-[11px] md:text-xs font-black py-3 rounded-xl hover:bg-[#071d13] transition-all flex items-center justify-center gap-1.5 shadow-xs cursor-pointer"
               >
-                {lang === 'en' ? 'Add & Shop 🛒' : 'إضافة وتسوّق 🛒'}
+                {lang === 'en' ? 'Add to cart & Shopping 🛒' : 'إضافة الي السله وتسوّق 🛒'}
               </button>
 
               <button
@@ -258,7 +258,7 @@ export default function ProductDetails({ productsData }) {
                 onClick={handleProceedAction}
                 className="w-full bg-[#d97706] text-white text-[11px] md:text-xs font-black py-3 rounded-xl hover:bg-[#b45309] transition-all flex items-center justify-center gap-1.5 shadow-xs cursor-pointer"
               >
-                {lang === 'en' ? 'Proceed 🚀' : 'استمرار والدفع 🚀'}
+                {lang === 'en' ? 'Proceed to checkout 🚀' : 'استمرار والدفع 🚀'}
               </button>
             </div>
 
