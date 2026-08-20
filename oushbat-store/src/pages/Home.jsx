@@ -137,7 +137,7 @@ export default function Home({ productsData }) {
                   
                   <Link 
                     to={`/product/${product.id}`}
-                    className="bg-stone-900 hover:bg-[#10b981] text-white transition-all font-bold text-[11px] px-3.5 py-2 rounded-xl flex items-center gap-1.5 shadow-sm"
+                    className="bg-stone-900  text-white transition-all font-bold text-[11px] px-3.5 py-2 rounded-xl flex items-center gap-1.5 shadow-sm"
                   >
                     <span>{lang === 'en' ? "Add to cart" : "أضف إلى السلة"}</span>
                     <span className="text-xs">🛒</span>
