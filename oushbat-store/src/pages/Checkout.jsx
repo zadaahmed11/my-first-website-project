@@ -47,11 +47,11 @@ export default function Checkout() {
 
   const isAddressInvalid = touched.address && (!isNameValid || !isPhoneValid || !formData.address.trim());
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = (e) => {
     e.preventDefault();
     setTouched({ name: true, phone: true, address: true });
 
-    // التحقق النهائي الصارم قبل الإرسال لمنع الدخول ببيانات فارغة أو خاطئة
+
     if (!isNameValid) {
       alert(lang === 'en' ? 'Please enter a full name (at least two words).' : 'برجاء إدخال الاسم ثنائي على الأقل.');
       return;
@@ -65,45 +65,30 @@ export default function Checkout() {
       return;
     }
 
-    try {
-      const { error } = await supabase.from('orders').insert([
-        {
-          customer_name: formData.name,
-          address: formData.address,
-          phone: cleanPhone,
-          notes: formData.notes,
-          total_price: Number(getCartTotal()),
-          items: cart, 
-          created_at: new Date()
-        }
-      ]);
-      if (error) throw error;
 
-      let message = `*طلب جديد 🛒*\n\n`;
-      message += `👤 *الاسم:* ${formData.name}\n`;
-      message += `📞 *الرقم:* ${cleanPhone}\n`;
-      message += `📍 *العنوان:* ${formData.address}\n`;
-      if (formData.notes) message += `📝 *ملاحظات:* ${formData.notes}\n\n`;
-      message += `📦 *المنتجات المطلوبة:*\n`;
-      
-      cart.forEach((item, index) => {
-        const name = lang === 'en' ? item.name_en : item.name_ar;
-        message += `${index + 1}. ${name} [${item.quantityText}] -> ${item.currentPrice.toFixed(2)} ${t('currency')}\n`;
-      });
+    let message = `*طلب جديد 🛒*\n\n`;
+    message += `👤 *الاسم:* ${formData.name}\n`;
+    message += `📞 *الرقم:* ${cleanPhone}\n`;
+    message += `📍 *العنوان:* ${formData.address}\n`;
+    if (formData.notes) message += `📝 *ملاحظات:* ${formData.notes}\n\n`;
+    message += `📦 *المنتجات المطلوبة:*\n`;
+    
+    cart.forEach((item, index) => {
+      const name = lang === 'en' ? item.name_en : item.name_ar;
+      message += `${index + 1}. ${name} [${item.quantityText}] -> ${item.currentPrice.toFixed(2)} ${t('currency')}\n`;
+    });
 
-      message += `\n💰 *الإجمالي النهائي:* ${getCartTotal().toFixed(2)} ${t('currency')}`;
+    message += `\n💰 *الإجمالي النهائي:* ${getCartTotal().toFixed(2)} ${t('currency')}`;
 
-      const encodedMessage = encodeURIComponent(message);
-      window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodedMessage}`, '_blank');
+    const encodedMessage = encodeURIComponent(message);
 
-      alert(t('alertSuccess'));
-      clearCart(); 
-      navigate('/'); 
-    } catch (error) {
-      console.error('Error saving order:', error.message);
-      alert(lang === 'en' ? 'Failed to send your order, please retry.' : 'حدث خطأ أثناء إرسال طلبك، يرجى المحاولة مرة أخرى.');
-    }
+
+    window.open(`https://wa.me{WHATSAPP_NUMBER}?text=${encodedMessage}`, '_blank');
+    alert(t('alertSuccess'));
+    clearCart(); 
+    navigate('/'); 
   };
+
 
   const cleanProductName = (name) => {
     if (!name) return '';
