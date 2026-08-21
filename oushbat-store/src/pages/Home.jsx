@@ -2,7 +2,6 @@ import React, { useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 
-import coverAr from '../assets/cover_ar.png';
 import coverEn from '../assets/cover_en.mp4';
 
 export default function Home({ productsData }) {
@@ -70,34 +69,26 @@ export default function Home({ productsData }) {
       <div className="container mx-auto px-4 pt-6">
         <div className="w-full shadow-lg rounded-3xl overflow-hidden border border-stone-200 bg-white">
           
-          {lang === 'en' ? (
-            <video 
-              ref={videoRef}
-              key={lang}
-              autoPlay 
-              loop 
-              muted
-              playsInline
-              preload="auto"
-              className="w-full h-auto block"
-              style={{ imageRendering: 'crisp-edges', videoRendering: 'crisp-edges' }}
-              onLoadedMetadata={() => {
-                if (videoRef.current) {
-                  videoRef.current.muted = true;
-                  videoRef.current.play().catch(err => console.log("Autoplay prevent:", err));
-                }
-              }}
-            >
-              <source src={coverEn} type="video/mp4" />
-              Your browser does not support the video tag.
-            </video>
-          ) : (
-            <img 
-              src={coverAr} 
-              alt="تصميم غلاف عشبة العطار" 
-              className="w-full h-auto object-cover block"
-            />
-          )}
+          <video 
+            ref={videoRef}
+            key={lang}
+            autoPlay 
+            loop 
+            muted
+            playsInline
+            preload="auto"
+            className="w-full h-auto block"
+            style={{ imageRendering: 'crisp-edges', videoRendering: 'crisp-edges' }}
+            onLoadedMetadata={() => {
+              if (videoRef.current) {
+                videoRef.current.muted = true;
+                videoRef.current.play().catch(err => console.log("Autoplay prevent:", err));
+              }
+            }}
+          >
+            <source src={coverEn} type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
 
         </div>
       </div>
