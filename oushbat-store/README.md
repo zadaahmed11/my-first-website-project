@@ -55,8 +55,8 @@ cd oushbat-store
 ### 2. Configure Environment Variables
 Create a `.env.local` file in the root directory and add your secure keys:
 ```env
-VITE_SUPABASE_URL=your_supabase_project_url
-VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+VITE_SUPABASE_URL=https://bdzdhepkknezyzkbhztk.supabase.co
+VITE_SUPABASE_ANON_KEY=sb_publishable_r5uQUwf3UG0ABsmTXRv33Q_m4SPocTt
 ```
 
 ### 3. Install & Launch
