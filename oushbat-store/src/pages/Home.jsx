@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 
 import coverAr from '../assets/cover_ar.png';
-import coverEn from '../assets/cover_en.png';
+import coverEn from '../assets/cover_en.gif';
 
 export default function Home({ productsData }) {
   const { t, lang } = useLanguage();
