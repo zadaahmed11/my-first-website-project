@@ -10,6 +10,7 @@ export default function Home({ productsData }) {
   const [selectedCategory, setSelectedCategory] = useState('All');
   
   const productsSectionRef = useRef(null);
+  const videoRef = useRef(null);
 
   const CATEGORIES = [
     { id: 'All', label: lang === 'en' ? "All Products" : "كل المنتجات" },
@@ -69,16 +70,24 @@ export default function Home({ productsData }) {
       <div className="container mx-auto px-4 pt-6">
         <div className="w-full shadow-lg rounded-3xl overflow-hidden border border-stone-200 bg-white">
           
-          {/* التعديل السحري هنا: التحقق من اللغة لعرض الفيديو أو الصورة */}
           {lang === 'en' ? (
             <video 
-              src={coverEn} 
-              autoplay 
+              ref={videoRef}
+              key={lang}
+              autoPlay 
               loop 
-              muted 
-              playsinline
+              muted
+              playsInline
+              preload="auto"
               className="w-full h-auto object-cover block"
+              onLoadedMetadata={() => {
+                if (videoRef.current) {
+                  videoRef.current.muted = true;
+                  videoRef.current.play().catch(err => console.log("Autoplay prevent:", err));
+                }
+              }}
             >
+              <source src={coverEn} type="video/mp4" />
               Your browser does not support the video tag.
             </video>
           ) : (
