@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 
 import coverAr from '../assets/cover_ar.png';
-import coverEn from '../assets/cover_en.gif';
+import coverEn from '../assets/cover_en.mp4';
 
 export default function Home({ productsData }) {
   const { t, lang } = useLanguage();
@@ -67,12 +67,28 @@ export default function Home({ productsData }) {
     <div className="bg-stone-50 min-h-screen text-stone-800 pb-20">
       
       <div className="container mx-auto px-4 pt-6">
-        <div className="w-full shadow-lg rounded-3xl overflow-hidden border border-stone-200">
-          <img 
-            src={lang === 'en' ? coverEn : coverAr} 
-            alt={lang === 'en' ? "Oshbat El Attar Banner Design" : "تصميم غلاف عشبة العطار"} 
-            className="w-full h-auto object-cover block"
-          />
+        <div className="w-full shadow-lg rounded-3xl overflow-hidden border border-stone-200 bg-white">
+          
+          {/* التعديل السحري هنا: التحقق من اللغة لعرض الفيديو أو الصورة */}
+          {lang === 'en' ? (
+            <video 
+              src={coverEn} 
+              autoplay 
+              loop 
+              muted 
+              playsinline
+              className="w-full h-auto object-cover block"
+            >
+              Your browser does not support the video tag.
+            </video>
+          ) : (
+            <img 
+              src={coverAr} 
+              alt="تصميم غلاف عشبة العطار" 
+              className="w-full h-auto object-cover block"
+            />
+          )}
+
         </div>
       </div>
 
