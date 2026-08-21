@@ -48,7 +48,7 @@ src/
 
 ### 1. Clone & Navigate
 ```bash
-git clone https://github.com
+git clone https://github.com/zadaahmed11/my-first-website-project.git
 cd oushbat-store
 ```
 
