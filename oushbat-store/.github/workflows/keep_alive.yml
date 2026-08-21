@@ -11,6 +11,6 @@ jobs:
     steps:
       - name: Send API Request to Supabase
         run: |
-          curl -X GET "https://supabase.co" \
+          curl -X GET "https://bdzdhepkknezyzkbhztk.supabase.co" \
           -H "apikey: sb_publishable_r5uQUwf3UG0ABsmTXRv33Q_m4SPocTt" \
           -H "Authorization: Bearer sb_publishable_r5uQUwf3UG0ABsmTXRv33Q_m4SPocTt"
