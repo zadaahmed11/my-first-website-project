@@ -1,0 +1,16 @@
+name: Keep Supabase Alive
+
+on:
+  schedule:
+    - cron: '0 12 */2 * *'
+  workflow_dispatch:
+
+jobs:
+  ping_supabase:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send API Request to Supabase
+        run: |
+          curl -X GET "https://supabase.co" \
+          -H "apikey: sb_publishable_r5uQUwf3UG0ABsmTXRv33Q_m4SPocTt" \
+          -H "Authorization: Bearer sb_publishable_r5uQUwf3UG0ABsmTXRv33Q_m4SPocTt"
