@@ -79,7 +79,8 @@ export default function Home({ productsData }) {
               muted
               playsInline
               preload="auto"
-              className="w-full h-auto object-cover block"
+              className="w-full h-auto block"
+              style={{ imageRendering: 'crisp-edges', videoRendering: 'crisp-edges' }}
               onLoadedMetadata={() => {
                 if (videoRef.current) {
                   videoRef.current.muted = true;
